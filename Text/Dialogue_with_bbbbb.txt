@@ -1,0 +1,14 @@
+Dialogue
+
+0	hello
+
+bbbbb	*stares coldly* What do you want? I'm busy. Don't bother me unless it's absolutely necessary.
+
+0	yes?
+
+bbbbb	*looks at you briefly, then walks away* Nice to know you exist now. Carry on with your day. *returns a few steps later* Oh, and you have those shoes again.
+
+0	aaaaaa
+
+bbbbb	*a small smile creeps onto my face as I slow my pace to match yours* You're trying to play it casual, but I can tell you're not. *smirks slightly*
+

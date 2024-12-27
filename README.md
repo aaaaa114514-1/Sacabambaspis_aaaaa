@@ -1,54 +1,72 @@
-# SI100B_DIE_Fall_2024_Repo
+# Readme
 
-# Git Introduction
+#### This is a game similar to 'Soul Knight', in terms of both **game-play** and **plot**.
 
-Please follow these steps to get familiar with Git.
+### How to run it ?
 
-## Step 0
+- You can use VSCode to open the file **Soul knight **and run **gamestruct.py**.
+- DO NOT ATTEMPT TO MAXIMIZE THE WINDOW !
 
-(For Team Leader) Please click "Use this template", and then click "Create a new repository". Name your new repository, then **set it to private**.
+### Log in
 
-## Step 1
+- You should log in before playing because there are something bound to your account (such as your resources, your chat history with npcs, and your relationship❤ ).
+- You can enter with your user name and your password.
 
-(For Team Leader) Please invite your team members to your repository.
+### How to play it?
 
-All of you should `git clone` your remote repository to create a local repository.
+- There are different parts of the whole game.
 
-## Step 2
+  #### Menu
 
-- (For Team Leader) Please create a file named `hello2.py`, add some random code, `git add .`, `commit` your changes with message "hello 2", and `push` your changes to the remote repository.
+  |       **Keys**   |           **Functions**          |
+  | :--------------: | :------------------------------: |
+  |      W / ↑       |  (Player 1 / Player 2) move up   |
+  |      S / ↓       | (Player 1 / Player 2) move down  |
+  |      A / ←       | (Player 1 / Player 2) move left  |
+  |      D / →       | (Player 1 / Player 2) move right |
+  | Q / Ctrl (right) |   (Player 1 / Player 2) attack   |
+  |      Space       |   Player 1 & Player 2 approach   |
+  |       Esc        |             Boss key             |
 
-- (For Team Members) Please `pull` the remote changes from the remote repository to your local repository.
+  - Menu uses a special map ! You can buy different weapons and enter different levels.
+  - You can play in either single **player mode** and **pair mode** ! Just approach the portal by yourself / together with your friend and press **Space** !
+  - You can try your weapon here ! No limit for magic !
+  - Press **Esc** to minimize the game window, pause the music and open CET-6 review material ! (Have a try !)
 
-## Step 3
+  #### Fight
 
-- (For Team Leader) Please change `print("Hello!")` to `print("Olleh!")` in `hello.py`, then commit and push your changes.
+  - You play the role **Soul Knight**, and you can press keys to control him/them to move or attack enemies by shooting.
 
-- (For One Team Member) Please change `print("Hello!")` to `print("hello")` in `hello.py`, then commit and try to push your changes. What happens now?
+  - Your goal is to defeat the enemies and then approach the portal.
+  - Everyone has **HP** and **MP** of their own. When one's HP gets down to 0, then he is defeated.
+  - Shooting consumes magic power (MP). When one's MP cannot afford a single shot, then he cannot shoot anymore.
+  - When you have defeated all enemies and both of you (If someone is defeated or it's a single-player game, then one player is also accepted) are beside the portal, you can press **Space **to enter the portal and won !
 
-After merging conflicts, commit and push your changes.
+  #### Plot Appreciation
 
-## Step 4
+  - ~~The inspiration for interface design comes from Galgame.~~
 
-- (For Team Leader) Please add a function `hi()`, write something, then commit and push your changes.
+  |                 **Keys**        |  **Functions**    |
+  | :------------------------------: | :-----------: |
+  | Space / left-click / scroll down |   next page   |
+  |           Ctrl (left)            | fast forward  |
+  |              A / F6              |   auto mode   |
+  |            scroll up             |    history    |
+  |               Esc                |   Boss key    |
 
-- (For One Team Member) Please add a function `hiii()`, write something, then commit and try to push your changes. What happens now?
+  - You can scroll up the mouse wheel (not in auto mode) to check the history dialogue. You can then scroll up/down to turn pages. When you turn to the last page and you can scroll down to quit the history mode. You can also press Esc to quit the history mode.
+  - You can press **A** / **F6** (not in history mode) to get into auto mode, which enables the program to play automatically (2.5s/page). If you turn pages in auto mode, time for each page will be reset. You can press **A** / **F6** again to quit the auto mode.
 
-After merging conflicts, commit and push your changes.
+  #### Chat with Npcs
 
-**NOTE: Please DO NOT use `git push -f` if you are unsure about the CONSEQUENCES!**
+  - You can chat with npcs powered by ollama AI. You can key in the text box below and press **Enter (on keyboard or keypad)** or press the button **Enter** to send a message to him/her.
+  - You can enhance your relationship with him/her by chatting.
+  - You may get **key information**, **effect gain** or **resources** by talking to npcs! The closer your relationship is, the more you may get!
+  - All your relationship and chat history will be saved and bound to your account.
 
-# Lecture 2
+### music & art
 
-## Folder `assets`
+- Background music ***Soul City*** is ***aaaaa***'s original track, **all rights reserved**.
 
-In a game development context, an assets folder typically contains essential resources that the game requires for its functionality, visual elements, etc. This folder commonly includes images, audio files, level design data (which, you can simply think of this as, the files that save your map, like tiles, special pickups, etc.)  
-Organizing these resources in an assets folder helps streamline development and makes it easier to manage and update the game's content.  
+- Other background music and pictures are from the Internet.
 
-## Folder `__pycache__`
-
-**The "pycache" is a directory created when you import code from other files, such as** `from game_manager import GameManager`. It is automatically generated by Python when it compiles and stores bytecode files (.pyc) for modules to improve execution speed.
-
-These files contain pre-compiled versions of Python source code, making the code execution faster upon subsequent runs. The "pycache" directory is created within the same directory as the Python script or module and helps reduce the need for recompilation, enhancing the efficiency of Python programs.
-
-**You should add it to .gitignore**, because there is no meaning to update it during your development. While others run your code, it will be generated again and cover the version you uploaded.  
