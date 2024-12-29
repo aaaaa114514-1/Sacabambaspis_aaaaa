@@ -6,6 +6,30 @@ import os
 from bgmplayer import BgmPlayer
 from load_picture import pictures
 
+
+'''
+camara:
+    edges([int,int,int,int]):   镜头移动判定边界位置(上/下/左/右)
+    left_top([int,int]):        镜头左上角在地图上的坐标
+
+    can_move(player, walls, direction):   -> [int,int,int,int]              判定是否能够移动, 返回值为0的元素表示不可[上/下/左/右]移动镜头, 为1则可以移动镜头; 若返回[2,2,2,2]则是地图到达边界
+        player([player, ...]):                                              所有玩家
+        walls(wall_bgp):                                                    墙与背景图对象
+        direction([int,int]):                                               移动向量
+    move_check(players, enemies, bullets, walls):                           判断是否需要移动镜头的移动检测函数
+        players([player, ...]):                                             所有玩家
+        enemies([enemy, ...]):                                              所有敌人
+        bullets([bullet, ...]):                                             子弹列表
+        walls(wall_bgp):                                                    墙与背景图对象
+    move(direction, distance, players, enemies, bullets, walls): -> int     移动镜头(含检测能否移动镜头), 返回值为是否无需强制移动至镜头移动判定边界上
+        direction(int):                                                     方向: 1-上 2-下 3-左 4-右
+        distance(int):                                                      移动距离
+        players([player, ...]):                                             所有玩家
+        enemies([enemy, ...]):                                              所有敌人
+        bullets([bullet, ...]):                                             子弹列表
+        walls(wall_bgp):                                                    墙与背景图对象
+'''
+
 class camera:
     def __init__(self, left_top:list):
         self.edges = [100, 600, 100, 460]
@@ -104,7 +128,7 @@ class camera:
 
 
 '''
-wall:bgp:
+wall_bgp:
     screen_image(Surface):  窗口
     bgp(Surface):           背景图
     bgp_rect(Rect):         背景图矩形
@@ -112,9 +136,12 @@ wall:bgp:
     wall_images([Surface]): 墙体图片列表
     wall_map([[]]):         地图(0-地面 >0-墙体)
 
-    build_map():                将墙体按照地图绘制在walled_bgp上
-    move(direction):            移动背景图和所有墙体(带边缘判定)
-        direction([int,int]):   移动方向向量
+    build_map():                    将墙体按照地图绘制在walled_bgp上
+    can_move(direction): -> bool    判定移动后图片是否出界
+        direction([int,int]):       移动方向向量
+    move(direction):                移动背景图和所有墙体(带边缘判定)
+        direction([int,int]):       移动方向向量
+    display():                      将walled_bgp绘制在屏幕上
 '''
 class wall_bgp:
     def __init__(self, screen_image:pygame.Surface, bgp:pygame.Surface, wall_images:list[pygame.Surface], wallmap=None):
