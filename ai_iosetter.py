@@ -1,6 +1,7 @@
 from openai import OpenAI
 from typing import List, Dict
 from datetime import datetime
+from account_setter import account_admin
 
 '''
 npc_dia:
@@ -11,6 +12,8 @@ npc_dia:
     cli_messages([Dict]):       npc与用户的对话(含初始系统设置)
     judge(OpenAI):              判断者AI
     jud_setting(Dict):          判断者设置
+    acer(<account_admin>):      账户操作助手
+    user_resource(Dict):        用户数据
     likability(int):            好感度(1~100)
 
     talk(user_input):  -> str       与AI对话, 返回AI的回答, 并将记录通过write_in方法写入文件
@@ -22,6 +25,7 @@ npc_dia:
 
 class npc_dia:
     def __init__(self, name:str, username:str):
+        self.username = username
         self.nowtime = datetime.now().strftime('%Y%m%d_%H%M%S')
         f = open(f"Text\\Accounts\\{self.username}\\Dialogue_with_{name}_{self.nowtime}.txt", "a", encoding="UTF-8")
         with open(f"Text\\Accounts\\{self.username}\\Dialogue_with_{name}_{self.nowtime}.txt", 'w') as file:
@@ -29,7 +33,6 @@ class npc_dia:
         f.write("Dialogue\n\n")
         f.close()
         self.name = name
-        self.username = username
         self.client = OpenAI(
             base_url = 'http://10.15.88.73:5016/v1',
             api_key = 'ollama',
@@ -45,7 +48,11 @@ class npc_dia:
         with open(f'AI_Settings\\{name}_judge.txt', 'r') as file:
             jud_settings = file.read()
         self.jud_setting =  {"role": "system", "content": jud_settings}
-        self.likability = 0
+        self.acer = account_admin
+        self.user_resource = self.acer.get_resource(self.username)
+        self.likability = int(self.user_resource[f'likability_{self.name}'])
+        print(self.likability)
+
 
     def talk(self, user_input:str):
         self.cli_messages.append({"role": "user", "content": user_input+f'\nLikability = {self.likability}'})
@@ -67,13 +74,23 @@ class npc_dia:
             self.likability += 3
         elif 'High' in jud_reply or 'high' in jud_reply:
             self.likability += 5
+
+        if self.likability < 0:
+            self.likability = 0
+        elif self.likability > 100:
+            self.likability = 100
+
         self.write_in(0, user_input)
         self.write_in(self.name, self.cli_messages[-1]['content'])
+        
+        
+        self.user_resource[f'likability_{self.name}'] = self.likability
+        self.acer.update_resource(self.username, self.user_resource)
         return cli_reply
 
     def write_in(self, name:str, content:str):
         f = open(f"Text\\Accounts\\{self.username}\\Dialogue_with_{self.name}_{self.nowtime}.txt", "a", encoding="UTF-8")
-        f.write(f"{name}\t{content}\n\n")
+        f.write(f"{name}   \t{content}\n\n")
         f.close()
 
 if __name__ == "__main__":

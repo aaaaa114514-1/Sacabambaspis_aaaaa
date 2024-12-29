@@ -92,6 +92,8 @@ class Textbox:
 
 
 def gal_custom(screen_image:pygame.Surface, username:str, npcname:str):
+    pygame.init()
+    screen_image.fill((0,0,0))
     manager = pygame_gui.UIManager((900, 560))
 
     inputbox_0 = Inputbox(screen_image, manager)

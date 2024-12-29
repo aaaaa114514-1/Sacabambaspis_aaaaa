@@ -1,2 +1,0 @@
-Soulstone   100
-has_read   0

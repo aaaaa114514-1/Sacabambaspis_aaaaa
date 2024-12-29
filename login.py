@@ -33,7 +33,7 @@ def login(screen_image:pygame.Surface):
 
     status_label = pygame_gui.elements.UILabel(relative_rect=pygame.Rect(250+DXY[0], 410+DXY[1], 400, 50), text="", manager=manager)
 
-    text_f = open('Text\Accounts.txt', "r", encoding="UTF-8")
+    text_f = open('Text\\Accounts.txt', "r", encoding="UTF-8")
     user_data = dict()
     for line in text_f:
         user_data[line.split()[0]] = line.split()[1]
@@ -71,11 +71,11 @@ def login(screen_image:pygame.Surface):
                         if username not in user_data:
                             user_data[username] = hash_data(password)
                             f = open(f'Text\Accounts.txt', "a", encoding="UTF-8")
-                            f.write(f'{username}\t{hash_data(password)}\n')
+                            f.write(f'{username}   \t{hash_data(password)}\n')
                             f.close()
                             os.mkdir(f'Text\\Accounts\\{username}')
                             with open (f'Text\\Accounts\\{username}\\account_resource.txt', 'w') as f:
-                                f.write('Soulstone   100\nhas_read   0')
+                                f.write('Soulstone   \t100\nhas_read   \t0\nlikability_Alice   \t1')
                             password_input.clear()
                             status_label.set_text("Register successfully!")
                         else:
