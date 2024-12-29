@@ -64,7 +64,7 @@
   - You may get **key information**, **effect gain** or **resources** by talking to npcs! The closer your relationship is, the more you may get!
   - All your relationship and chat history will be saved and bound to your account.
 
-### music & art
+### Music & Art
 
 - Background music ***Soul City*** is ***aaaaa***'s original track, **all rights reserved**.
 
