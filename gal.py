@@ -167,7 +167,7 @@ def gal():
     pygame.display.flip()
 
     bgm = BgmPlayer()
-    bgm.play('1.mp3',-1)
+    bgm.play('Soul_Soil.mp3',-1)
 
     text0 = text(screen_image, pic.chapter_background, 'Text\\Chapter0.txt', pic.textbox, 'aaaaa')
     history0 = history(screen_image, pic.Soul_knight_background)

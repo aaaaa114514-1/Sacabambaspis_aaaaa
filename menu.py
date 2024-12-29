@@ -181,7 +181,7 @@ def menu():
     bullets = []
 
     bgm = BgmPlayer()
-    bgm.play('1.mp3', -1)
+    bgm.play('Soul_Soil.mp3', -1)
 
     def minimize_window():
         window = gw.getWindowsWithTitle('Soul Knight')[0]

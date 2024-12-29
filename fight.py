@@ -8,7 +8,7 @@ from load_picture import pictures
 
 class camera:
     def __init__(self, left_top:list):
-        self.edges = [150, 600, 100, 460]
+        self.edges = [100, 600, 100, 460]
         self.left_top = left_top
 
     def can_move(self, players:list, walls, direction:list):
@@ -366,7 +366,7 @@ def fight():
     camera_0 = camera([0,0])
 
     bgm = BgmPlayer()
-    bgm.play('1.mp3', -1)
+    bgm.play('Soul_Soil.mp3', -1)
 
     def minimize_window():
         window = gw.getWindowsWithTitle('Soul Knight')[0]
