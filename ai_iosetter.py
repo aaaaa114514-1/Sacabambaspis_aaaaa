@@ -1,9 +1,10 @@
 from openai import OpenAI
 from typing import List, Dict
-
+from datetime import datetime
 
 '''
 npc_dia:
+    nowtime(str):               对话时间
     name(str):                  npc的名字
     client(OpenAI):             npc的控制AI
     cli_messages([Dict]):       npc与用户的对话(含初始系统设置)
@@ -12,16 +13,17 @@ npc_dia:
     likability(int):            好感度(1~100)
 
     talk(user_input):  -> str       与AI对话, 返回AI的回答, 并将记录通过write_in方法写入文件
-        user_input(str)             用户的输入
-    write_in(name, content):        写入文件"Text\\Dialogue_with_{name}.txt"
-        name(str):                  说话者的名字
-        content(str):               某个人的话
+        user_input(str)                 用户的输入
+    write_in(name, content):        写入文件"Text\\Dialogue_with_{name}_{nowtime}.txt"
+        name(str):                      说话者的名字
+        content(str):                   某个人的话
 '''
 
 class npc_dia:
     def __init__(self, name):
-        f = open(f"Text\\Dialogue_with_{name}.txt", "a", encoding="UTF-8")
-        with open(f"Text\\Dialogue_with_{name}.txt", 'w') as file:
+        self.nowtime = datetime.now().strftime('%Y%m%d_%H%M%S')
+        f = open(f"Text\\Dialogue_with_{name}_{self.nowtime}.txt", "a", encoding="UTF-8")
+        with open(f"Text\\Dialogue_with_{name}_{self.nowtime}.txt", 'w') as file:
             pass
         f.write("Dialogue\n\n")
         f.close()
@@ -68,7 +70,7 @@ class npc_dia:
         return cli_reply
 
     def write_in(self, name, content):
-        f = open(f"Text\\Dialogue_with_{self.name}.txt", "a", encoding="UTF-8")
+        f = open(f"Text\\Dialogue_with_{self.name}_{self.nowtime}.txt", "a", encoding="UTF-8")
         f.write(f"{name}\t{content}\n\n")
         f.close()
 

@@ -18,9 +18,9 @@ Inputbox:
     check_empty():              检验输入框是否为空, 并更新提交按钮状态
     is_pressed():   -> Bool     返回按钮是否被按下
     set_button(is_able):        设置按钮状态与显示
-        is_able(Bool):          目标状态: 0-禁用 1-启用
+        is_able(Bool):              目标状态: 0-禁用 1-启用
     set_inputbox(is_able):      设置输入框状态
-        is_able(Bool):          目标状态: 0-禁用 1-启用
+        is_able(Bool):              目标状态: 0-禁用 1-启用
 
 '''
 class Inputbox:
@@ -72,9 +72,9 @@ Textbox:
     content([str]):         内容, 每个元素之间空1行
     textbox(UITextBox):     文本框
 
-    append_text(add_speaker, add_dialogue):     把内容打印在文本框里(说话人和内容之间换行)
-        add_speaker(str):                       说话人
-        add_dialogue(str):                      对话内容
+    append_text(add_speaker, add_dialogue):     把内容打印在文本框里(说话人和内容之间换行), 并自动翻页至底部
+        add_speaker(str):                           说话人
+        add_dialogue(str):                          对话内容
 '''
 
 class Textbox:

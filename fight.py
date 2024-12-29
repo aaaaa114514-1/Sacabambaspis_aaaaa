@@ -13,21 +13,21 @@ camara:
     left_top([int,int]):        镜头左上角在地图上的坐标
 
     can_move(player, walls, direction):   -> [int,int,int,int]              判定是否能够移动, 返回值为0的元素表示不可[上/下/左/右]移动镜头, 为1则可以移动镜头; 若返回[2,2,2,2]则是地图到达边界
-        player([player, ...]):                                              所有玩家
-        walls(wall_bgp):                                                    墙与背景图对象
-        direction([int,int]):                                               移动向量
+        player([player, ...]):                                                  所有玩家
+        walls(wall_bgp):                                                        墙与背景图对象
+        direction([int,int]):                                                   移动向量
     move_check(players, enemies, bullets, walls):                           判断是否需要移动镜头的移动检测函数
-        players([player, ...]):                                             所有玩家
-        enemies([enemy, ...]):                                              所有敌人
-        bullets([bullet, ...]):                                             子弹列表
-        walls(wall_bgp):                                                    墙与背景图对象
+        players([player, ...]):                                                 所有玩家
+        enemies([enemy, ...]):                                                  所有敌人
+        bullets([bullet, ...]):                                                 子弹列表
+        walls(wall_bgp):                                                        墙与背景图对象
     move(direction, distance, players, enemies, bullets, walls): -> int     移动镜头(含检测能否移动镜头), 返回值为是否无需强制移动至镜头移动判定边界上
-        direction(int):                                                     方向: 1-上 2-下 3-左 4-右
-        distance(int):                                                      移动距离
-        players([player, ...]):                                             所有玩家
-        enemies([enemy, ...]):                                              所有敌人
-        bullets([bullet, ...]):                                             子弹列表
-        walls(wall_bgp):                                                    墙与背景图对象
+        direction(int):                                                         方向: 1-上 2-下 3-左 4-右
+        distance(int):                                                          移动距离
+        players([player, ...]):                                                 所有玩家
+        enemies([enemy, ...]):                                                  所有敌人
+        bullets([bullet, ...]):                                                 子弹列表
+        walls(wall_bgp):                                                        墙与背景图对象
 '''
 
 class camera:
@@ -138,9 +138,9 @@ wall_bgp:
 
     build_map():                    将墙体按照地图绘制在walled_bgp上
     can_move(direction): -> bool    判定移动后图片是否出界
-        direction([int,int]):       移动方向向量
+        direction([int,int]):           移动方向向量
     move(direction):                移动背景图和所有墙体(带边缘判定)
-        direction([int,int]):       移动方向向量
+        direction([int,int]):           移动方向向量
     display():                      将walled_bgp绘制在屏幕上
 '''
 class wall_bgp:
@@ -189,7 +189,7 @@ player:
     images([Surface])       形象: [knight1, knight2, ...]
     side_player(Surface)    本角色侧边栏图片
     state(int)              状态: 1-up 2-down 3-left 4-right
-    damage_value(int)             伤害
+    damage_value(int)       伤害
     full_hp(int)            最高血量
     hp(int)                 血量
     full_magic(int)         最高魔法值
@@ -321,17 +321,17 @@ bullet:
     screen_image(Surface)       窗口
     image(Surface)              子弹形象
     is_show(Bool)               是否显示    0-隐藏 1-显示
-    from_player(player)            伤害来源:   0-来源于非玩家 player1-来源于玩家1 player2-来源于玩家2
+    from_player(player)         伤害来源:   0-来源于非玩家 player1-来源于玩家1 player2-来源于玩家2
     damage(int)                 伤害:       +为伤害 -为治疗
     damage_range(float)         伤害半径
     speed([float, float])       速度:       x_speed(右) y_speed(下)
     last_time(int)              子弹上次移动毫秒值
     rect(Rect)                  子弹矩形对象
 
-    display():          绘制子弹(如状态为显示)
-    move():             向固定方向移动并绘制
-    hit(target):        消除并造成伤害
-        target(<player> or <enemy> or 0)    目标
+    display():                              绘制子弹(如状态为显示)
+    move():                                 向固定方向移动并绘制
+    hit(target):                            消除并造成伤害
+        target(<player> or <enemy> or 0)        目标
 '''
 class bullet:
     def __init__(self, screenin: pygame.surface, imagein: pygame.surface, from_player: player, damage_range: float, b_location: list, speed: list):
@@ -426,7 +426,6 @@ def fight():
 
     def flipper():
         walls.display()
-        #screen_image.blit(pic.grass, (0,0))
         screen_image.blit(pic.sidebox, (750, 0))
         for player_0 in players:
             if player_0.is_alive == 1:
