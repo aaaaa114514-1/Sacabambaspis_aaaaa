@@ -7,71 +7,100 @@ from bgmplayer import BgmPlayer
 from load_picture import pictures
 
 class camera:
-    def __init__(self):
-        self.edges = [150, 750, 100, 460]
+    def __init__(self, left_top:list):
+        self.edges = [150, 600, 100, 460]
+        self.left_top = left_top
 
     def can_move(self, players:list, walls, direction:list):
         if walls.can_move(direction):
             result = [1,1,1,1]
             for player_0 in players:
-                if player_0.location[1] >= self.edges[3]:
+                if player_0.rect.y >= self.edges[3]:
                     result[1] = 0
-                if player_0.location[1] <= self.edges[2]:
+                if player_0.rect.y <= self.edges[2]:
                     result[0] = 0
-                if player_0.location[0] >= self.edges[1]:
+                if player_0.rect.x >= self.edges[1]:
                     result[3] = 0
-                if player_0.location[0] <= self.edges[0]:
+                if player_0.rect.x <= self.edges[0]:
                     result[2] = 0
             return result
         else:
-            return [0,0,0,0]
+            return [2,2,2,2]
     
     def move_check(self, players:list, enemies:list, bullets:list, walls):
         for player_0 in players:
-            if player_0.location[1] > self.edges[3]:
-                self.move(1, player_0.location[1] - self.edges[3], players, enemies, bullets, walls)
-            elif player_0.location[1] < self.edges[2]:
-                self.move(2, self.edges[2] - player_0.location[1], players, enemies, bullets, walls)
-            elif player_0.location[0] > self.edges[1]:
-                self.move(3, player_0.location[0] - self.edges[1], players, enemies, bullets, walls)
-            elif player_0.location[0] < self.edges[0]:
-                self.move(4, self.edges[0] - player_0.location[0], players, enemies, bullets, walls)
+            if player_0.rect.y > self.edges[3]:
+                if not self.move(1, player_0.rect.y - self.edges[3], players, enemies, bullets, walls):
+                    player_0.rect.y = self.edges[3]
+                    player_0.rect.y = self.edges[3]
+            elif player_0.rect.y < self.edges[2]:
+                if not self.move(2, self.edges[2] - player_0.rect.y, players, enemies, bullets, walls):
+                    player_0.rect.y = self.edges[2]
+                    player_0.rect.y = self.edges[2]
+            elif player_0.rect.x > self.edges[1]:
+                if not self.move(3, player_0.rect.x - self.edges[1], players, enemies, bullets, walls):
+                    player_0.rect.x = self.edges[1]
+                    player_0.rect.x = self.edges[1]
+            elif player_0.rect.x < self.edges[0]:
+                if not self.move(4, self.edges[0] - player_0.rect.x, players, enemies, bullets, walls):
+                    player_0.rect.x = self.edges[0]
+                    player_0.rect.x = self.edges[0]
 
     def move(self, direction:int, distance:int, players:list, enemies:list, bullets:list, walls):
-        if direction == 1 and self.can_move(players, walls, [0,-distance])[0]:
-            for entity in players:
-                entity.rect.y -= distance
-            for entity in enemies:
-                entity.rect.y -= distance
-            for entity in bullets:
-                entity.rect.y -= distance
-            walls.move([0,-distance])
-        elif direction == 2 and self.can_move(players, walls, [0,distance])[1]:
-            for entity in players:
-                entity.rect.y += distance
-            for entity in enemies:
-                entity.rect.y += distance
-            for entity in bullets:
-                entity.rect.y += distance
-            walls.move([0,distance])
-        elif direction == 3 and self.can_move(players, walls, [-distance,0])[2]:
-            for entity in players:
-                entity.rect.x -= distance
-            for entity in enemies:
-                entity.rect.x -= distance
-            for entity in bullets:
-                entity.rect.x -= distance
-            walls.move([-distance,0])
-        elif direction == 4 and self.can_move(players, walls, [distance,0])[3]:
-            for entity in players:
-                entity.rect.x += distance
-            for entity in enemies:
-                entity.rect.x += distance
-            for entity in bullets:
-                entity.rect.x += distance
-            walls.move([distance,0])
-        for entity in players:
-            entity.location = [entity.rect.x, entity.rect.y]
+        if direction == 1:
+            if self.can_move(players, walls, [0,-distance])[0] == 1:
+                for entity in players:
+                    entity.rect.y -= distance
+                for entity in enemies:
+                    entity.rect.y -= distance
+                for entity in bullets:
+                    entity.rect.y -= distance
+                walls.move([0,-distance])
+                self.left_top = [self.left_top[0],self.left_top[1]-distance]
+                return 1
+            elif self.can_move(players, walls, [0,-distance])[0] == 2:
+                return 1
+        elif direction == 2:
+            if self.can_move(players, walls, [0,distance])[1] == 1:
+                for entity in players:
+                    entity.rect.y += distance
+                for entity in enemies:
+                    entity.rect.y += distance
+                for entity in bullets:
+                    entity.rect.y += distance
+                walls.move([0,distance])
+                self.left_top = [self.left_top[0],self.left_top[1]+distance]
+                return 1
+            elif self.can_move(players, walls, [0,distance])[1] == 2:
+                return 1
+        elif direction == 3:
+            if self.can_move(players, walls, [-distance,0])[2] == 1:
+                for entity in players:
+                    entity.rect.x -= distance
+                for entity in enemies:
+                    entity.rect.x -= distance
+                for entity in bullets:
+                    entity.rect.x -= distance
+                walls.move([-distance,0])
+                self.left_top = [self.left_top[0]-distance,self.left_top[1]]
+                return 1
+            elif self.can_move(players, walls, [-distance,0])[2] == 2:
+                return 1
+        elif direction == 4:
+            if self.can_move(players, walls, [distance,0])[3] == 1:
+                for entity in players:
+                    entity.rect.x += distance
+                for entity in enemies:
+                    entity.rect.x += distance
+                for entity in bullets:
+                    entity.rect.x += distance
+                walls.move([distance,0])
+                self.left_top = [self.left_top[0]+distance,self.left_top[1]]
+                return 1
+            elif self.can_move(players, walls, [distance,0])[3] == 2:
+                return 1
+        else:
+            return 0
 
 
 '''
@@ -106,15 +135,15 @@ class wall_bgp:
                     self.walled_bgp.blit(self.wall_images[self.wallmap[i][j]-1], (50*j, 50*i))
             
     def can_move(self, direction:list):
-        if self.bgp_rect.left + direction[0] <= 0 and self.bgp_rect.right + direction[0] >= 900 and self.bgp_rect.top + direction[1] <= 0 and self.bgp_rect.bottom + direction[1] >= 510:
+        if self.bgp_rect.left + direction[0] <= 0 and self.bgp_rect.right + direction[0] >= 750 and self.bgp_rect.top + direction[1] <= 0 and self.bgp_rect.bottom + direction[1] >= 560:
             return 1
         else:
             return 0
 
     def move(self, direction):
-        if self.bgp_rect.left + direction[0] <= 0 and self.bgp_rect.right + direction[0] >= 900:
+        if self.bgp_rect.left + direction[0] <= 0 and self.bgp_rect.right + direction[0] >= 750:
             self.bgp_rect.x += direction[0]
-        if self.bgp_rect.top + direction[1] <= 0 and self.bgp_rect.bottom + direction[1] >= 510:
+        if self.bgp_rect.top + direction[1] <= 0 and self.bgp_rect.bottom + direction[1] >= 560:
             self.bgp_rect.y += direction[1]
         self.display()
 
@@ -138,7 +167,6 @@ player:
     hp(int)                 血量
     full_magic(int)         最高魔法值
     magic(int)              魔法值
-    location([int,int])     位置
     last_time(int)          玩家上次移动毫秒值
     rect(Rect)              玩家矩形对象
     wallmap([[]])           地图
@@ -174,22 +202,19 @@ class player:
         self.hp = self.full_hp
         self.full_magic = full_magic
         self.magic = 100
-        self.location = [350, 255] 
         self.state = 2
         self.last_time = pygame.time.get_ticks()
-        self.rect = self.images[0].get_rect(center=self.location)
+        self.rect = self.images[0].get_rect(center=[350, 255])
         self.wallmap = wallmap
         self.is_alive = 1
 
     def goto(self, direction, destination=None):
         if destination is None:
-            destination = self.location
+            destination = [self.rect.x, self.rect.y]
         self.state = direction
         self.rect.center = destination 
-        self.location = list(self.rect.center)
 
-
-    def can_goto(self, direction):
+    def can_goto(self, direction, camera_left_top:list):
         new_rect = self.rect.copy()
         if direction == 1:
             new_rect.y -= 3
@@ -205,12 +230,12 @@ class player:
         bottom_left = (new_rect.left, new_rect.bottom)
         bottom_right = (new_rect.right, new_rect.bottom)
 
-        if new_rect.left < 0 or new_rect.right > 750 or new_rect.top < 0 or new_rect.bottom > 510:
+        if new_rect.left < 0 or new_rect.right > 750 or new_rect.top < 0 or new_rect.bottom > 560:
             return False
 
         for corner in [top_left, top_right, bottom_left, bottom_right]:
             try:
-                if self.wallmap[corner[1] // 50][corner[0] // 50] != 0:
+                if self.wallmap[(corner[1]-camera_left_top[1]) // 50][(corner[0]-camera_left_top[0]) // 50] != 0:
                     return False
             except IndexError:
                 return True
@@ -232,20 +257,19 @@ class player:
             self.screen_image.blit(now_text, (845, 180))
         self.screen_image.blit(self.images[self.state - 1], self.rect) 
 
-    def move(self, direction):
+    def move(self, direction, camera_left_top):
         if pygame.time.get_ticks() - self.last_time >= 10:
             self.last_time = pygame.time.get_ticks()
             self.state = direction
             speed = 3
-            if direction == 1 and self.rect.top >= 1 and self.can_goto(1): 
+            if direction == 1 and self.rect.top >= 1 and self.can_goto(1,camera_left_top): 
                 self.rect.y -= speed
-            elif direction == 2 and self.rect.bottom <= 510 and self.can_goto(2):  
+            elif direction == 2 and self.rect.bottom <= 560 and self.can_goto(2,camera_left_top):  
                 self.rect.y += speed
-            elif direction == 3 and self.rect.left >= 1 and self.can_goto(3): 
+            elif direction == 3 and self.rect.left >= 1 and self.can_goto(3,camera_left_top): 
                 self.rect.x -= speed
-            elif direction == 4 and self.rect.right <= 749 and self.can_goto(4):  
+            elif direction == 4 and self.rect.right <= 749 and self.can_goto(4,camera_left_top):  
                 self.rect.x += speed
-            self.location = list(self.rect.center)
 
 
     def hp_set(self, new_hp):
@@ -312,7 +336,7 @@ class bullet:
         self.is_show = 0
 
     def detect(self, locations: list):
-        if self.rect.left < 0 or self.rect.top < 0 or self.rect.right > 750 or self.rect.bottom > 510:
+        if self.rect.left < 0 or self.rect.top < 0 or self.rect.right > 750 or self.rect.bottom > 560:
             print('0010')
             self.hit(0)
             return -1
@@ -323,7 +347,7 @@ class bullet:
                     return -1
             return 0
 
-def menu():
+def fight():
     pygame.init()
     screen_image = pygame.display.set_mode((900, 560))
     screen_rect = screen_image.get_rect()
@@ -339,7 +363,7 @@ def menu():
     players = [player1, player2]
     bullets = []
 
-    camera_0 = camera()
+    camera_0 = camera([0,0])
 
     bgm = BgmPlayer()
     bgm.play('1.mp3', -1)
@@ -351,16 +375,16 @@ def menu():
     def playercheck(a_player:player, K_up, K_down, K_left, K_right):
         if a_player.is_alive == 1:
             if keypressed[K_up] and not keypressed[K_down]:
-                a_player.move(1)
+                a_player.move(1,camera_0.left_top)
                 flipper()
             if keypressed[K_down] and not keypressed[K_up]:
-                a_player.move(2)
+                a_player.move(2,camera_0.left_top)
                 flipper()
             if keypressed[K_left] and not keypressed[K_right]:
-                a_player.move(3)
+                a_player.move(3,camera_0.left_top)
                 flipper()
             if keypressed[K_right] and not keypressed[K_left]:
-                a_player.move(4)
+                a_player.move(4,camera_0.left_top)
                 flipper()
 
     def state_trans(state,speed):
@@ -393,11 +417,11 @@ def menu():
         for bullet_0 in bullets:
             bullet_0.move()
             if bullet_0.from_player == player1:
-                result = bullet_0.detect([[player2.location[0], player2.location[1], player2]])
+                result = bullet_0.detect([[player2.rect.x, player2.rect.y, player2]])
                 if result == -1:
                     bullets_to_remove.append(bullet_0)
             elif bullet_0.from_player == player2:
-                result = bullet_0.detect([[player1.location[0], player1.location[1], player1]])
+                result = bullet_0.detect([[player1.rect.x, player1.rect.y, player1]])
                 if result == -1:
                     bullets_to_remove.append(bullet_0)
         for bullet_0 in bullets_to_remove:
@@ -416,11 +440,11 @@ def menu():
 
             if player1.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_q and player1.magic >= 5:
                 player1.magic -= 5
-                bullets.append(bullet(screen_image, pic.bullet1, player1, 20, player1.location[:], state_trans(player1.state,4)))
+                bullets.append(bullet(screen_image, pic.bullet1, player1, 20, [player1.rect.x, player1.rect.y][:], state_trans(player1.state,4)))
                 bullets[-1].display()
             if player2.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_RCTRL and player2.magic >= 5:
                 player2.magic -= 5
-                bullets.append(bullet(screen_image, pic.bullet1, player2, 20, player2.location[:], state_trans(player2.state,4)))
+                bullets.append(bullet(screen_image, pic.bullet1, player2, 20, [player2.rect.x, player2.rect.y][:], state_trans(player2.state,4)))
                 bullets[-1].display()
 
         if pygame.display.get_active():
@@ -436,4 +460,4 @@ def menu():
 
 
 if __name__ == '__main__':
-    menu()
+    fight()
