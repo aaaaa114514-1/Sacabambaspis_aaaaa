@@ -26,7 +26,7 @@ Inputbox:
 class Inputbox:
     pygame.init()
 
-    def __init__(self, screen, manager):
+    def __init__(self, screen:pygame.Surface, manager:pygame_gui.UIManager):
         self.screen_image = screen
         self.manager = manager
         self.input_box = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((75, 515), (645, 40)),manager=self.manager)
@@ -56,7 +56,7 @@ class Inputbox:
     def set_button(self, is_able:bool):
         if is_able:
             self.submit_button.is_enabled = True
-            self.submit_button.normal_bg_color = (0, 128, 255)
+            self.submit_button.normal_bg_color = (100, 100, 100)
             self.submit_button.hovered_bg_color = (0, 100, 200)
         else:
             self.submit_button.is_enabled = False
@@ -78,12 +78,12 @@ Textbox:
 '''
 
 class Textbox:
-    def __init__(self, content, manager):
+    def __init__(self, content:list[str], manager:pygame_gui.UIManager):
         self.content = [content]
         self.textbox = pygame_gui.elements.UITextBox(html_text=self.content[0], relative_rect=pygame.Rect((75, 10), (750, 500)), manager=manager)
 
     def append_text(self, add_speaker, add_dialogue):
-        self.content.append(str(add_speaker)+'\n    '+str(add_dialogue))
+        self.content.append(f'<font color="grey">{add_speaker}</font>\n>> {add_dialogue}')
         self.textbox.set_text('\n\n'.join(self.content))
         try:
             self.textbox.scroll_bar.set_scroll_from_start_percentage(1)
@@ -97,8 +97,9 @@ def gal_custom():
     pygame.display.set_caption('Soul Knight')
     manager = pygame_gui.UIManager((900, 560))
     inputbox_0 = Inputbox(screen_image, manager)
-    textbox_0 = Textbox('-'*50, manager)
-    npc_0 = npc_dia('bbbbb')
+    npc_0 = npc_dia('Alice')
+    textbox_0 = Textbox(f'Chat with {npc_0.name}\n'+'-'*144, manager)
+
 
     bgm = BgmPlayer()
     bgm.play('1.mp3',-1)
@@ -148,12 +149,9 @@ def gal_custom():
                 textbox_0.append_text(npc_0.name, npc_0.talk(newtext))
                 inputbox_0.set_inputbox(1)
 
-        manager.update(time_delta)
-
-        screen_image.fill((255, 255, 255))
-        manager.draw_ui(screen_image)
         inputbox_0.check_empty()
-
+        manager.update(time_delta)
+        manager.draw_ui(screen_image)
         pygame.display.flip()
 
 

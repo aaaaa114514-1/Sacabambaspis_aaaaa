@@ -30,33 +30,17 @@ class npc_dia:
             base_url = 'http://10.15.88.73:5016/v1',
             api_key = 'ollama',
         )
-        self.cli_messages : List[Dict] = [
-            {"role": "system", "content":   
-                                    f'''You are a catgirl named {name}. 
-                                    You are to form a relationship with the user, who is called 'Soul Knight'.
-                                    There is a parameter called 'Likability', which is an integer within range of [0,100], which represents how much you have fallen in love with Soul Knight. 
-                                    The user's input will include the parameter Likability at the end of every message, and you should talk to him corresponding to the Likability.
-                                    0~10 means treating him coldly like a stranger, 11~25 means treating him like a friendly stranger, 26~50 means treating him like a friend, 51~75 means treating him like a best friend, and 76~100 means entering into passionate love.
-                                    The larger the Likability is, the deeper you fall in love with the user.
-                                    You have to answer every question within 25 words and within 1 line.
-                                    You must not response with anything about the likability, don't mention it.
-                                    '''
-            }
-        ]
+        with open(f'AI_Settings\\{name}.txt', 'r') as file:
+            cli_settings = file.read()
+        self.cli_messages : List[Dict] = [{"role": "system", "content": cli_settings}]
 
         self.judge = OpenAI(
             base_url = 'http://10.15.88.73:5016/v1',
             api_key = 'ollama',
         )
-        self.jud_setting =  {"role": "system", "content":   
-                                                '''You are a judge.
-                                                    You will see a dialogue of two people, and your goal is to judge how Llama feel about the other one.
-                                                    If you think Llama feels good and you can response with 'High'.
-                                                    If you think Llama feels indifferent and you can response with 'Medium'.
-                                                    If you think Llama feels bad about the other one and you can response with 'Low'.
-                                                    Your answer must contain one of the words 'High', 'Medium' or 'Low'.
-                                                '''
-                            }
+        with open(f'AI_Settings\\{name}_judge.txt', 'r') as file:
+            jud_settings = file.read()
+        self.jud_setting =  {"role": "system", "content": jud_settings}
         self.likability = 0
 
     def talk(self, user_input:str):
@@ -89,7 +73,7 @@ class npc_dia:
         f.close()
 
 if __name__ == "__main__":
-    npc1 = npc_dia('bbbbb')
+    npc1 = npc_dia('Alice')
     while 1:
         print(npc_dia.talk(npc1,input()))
         print(npc1.likability)

@@ -6,56 +6,72 @@ import os
 from bgmplayer import BgmPlayer
 from load_picture import pictures
 
-class camara:
+class camera:
     def __init__(self):
         self.edges = [150, 750, 100, 460]
 
-    def can_move(self, players):
-        result = [1,1,1,1]
-        for player_0 in players:
-            if player_0.location[1] >= self.edges[3]:
-                result[0] = 0
-            if player_0.location[1] <= self.edges[2]:
-                result[1] = 0
-            if player_0.location[0] >= self.edges[1]:
-                result[2] = 0
-            if player_0.location[0] <= self.edges[0]:
-                result[3] = 0
-        return result
+    def can_move(self, players:list, walls, direction:list):
+        if walls.can_move(direction):
+            result = [1,1,1,1]
+            for player_0 in players:
+                if player_0.location[1] >= self.edges[3]:
+                    result[1] = 0
+                if player_0.location[1] <= self.edges[2]:
+                    result[0] = 0
+                if player_0.location[0] >= self.edges[1]:
+                    result[3] = 0
+                if player_0.location[0] <= self.edges[0]:
+                    result[2] = 0
+            return result
+        else:
+            return [0,0,0,0]
     
-    def move(self, players:list, enemies:list, bullets:list, walls, direction):
-        if direction == 1 and self.can_move(players)[0]:
+    def move_check(self, players:list, enemies:list, bullets:list, walls):
+        for player_0 in players:
+            if player_0.location[1] > self.edges[3]:
+                self.move(1, player_0.location[1] - self.edges[3], players, enemies, bullets, walls)
+            elif player_0.location[1] < self.edges[2]:
+                self.move(2, self.edges[2] - player_0.location[1], players, enemies, bullets, walls)
+            elif player_0.location[0] > self.edges[1]:
+                self.move(3, player_0.location[0] - self.edges[1], players, enemies, bullets, walls)
+            elif player_0.location[0] < self.edges[0]:
+                self.move(4, self.edges[0] - player_0.location[0], players, enemies, bullets, walls)
+
+    def move(self, direction:int, distance:int, players:list, enemies:list, bullets:list, walls):
+        if direction == 1 and self.can_move(players, walls, [0,-distance])[0]:
             for entity in players:
-                entity.rect.y -= 3
+                entity.rect.y -= distance
             for entity in enemies:
-                entity.rect.y -= 3
+                entity.rect.y -= distance
             for entity in bullets:
-                entity.rect.y -= 3
-            walls.move([0,-3])
-        elif direction == 2 and self.can_move(players)[1]:
+                entity.rect.y -= distance
+            walls.move([0,-distance])
+        elif direction == 2 and self.can_move(players, walls, [0,distance])[1]:
             for entity in players:
-                entity.rect.y += 3
+                entity.rect.y += distance
             for entity in enemies:
-                entity.rect.y += 3
+                entity.rect.y += distance
             for entity in bullets:
-                entity.rect.y += 3
-            walls.move([0,3])
-        elif direction == 3 and self.can_move(players)[2]:
+                entity.rect.y += distance
+            walls.move([0,distance])
+        elif direction == 3 and self.can_move(players, walls, [-distance,0])[2]:
             for entity in players:
-                entity.rect.x -= 3
+                entity.rect.x -= distance
             for entity in enemies:
-                entity.rect.x -= 3
+                entity.rect.x -= distance
             for entity in bullets:
-                entity.rect.x -= 3
-            walls.move([-3,0])
-        elif direction == 4 and self.can_move(players)[3]:
+                entity.rect.x -= distance
+            walls.move([-distance,0])
+        elif direction == 4 and self.can_move(players, walls, [distance,0])[3]:
             for entity in players:
-                entity.rect.y += 3
+                entity.rect.x += distance
             for entity in enemies:
-                entity.rect.y += 3
+                entity.rect.x += distance
             for entity in bullets:
-                entity.rect.y += 3
-            walls.move([3,0])
+                entity.rect.x += distance
+            walls.move([distance,0])
+        for entity in players:
+            entity.location = [entity.rect.x, entity.rect.y]
 
 
 '''
@@ -89,11 +105,16 @@ class wall_bgp:
                 if self.wallmap[i][j]:
                     self.walled_bgp.blit(self.wall_images[self.wallmap[i][j]-1], (50*j, 50*i))
             
+    def can_move(self, direction:list):
+        if self.bgp_rect.left + direction[0] <= 0 and self.bgp_rect.right + direction[0] >= 900 and self.bgp_rect.top + direction[1] <= 0 and self.bgp_rect.bottom + direction[1] >= 510:
+            return 1
+        else:
+            return 0
 
     def move(self, direction):
-        if self.bgp_rect.left + direction[0] < 0 and self.bgp_rect.right + direction[0] > 900:
+        if self.bgp_rect.left + direction[0] <= 0 and self.bgp_rect.right + direction[0] >= 900:
             self.bgp_rect.x += direction[0]
-        if self.bgp_rect.top + direction[1] < 0 and self.bgp_rect.bottom + direction[1] > 510:
+        if self.bgp_rect.top + direction[1] <= 0 and self.bgp_rect.bottom + direction[1] >= 510:
             self.bgp_rect.y += direction[1]
         self.display()
 
@@ -318,6 +339,8 @@ def menu():
     players = [player1, player2]
     bullets = []
 
+    camera_0 = camera()
+
     bgm = BgmPlayer()
     bgm.play('1.mp3', -1)
 
@@ -408,6 +431,7 @@ def menu():
         keypressed = pygame.key.get_pressed()
         playercheck(player1, pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d)
         playercheck(player2, pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT)
+        camera_0.move_check(players, [], bullets, walls)
         flipper()
 
 
