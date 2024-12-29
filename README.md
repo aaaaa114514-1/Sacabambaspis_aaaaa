@@ -4,7 +4,7 @@
 
 ### How to run it ?
 
-- You can use VSCode to open the file **Soul knight **and run **gamestruct.py**.
+- You can use VSCode to open the file **Soul knight** and run **gamestruct.py**.
 - DO NOT ATTEMPT TO MAXIMIZE THE WINDOW !
 
 ### Log in
