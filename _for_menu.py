@@ -32,7 +32,7 @@ camara:
 
 class camera:
     def __init__(self, left_top:list):
-        self.edges = [120, 580, 120, 440]
+        self.edges = [100, 600, 100, 460]
         self.left_top = left_top
 
     def can_move(self, players:list, walls, direction:list):
@@ -334,7 +334,7 @@ bullet:
         target(<player> or <enemy> or 0)        目标
 '''
 class bullet:
-    def __init__(self, screenin: pygame.surface, imagein: pygame.surface, from_player: player, damage_range: float, b_location: list, speed: list, can_through_wall:bool=False):
+    def __init__(self, screenin: pygame.surface, imagein: pygame.surface, from_player: player, damage_range: float, b_location: list, speed: list):
         self.screen_image = screenin
         self.image = imagein
         self.is_show = 1
@@ -362,15 +362,15 @@ class bullet:
             target.damage(self.damage)
         self.is_show = 0
 
-    def detect(self, targets: list):
+    def detect(self, locations: list):
         if self.rect.left < 0 or self.rect.top < 0 or self.rect.right > 750 or self.rect.bottom > 560:
             print('0010')
             self.hit(0)
             return -1
         else:
-            for target in targets:
-                if (target.rect.x - self.rect.centerx) ** 2 + (target.rect.y - self.rect.centery) ** 2 <= self.damage_range ** 2:
-                    self.hit(target)
+            for target in locations:
+                if (target[0] - self.rect.centerx) ** 2 + (target[1] - self.rect.centery) ** 2 <= self.damage_range ** 2:
+                    self.hit(target[2])
                     return -1
             return 0
 
@@ -378,11 +378,8 @@ def fight(screen_image:pygame.Surface, player_num):
     pygame.init()
 
     pic = pictures()
-    map_0 = []
-    with open('Maps\\map1.txt','r') as f:
-        for line in f:
-            map_0.append(list(map(int,line.strip())))
-    walls = wall_bgp(screen_image, pic.grass, pic.wall_images, map_0)
+
+    walls = wall_bgp(screen_image, pic.grass, pic.wall_images, [[0,1,0,1,1,1,0,0,0,0,0,0,0,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,1,1,1,1,1,1,0,0,0,0,0,1],[2,0,3,4,2,1,2,1,0,0,0,0,0,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,1]])
     player1 = player(screen_image, walls.wallmap, [pic.knight1, pic.knight2, pic.knight3, pic.knight4], pic.sideplayer1, 10, 114, 100)
     player1.goto(2)
     if player_num == 2:
@@ -391,7 +388,7 @@ def fight(screen_image:pygame.Surface, player_num):
         players = [player1, player2]
     else:
         players = [player1]
-
+        
     bullets = []
 
     camera_0 = camera([0,0])
@@ -446,13 +443,12 @@ def fight(screen_image:pygame.Surface, player_num):
         bullets_to_remove = []
         for bullet_0 in bullets:
             bullet_0.move()
-            if bullet_0.from_player == player1 or bullet_0.from_player == player2:
-                ############################################################################################3
-                result = bullet_0.detect([player1])
+            if bullet_0.from_player == player1:
+                result = bullet_0.detect([[player2.rect.x, player2.rect.y, player2]])
                 if result == -1:
                     bullets_to_remove.append(bullet_0)
-            else:
-                result = bullet_0.detect(players)
+            elif bullet_0.from_player == player2:
+                result = bullet_0.detect([[player1.rect.x, player1.rect.y, player1]])
                 if result == -1:
                     bullets_to_remove.append(bullet_0)
         for bullet_0 in bullets_to_remove:
@@ -469,15 +465,14 @@ def fight(screen_image:pygame.Surface, player_num):
                     minimize_window()
                     os.startfile('Pictures\K_Boss.pdf')
 
-            for player_0 in players:
-                if player_0.player_num == 1 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_q and player_0.magic >= 5:
-                    player_0.magic -= 5
-                    bullets.append(bullet(screen_image, pic.bullet1, player_0, 20, [player_0.rect.x, player_0.rect.y][:], state_trans(player_0.state,4)))
-                    bullets[-1].display()
-                if player_0.player_num == 2 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_RCTRL and player_0.magic >= 5:
-                    player_0.magic -= 5
-                    bullets.append(bullet(screen_image, pic.bullet1, player_0, 20, [player_0.rect.x, player_0.rect.y][:], state_trans(player_0.state,4)))
-                    bullets[-1].display()
+            if player1.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_q and player1.magic >= 5:
+                player1.magic -= 5
+                bullets.append(bullet(screen_image, pic.bullet1, player1, 20, [player1.rect.x, player1.rect.y][:], state_trans(player1.state,4)))
+                bullets[-1].display()
+            if player2.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_RCTRL and player2.magic >= 5:
+                player2.magic -= 5
+                bullets.append(bullet(screen_image, pic.bullet1, player2, 20, [player2.rect.x, player2.rect.y][:], state_trans(player2.state,4)))
+                bullets[-1].display()
 
         if pygame.display.get_active():
             bgm.unpause()
@@ -486,8 +481,7 @@ def fight(screen_image:pygame.Surface, player_num):
 
         keypressed = pygame.key.get_pressed()
         playercheck(player1, pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d)
-        if player_num == 2:
-            playercheck(player2, pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT)
+        playercheck(player2, pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT)
         camera_0.move_check(players, [], bullets, walls)
         flipper()
 
@@ -495,4 +489,4 @@ def fight(screen_image:pygame.Surface, player_num):
 if __name__ == '__main__':
     screen_image = pygame.display.set_mode((900, 560))
     pygame.display.set_caption('Soul Knight')
-    fight(screen_image, 1)
+    fight(screen_image)
