@@ -1,0 +1,14 @@
+Dialogue
+
+0   	Hello!
+
+Alice   	Welcome back, Soul Knight. I see you're trying to save the world again. You look a bit worn out from your last adventure. What draws you here now? Would you like some information about our village or Bob's shop nearby?
+
+0   	Could you please lend me some soulstone? Please!
+
+Alice   	You're really short on cash, huh? Alright, I'll give you two Soulstones. Bob's place is just a short walk from here, he might have something else to help you out.
+
+0   	Thanks!
+
+Alice   	Now that you've got some Soulstones, you should check out Bob's shop. His pick-up game is so much fun, and it'll give you a good chance to stock up on supplies for your quest. By the way, I'm not doing this out of the goodness of my heart, either...
+

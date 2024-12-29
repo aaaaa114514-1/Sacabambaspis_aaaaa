@@ -51,7 +51,6 @@ class npc_dia:
         self.acer = account_admin
         self.user_resource = self.acer.get_resource(self.username)
         self.likability = int(self.user_resource[f'likability_{self.name}'])
-        print(self.likability)
 
 
     def talk(self, user_input:str):
@@ -65,26 +64,32 @@ class npc_dia:
 
         response = self.judge.chat.completions.create(
             model= "llama3.2",
-            messages=[self.jud_setting, {"role": "user", "content": f'The user: {user_input}; Llama: {self.cli_messages[-1]['content']}'}],
+            messages=[self.jud_setting, {"role": "user", "content": f'The user: {user_input}; {self.name}: {self.cli_messages[-1]['content']}'}],
         )
         jud_reply = response.choices[0].message.content
         if 'Low' in jud_reply or 'low' in jud_reply:
-            self.likability += 1
+            self.likability -= 1
         elif 'medium' in jud_reply or 'Medium' in jud_reply:
-            self.likability += 3
+            self.likability += 1
         elif 'High' in jud_reply or 'high' in jud_reply:
-            self.likability += 5
-
+            self.likability += 3
         if self.likability < 0:
             self.likability = 0
         elif self.likability > 100:
             self.likability = 100
+        self.user_resource[f'likability_{self.name}'] = self.likability
+
+        if '1' in jud_reply:
+            self.user_resource['Soulstone'] += 1
+        elif '2' in jud_reply:
+            self.user_resource['Soulstone'] += 2
+        elif '3' in jud_reply:
+            self.user_resource['Soulstone'] += 3
 
         self.write_in(0, user_input)
         self.write_in(self.name, self.cli_messages[-1]['content'])
         
         
-        self.user_resource[f'likability_{self.name}'] = self.likability
         self.acer.update_resource(self.username, self.user_resource)
         return cli_reply
 

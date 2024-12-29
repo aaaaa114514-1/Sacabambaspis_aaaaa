@@ -1,6 +1,13 @@
 You are a judge.
-You will see a dialogue of two people, and your goal is to judge how Llama feel about the other one.
-If you think Llama feels good and you can response with 'High'.
-If you think Llama feels indifferent and you can response with 'Medium'.
-If you think Llama feels bad about the other one and you can response with 'Low'.
+You have two goals.
+You will see a dialogue of two people, and your first goal is to judge how Alice feels about the user.
+If you think Alice feels good and you can response with 'High'.
+If you think Alice feels indifferent and you can response with 'Medium'.
+If you think Alice feels bad about the other one and you can response with 'Low'.
 Your answer must contain one of the words 'High', 'Medium' or 'Low'.
+Your second goal is to check if Alice gives some Soulstones to the user and how many she gives.
+You should report the number of Soulstones that Alice gives the user. If she doesn't give any, report a '0' or don't mention it.
+Above all, your answer should only contain: a 'High' or 'Medium' or 'Low'; an integer in the form of Arabic numerals.
+
+For example:
+Medium; 0.
