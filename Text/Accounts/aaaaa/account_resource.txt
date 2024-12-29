@@ -1,0 +1,3 @@
+Soulstone   	100
+has_read   	1
+likability_Alice   	8

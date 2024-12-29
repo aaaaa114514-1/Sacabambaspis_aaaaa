@@ -1,7 +1,17 @@
 import shutil
 import os
 
-
+'''
+account_admin:
+    update_resource(username, user_resource):       更新指定用户的account_resource.txt文件
+        username(str):                                  用户名
+        user_resource(Dict):                            用户的资源数据
+    get_resource(username):      -> Dict            获取指定用户的account_resource.txt文件内数据, 输出到Dict中
+        username(str):                                  用户名
+    clear_all_accounts():                           删除所有用户数据
+    remove_account(usename):                        删除指定用户数据
+        username(str):                                  用户名
+'''
 class account_admin:
     def __init__(self):
         pass

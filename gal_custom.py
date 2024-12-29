@@ -98,7 +98,7 @@ def gal_custom(screen_image:pygame.Surface, username:str, npcname:str):
 
     inputbox_0 = Inputbox(screen_image, manager)
     npc_0 = npc_dia(npcname, username)
-    textbox_0 = Textbox(f'Chat with {npc_0.name}\n'+'-'*144, manager)
+    textbox_0 = Textbox(f'Chat with {npc_0.name}\n'+'-'*140, manager)
 
 
     bgm = BgmPlayer()
