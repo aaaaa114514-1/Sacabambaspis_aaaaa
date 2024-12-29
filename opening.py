@@ -3,15 +3,9 @@ import sys
 import time
 from load_picture import pictures
 
-def opening():
+def opening(screen_image:pygame.Surface):
     pygame.init()
-
-    screen_image = pygame.display.set_mode((900,560))
-
-    pygame.display.set_caption('Soul Knight')
-
-    pic = pictures
-
+    pic = pictures()
     screen_image.blit(pic.Soul_knight_background, (0, 0))
 
     clock = pygame.time.Clock()
@@ -45,3 +39,9 @@ def opening():
     pygame.time.wait(1000)
     pygame.draw.rect(screen_image, (0,0,0), (0,0,900,560))
     pygame.display.flip()
+
+
+if __name__ == '__main__':
+    screen_image = pygame.display.set_mode((900, 560))
+    pygame.display.set_caption('Soul Knight')
+    open(screen_image)

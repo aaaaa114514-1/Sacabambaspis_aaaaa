@@ -1,12 +1,12 @@
 import pygame
 import pygame_gui
-from load_picture import pictures as pic
+from load_picture import pictures
 import hashlib
 import os
 
 
 
-def login():
+def login(screen_image:pygame.Surface):
     """
     hash_data(data):   -> str       使用SHA-256算法对输入数据进行哈希加密
         data(str):                  需要加密的数据
@@ -17,14 +17,9 @@ def login():
         return sha256_hash.hexdigest()
 
     pygame.init()
-    pygame.display.set_caption("Soul Knight")
-
-    WINDOW_SIZE = (900, 560)
-    screen_image = pygame.display.set_mode(WINDOW_SIZE)
     font = pygame.font.Font('Text\\xiangfont.ttf', 60)
 
-
-    manager = pygame_gui.UIManager(WINDOW_SIZE)
+    manager = pygame_gui.UIManager((900,560))
 
     DXY = [-160,80]
     username_label = pygame_gui.elements.UILabel(relative_rect=pygame.Rect(150+DXY[0], 200+DXY[1], 200, 50), text="Username:", manager=manager)
@@ -42,6 +37,7 @@ def login():
     user_data = dict()
     for line in text_f:
         user_data[line.split()[0]] = line.split()[1]
+    pic = pictures()
 
     running = True
     clock = pygame.time.Clock()
@@ -50,6 +46,8 @@ def login():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+                pygame.quit()
+
             manager.process_events(event)
 
             if event.type == pygame.USEREVENT:
@@ -60,10 +58,10 @@ def login():
 
                         if username in user_data and user_data[username] == hash_data(password):
                             status_label.set_text(f"Welcome, {username} !")
+                            pygame.time.wait(500)
+                            return username
                         else:
                             status_label.set_text("Incorrect username or password")
-                            print(user_data)
-                            print(hash_data(password))
                             password_input.clear()
 
                     elif event.ui_element == register_button:
@@ -76,6 +74,8 @@ def login():
                             f.write(f'{username}\t{hash_data(password)}\n')
                             f.close()
                             os.mkdir(f'Text\\Accounts\\{username}')
+                            with open (f'Text\\Accounts\\{username}\\account_resource.txt', 'w') as f:
+                                f.write('Soulstone   100\nhas_read   0')
                             password_input.clear()
                             status_label.set_text("Register successfully!")
                         else:
@@ -92,4 +92,6 @@ def login():
     pygame.quit()
 
 if __name__ == '__main__':
-    login()
+    screen_image = pygame.display.set_mode((900, 560))
+    pygame.display.set_caption('Soul Knight')
+    login(screen_image)

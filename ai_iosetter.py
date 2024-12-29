@@ -6,6 +6,7 @@ from datetime import datetime
 npc_dia:
     nowtime(str):               对话时间
     name(str):                  npc的名字
+    username(str):              用户名
     client(OpenAI):             npc的控制AI
     cli_messages([Dict]):       npc与用户的对话(含初始系统设置)
     judge(OpenAI):              判断者AI
@@ -14,20 +15,21 @@ npc_dia:
 
     talk(user_input):  -> str       与AI对话, 返回AI的回答, 并将记录通过write_in方法写入文件
         user_input(str)                 用户的输入
-    write_in(name, content):        写入文件"Text\\Dialogue_with_{name}_{nowtime}.txt"
+    write_in(name, content):        写入文件"Text\\Accounts\\{self.username}\\Dialogue_with_{name}_{nowtime}.txt"
         name(str):                      说话者的名字
         content(str):                   某个人的话
 '''
 
 class npc_dia:
-    def __init__(self, name):
+    def __init__(self, name:str, username:str):
         self.nowtime = datetime.now().strftime('%Y%m%d_%H%M%S')
-        f = open(f"Text\\Dialogue_with_{name}_{self.nowtime}.txt", "a", encoding="UTF-8")
-        with open(f"Text\\Dialogue_with_{name}_{self.nowtime}.txt", 'w') as file:
+        f = open(f"Text\\Accounts\\{self.username}\\Dialogue_with_{name}_{self.nowtime}.txt", "a", encoding="UTF-8")
+        with open(f"Text\\Accounts\\{self.username}\\Dialogue_with_{name}_{self.nowtime}.txt", 'w') as file:
             pass
         f.write("Dialogue\n\n")
         f.close()
         self.name = name
+        self.username = username
         self.client = OpenAI(
             base_url = 'http://10.15.88.73:5016/v1',
             api_key = 'ollama',
@@ -69,13 +71,13 @@ class npc_dia:
         self.write_in(self.name, self.cli_messages[-1]['content'])
         return cli_reply
 
-    def write_in(self, name, content):
-        f = open(f"Text\\Dialogue_with_{self.name}_{self.nowtime}.txt", "a", encoding="UTF-8")
+    def write_in(self, name:str, content:str):
+        f = open(f"Text\\Accounts\\{self.username}\\Dialogue_with_{self.name}_{self.nowtime}.txt", "a", encoding="UTF-8")
         f.write(f"{name}\t{content}\n\n")
         f.close()
 
 if __name__ == "__main__":
-    npc1 = npc_dia('Alice')
+    npc1 = npc_dia('Alice','aaaaa')
     while 1:
         print(npc_dia.talk(npc1,input()))
         print(npc1.likability)

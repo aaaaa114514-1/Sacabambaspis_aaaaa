@@ -155,11 +155,8 @@ class history:
 
 
 
-def gal():
+def gal(screen_image:pygame.Surface, username:str, chapter_path:str = 'Text\\Chapter0.txt'):
     pygame.init()
-    screen_image = pygame.display.set_mode((900,560))
-    screen_rect = screen_image.get_rect()
-    pygame.display.set_caption('Soul Knight')
 
     pic = pictures()
     screen_image.blit(pic.Soul_knight_background, (0,0))
@@ -169,7 +166,7 @@ def gal():
     bgm = BgmPlayer()
     bgm.play('Soul_Soil.mp3',-1)
 
-    text0 = text(screen_image, pic.chapter_background, 'Text\\Chapter0.txt', pic.textbox, 'aaaaa')
+    text0 = text(screen_image, pic.chapter_background, chapter_path, pic.textbox, username)
     history0 = history(screen_image, pic.Soul_knight_background)
 
     def minimize_window():
@@ -259,4 +256,6 @@ def gal():
             gal_running = text0.push_on()
 
 if __name__ == '__main__':
-    gal()
+    screen_image = pygame.display.set_mode((900,560))
+    pygame.display.set_caption('Soul Knight')
+    gal(screen_image, 'aaaaa')

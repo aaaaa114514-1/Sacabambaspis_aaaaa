@@ -374,11 +374,8 @@ class bullet:
                     return -1
             return 0
 
-def fight():
+def fight(screen_image:pygame.Surface):
     pygame.init()
-    screen_image = pygame.display.set_mode((900, 560))
-    screen_rect = screen_image.get_rect()
-    pygame.display.set_caption('Soul Knight')
 
     pic = pictures()
 
@@ -486,4 +483,6 @@ def fight():
 
 
 if __name__ == '__main__':
-    fight()
+    screen_image = pygame.display.set_mode((900, 560))
+    pygame.display.set_caption('Soul Knight')
+    fight(screen_image)

@@ -166,11 +166,8 @@ class bullet:
                     return -1
             return 0
 
-def menu():
+def menu(screen_image:pygame.Surface):
     pygame.init()
-    screen_image = pygame.display.set_mode((900, 560))
-    screen_rect = screen_image.get_rect()
-    pygame.display.set_caption('Soul Knight')
 
     pic = pictures()
 
@@ -272,4 +269,6 @@ def menu():
 
 
 if __name__ == '__main__':
-    menu()
+    screen_image = pygame.display.set_mode((900, 560))
+    pygame.display.set_caption('Soul Knight')
+    menu(screen_image)

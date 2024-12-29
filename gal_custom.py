@@ -91,13 +91,11 @@ class Textbox:
 
 
 
-def gal_custom():
-    username = 'aaaaa'
-    screen_image = pygame.display.set_mode((900, 560))
-    pygame.display.set_caption('Soul Knight')
+def gal_custom(screen_image:pygame.Surface, username:str, npcname:str):
     manager = pygame_gui.UIManager((900, 560))
+
     inputbox_0 = Inputbox(screen_image, manager)
-    npc_0 = npc_dia('Alice')
+    npc_0 = npc_dia(npcname, username)
     textbox_0 = Textbox(f'Chat with {npc_0.name}\n'+'-'*144, manager)
 
 
@@ -156,4 +154,6 @@ def gal_custom():
 
 
 if __name__ == '__main__':
-    gal_custom()
+    screen_image = pygame.display.set_mode((900, 560))
+    pygame.display.set_caption('Soul Knight')
+    gal_custom(screen_image,'aaaaa','Alice')
