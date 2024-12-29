@@ -3,6 +3,9 @@ import os
 
 class pictures:
     Soul_knight_background = pygame.image.load('Pictures\Soul_knight_background.jpg')
+    Soul_knight_background = pygame.transform.scale(Soul_knight_background, (900,560))
+    Soul_knight_background2 = pygame.image.load('Pictures\Soul_knight_background2.png')
+    Soul_knight_background2 = pygame.transform.scale(Soul_knight_background2, (900,560))
     Title = pygame.image.load('Pictures\Title.png')
     Author = pygame.image.load('Pictures\Author.jpg')
     Author = pygame.transform.scale(Author, (150, 52.5))
