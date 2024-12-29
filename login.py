@@ -50,7 +50,6 @@ def login():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-
             manager.process_events(event)
 
             if event.type == pygame.USEREVENT:
@@ -86,8 +85,6 @@ def login():
         screen_image.blit(pic.Soul_knight_background2,(0,0))
         login_text = font.render('Log in', True, (255, 255, 255))
         screen_image.blit(login_text, (190,170))
-
-        # 渲染界面
         manager.draw_ui(screen_image)
 
         pygame.display.update()

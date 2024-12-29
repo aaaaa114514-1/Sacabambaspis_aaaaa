@@ -9,7 +9,7 @@
 
 ### Log in
 
-- You should log in before playing because there are something bound to your account (such as your resources, your chat history with npcs, and your relationship❤ ).
+- You should log in (or register first) before playing because there are something bound to your account (such as your resources, your chat history with npcs, and your relationship❤ ).
 - You can enter with your user name and your password.
 
 ### How to play it?
