@@ -439,10 +439,10 @@ def fight(screen_image:pygame.Surface, player_num:int, map_num:int):
         for line in f:
             map_0.append(list(map(int,line.strip())))
     walls = wall_bgp(screen_image, pic.big_grass, pic.wall_images, map_0)
-    player1 = player(screen_image, walls.wallmap, pic.Alice, pic.sideplayer1, 10, 114, 100, 4)
+    player1 = player(screen_image, walls.wallmap, pic.Knight, pic.sideplayer1, 10, 114, 100, 4)
     player1.goto(2)
     if player_num == 2:
-        player2 = player(screen_image, walls.wallmap, pic.Alice, pic.sideplayer2, 10, 514, 100, 4)
+        player2 = player(screen_image, walls.wallmap, pic.Knight, pic.sideplayer2, 10, 514, 100, 4)
         player2.goto(2)
         players = [player1, player2]
     else:

@@ -20,15 +20,8 @@ class pictures:
     Author = pygame.transform.scale(Author, (150, 52.5))
 
     Alice = load_images('Alice', 4, (33,49))
-
-    knight1 = pygame.image.load('Pictures\Knight\Knight1.png')
-    knight1 = pygame.transform.scale(knight1, (40, 40))
-    knight2 = pygame.image.load('Pictures\Knight\Knight2.png')
-    knight2 = pygame.transform.scale(knight2, (40, 40))
-    knight3 = pygame.image.load('Pictures\Knight\Knight3.png')
-    knight3 = pygame.transform.scale(knight3, (40, 40))
-    knight4 = pygame.image.load('Pictures\Knight\Knight4.png')
-    knight4 = pygame.transform.scale(knight4, (40, 40))
+    Bob = load_images('Bob', 4, (33,49))
+    Knight = load_images('Knight', 4, (33,49))
 
     bullet1 = pygame.image.load('Pictures\Bullets\Bullet1.png')
     bullet1 = pygame.transform.scale(bullet1, (10, 10))
