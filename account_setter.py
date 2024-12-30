@@ -51,4 +51,4 @@ class account_admin:
 
 if __name__ == '__main__':
     acer0 = account_admin
-    acer0.remove_account('33')
+    acer0.remove_account('aaaaa')

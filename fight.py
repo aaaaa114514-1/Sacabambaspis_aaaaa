@@ -585,6 +585,6 @@ if __name__ == '__main__':
     pic = pictures
     screen_image = pygame.display.set_mode((900, 560))
     pygame.display.set_caption('Soul Knight')
-    fight(screen_image, 2, 2, [[100,100,4,10,20,True,4,6,pic.bullet1],[100,100,4,20,30,False,5,3,pic.bullet2]])
+    fight(screen_image, 2, 2, [[100,100,4,10,20,True,3,6,pic.bullet1],[100,100,4,20,30,False,5,3,pic.bullet2]])
 
     #[[0血量, 1魔法值, 2速度, 3伤害, 4溅射范围, 5子弹能否穿墙, 6子弹消耗魔法值, 7子弹速度, 8子弹形象],]

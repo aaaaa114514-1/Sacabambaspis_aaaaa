@@ -3,7 +3,7 @@ import pygame_gui
 from load_picture import pictures
 import hashlib
 import os
-
+import shutil
 
 
 def login(screen_image:pygame.Surface):
@@ -77,8 +77,7 @@ def login(screen_image:pygame.Surface):
                                 f.write(f'{username}   \t{hash_data(password)}\n')
                                 f.close()
                                 os.mkdir(f'Text\\Accounts\\{username}')
-                                with open (f'Text\\Accounts\\{username}\\account_resource.txt', 'w') as f:
-                                    f.write('Soulstone   \t100\nhas_read   \t0\nlikability_Alice   \t1')
+                                shutil.copy('Text\\account_resource.txt',f'Text\\Accounts\\{username}\\account_resource.txt')
                                 password_input.clear()
                                 status_label.set_text("Register successfully!")
                             else:

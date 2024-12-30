@@ -16,11 +16,11 @@ Inputbox:
 
     get_and_clear():  -> str    获取输入框信息并返回, 同时清空输入框(若为空则不操作)
     check_empty():              检验输入框是否为空, 并更新提交按钮状态
-    is_pressed():   -> Bool     返回按钮是否被按下
+    is_pressed():   -> bool     返回按钮是否被按下
     set_button(is_able):        设置按钮状态与显示
-        is_able(Bool):              目标状态: 0-禁用 1-启用
+        is_able(bool):              目标状态: 0-禁用 1-启用
     set_inputbox(is_able):      设置输入框状态
-        is_able(Bool):              目标状态: 0-禁用 1-启用
+        is_able(bool):              目标状态: 0-禁用 1-启用
 
 '''
 class Inputbox:
