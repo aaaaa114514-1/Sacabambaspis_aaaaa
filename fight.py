@@ -144,7 +144,7 @@ wall_bgp:
     display():                      将walled_bgp绘制在屏幕上
 '''
 class wall_bgp:
-    def __init__(self, screen_image:pygame.Surface, bgp:pygame.Surface, wall_images:list[pygame.Surface], wallmap=None):
+    def __init__(self, screen_image:pygame.Surface, bgp:pygame.Surface, wall_images:list[pygame.Surface], wallmap:list=None):
         self.screen_image = screen_image
         self.bgp = bgp
         self.bgp_rect = bgp.get_rect()
@@ -246,7 +246,7 @@ class player:
         self.state = direction
         self.rect.center = destination 
 
-    def can_goto(self, direction, camera_left_top:list):
+    def can_goto(self, direction:int, camera_left_top:list):
         new_rect = self.rect.copy()
         if direction == 1:
             new_rect.y -= 3
@@ -380,14 +380,22 @@ bullet:
     speed([float, float])       速度:       x_speed(右) y_speed(下)
     last_time(int)              子弹上次移动毫秒值
     rect(Rect)                  子弹矩形对象
+    can_through_wall(Bool)      子弹是否能够穿墙:   0-不能穿墙 1-穿墙
 
-    display():                              绘制子弹(如状态为显示)
-    move():                                 向固定方向移动并绘制
-    hit(target):                            消除并造成伤害
-        target(<player> or <enemy> or 0)        目标
+    display():                                          绘制子弹(如状态为显示)
+    move():                                             向固定方向移动并绘制
+    hit(target):                                        消除并造成伤害
+        target(<player> or <enemy> or 0)                    目标
+    is_hit_wall(camera_left_top, wallmap):  -> Bool     判断是否撞到边界 或 墙(可穿墙的不判定): 0-未撞到 1-撞到
+        camera_left_top([int,int]):                         镜头左上角坐标
+        wallmap([[int]]):                                   地图
+    detect(targets, camera_left_top, wallmap): -> int   检查是否撞到列表内的目标或边界 或 墙(可穿墙的不判定): -1 - 撞到并删除该子弹 0 - 未撞到
+        targets([<player> or <enemy>]):                     子弹需要判定的目标
+        camera_left_top([int,int]):                         镜头左上角坐标
+        wallmap([[int]]):                                   地图
 '''
 class bullet:
-    def __init__(self, screenin: pygame.surface, imagein: pygame.surface, from_player: player, damage_range: float, b_location: list, speed: list, can_through_wall:bool=False):
+    def __init__(self, screenin:pygame.Surface, imagein:pygame.Surface, from_player:player, damage_range:float, b_location:list, speed:list, can_through_wall:bool=False):
         self.screen_image = screenin
         self.image = imagein
         self.is_show = 1
@@ -400,6 +408,7 @@ class bullet:
         self.speed = speed
         self.last_time = pygame.time.get_ticks()
         self.rect = self.image.get_rect(center=b_location) 
+        self.can_through_wall = can_through_wall
 
     def display(self):
         if self.is_show:
@@ -418,9 +427,18 @@ class bullet:
             target.damage(self.damage)
         self.is_show = 0
 
-    def detect(self, targets: list):
+    def is_hit_wall(self, camera_left_top:list, wallmap:list):
         if self.rect.left < 0 or self.rect.top < 0 or self.rect.right > 750 or self.rect.bottom > 560:
-            print('0010')
+            return True
+        if not self.can_through_wall:
+            try:
+                if wallmap[(self.rect.centery - camera_left_top[1]) // 50][(self.rect.centerx - camera_left_top[0]) // 50] != 0:
+                    return True
+            except IndexError:
+                return False
+
+    def detect(self, targets:list, camera_left_top:list, wallmap:list):
+        if self.is_hit_wall(camera_left_top, wallmap):
             self.hit(0)
             return -1
         else:
@@ -442,13 +460,13 @@ def fight(screen_image:pygame.Surface, player_num:int, map_num:int):
     player1 = player(screen_image, walls.wallmap, pic.Knight, pic.sideplayer1, 10, 114, 100, 4)
     player1.goto(2)
     if player_num == 2:
-        player2 = player(screen_image, walls.wallmap, pic.Knight, pic.sideplayer2, 10, 514, 100, 4)
+        player2 = player(screen_image, walls.wallmap, pic.Knightress, pic.sideplayer2, 10, 514, 100, 4)
         player2.goto(2)
         players = [player1, player2]
     else:
         players = [player1]
 
-    bullets = []
+    bullets:list[bullet] = []
 
     camera_0 = camera([0,0])
 
@@ -505,11 +523,11 @@ def fight(screen_image:pygame.Surface, player_num:int, map_num:int):
             bullet_0.move()
             if bullet_0.from_player == player1 or bullet_0.from_player == player2:
                 ############################################################################################
-                result = bullet_0.detect([player1])
+                result = bullet_0.detect([player1], camera_0.left_top, map_0)
                 if result == -1:
                     bullets_to_remove.append(bullet_0)
             else:
-                result = bullet_0.detect(players)
+                result = bullet_0.detect(players, camera_0.left_top, map_0)
                 if result == -1:
                     bullets_to_remove.append(bullet_0)
         for bullet_0 in bullets_to_remove:

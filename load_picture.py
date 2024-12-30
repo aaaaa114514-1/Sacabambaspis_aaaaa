@@ -22,6 +22,9 @@ class pictures:
     Alice = load_images('Alice', 4, (33,49))
     Bob = load_images('Bob', 4, (33,49))
     Knight = load_images('Knight', 4, (33,49))
+    Knightress = load_images('Knightress', 4, (33,49))
+    Bird = load_images('Bird', 4, (64,60))
+    Boss = load_images('Boss', 4, (96,96))
 
     bullet1 = pygame.image.load('Pictures\Bullets\Bullet1.png')
     bullet1 = pygame.transform.scale(bullet1, (10, 10))
