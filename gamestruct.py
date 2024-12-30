@@ -5,7 +5,7 @@ import time
 import opening
 import login
 import gal
-import TEST_menu
+import menu
 import gal_custom
 
 
