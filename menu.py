@@ -112,7 +112,7 @@ class player:
 bullet:
     screen_image(Surface)       窗口
     image(Surface)              子弹形象
-    is_show(Bool)               是否显示    0-隐藏 1-显示
+    is_show(bool)               是否显示    0-隐藏 1-显示
     from_player(player)            伤害来源:   0-来源于非玩家 player1-来源于玩家1 player2-来源于玩家2
     damage(int)                 伤害:       +为伤害 -为治疗
     damage_range(float)         伤害半径

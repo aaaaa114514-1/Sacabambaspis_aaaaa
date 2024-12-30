@@ -20,7 +20,7 @@ text:
     username(str)           用户名
     Chapter(str)            章节名
 
-    push_on() -> Bool               下一句,返回是否还有下一句
+    push_on() -> bool               下一句,返回是否还有下一句
     get_text() -> [[str], [str]]    返回历史记录列表[[speaker],[dialogue]]
     show_scene()                    刷新文本框显示
 '''
@@ -96,7 +96,7 @@ history:
 
     into_history(his_text)      传入列表[[speaker],[dialogue]],初始化并进入历史记录模式
     page_up()                   向上翻页(如可行)
-    page_down() -> Bool         向下翻页并返回1; 如不可翻页则退出历史记录模式并返回0
+    page_down() -> bool         向下翻页并返回1; 如不可翻页则退出历史记录模式并返回0
     show_history()              绘制历史记录模式界面
 '''
 class history:

@@ -236,7 +236,7 @@ class player:
         self.last_time = pygame.time.get_ticks()
         self.pace_time = pygame.time.get_ticks()
         self.image_num = 0
-        self.rect = self.images[0][0].get_rect(center=[350, 255])
+        self.rect = self.images[0][0].get_rect(center=[120+30*self.player_num, 260])
         self.wallmap = wallmap
         self.is_alive = 1
 
@@ -373,20 +373,20 @@ class enemy:
 bullet:
     screen_image(Surface)       窗口
     image(Surface)              子弹形象
-    is_show(Bool)               是否显示    0-隐藏 1-显示
+    is_show(bool)               是否显示    0-隐藏 1-显示
     from_player(player)         伤害来源:   0-来源于非玩家(或玩家的治疗) player1-来源于玩家1 player2-来源于玩家2
     damage(int)                 伤害:       +为伤害 -为治疗
     damage_range(float)         伤害半径
     speed([float, float])       速度:       x_speed(右) y_speed(下)
     last_time(int)              子弹上次移动毫秒值
     rect(Rect)                  子弹矩形对象
-    can_through_wall(Bool)      子弹是否能够穿墙:   0-不能穿墙 1-穿墙
+    can_through_wall(bool)      子弹是否能够穿墙:   0-不能穿墙 1-穿墙
 
     display():                                          绘制子弹(如状态为显示)
     move():                                             向固定方向移动并绘制
     hit(target):                                        消除并造成伤害
         target(<player> or <enemy> or 0)                    目标
-    is_hit_wall(camera_left_top, wallmap):  -> Bool     判断是否撞到边界 或 墙(可穿墙的不判定): 0-未撞到 1-撞到
+    is_hit_wall(camera_left_top, wallmap):  -> bool     判断是否撞到边界 或 墙(可穿墙的不判定): 0-未撞到 1-撞到
         camera_left_top([int,int]):                         镜头左上角坐标
         wallmap([[int]]):                                   地图
     detect(targets, camera_left_top, wallmap): -> int   检查是否撞到列表内的目标或边界 或 墙(可穿墙的不判定): -1 - 撞到并删除该子弹 0 - 未撞到
@@ -448,7 +448,14 @@ class bullet:
                     return -1
             return 0
 
-def fight(screen_image:pygame.Surface, player_num:int, map_num:int):
+'''
+fight(screen_image, player_num, map_num, player_info):              战斗场景
+    screen_image(Surface):                                              窗口
+    player_num(int):                                                    玩家数(1或2)
+    map_num(int):                                                       使用的地图编号
+    player_info([[int,int,int,int,float,bool,int,int,Surface],]):       玩家信息:   [[血量, 魔法值, 速度, 伤害, 溅射范围, 子弹能否穿墙, 子弹消耗魔法值, 子弹速度, 子弹形象],]
+'''
+def fight(screen_image:pygame.Surface, player_num:int, map_num:int, player_info:list):
     pygame.init()
 
     pic = pictures()
@@ -457,10 +464,10 @@ def fight(screen_image:pygame.Surface, player_num:int, map_num:int):
         for line in f:
             map_0.append(list(map(int,line.strip())))
     walls = wall_bgp(screen_image, pic.big_grass, pic.wall_images, map_0)
-    player1 = player(screen_image, walls.wallmap, pic.Knight, pic.sideplayer1, 10, 114, 100, 4)
+    player1 = player(screen_image, walls.wallmap, pic.Knight, pic.sideplayer1, player_info[0][3], player_info[0][0], player_info[0][1], player_info[0][2])
     player1.goto(2)
     if player_num == 2:
-        player2 = player(screen_image, walls.wallmap, pic.Knightress, pic.sideplayer2, 10, 514, 100, 4)
+        player2 = player(screen_image, walls.wallmap, pic.Knightress, pic.sideplayer2, player_info[1][3], player_info[1][0], player_info[1][1], player_info[1][2])
         player2.goto(2)
         players = [player1, player2]
     else:
@@ -523,7 +530,7 @@ def fight(screen_image:pygame.Surface, player_num:int, map_num:int):
             bullet_0.move()
             if bullet_0.from_player == player1 or bullet_0.from_player == player2:
                 ############################################################################################
-                result = bullet_0.detect([player1], camera_0.left_top, map_0)
+                result = bullet_0.detect([], camera_0.left_top, map_0)
                 if result == -1:
                     bullets_to_remove.append(bullet_0)
             else:
@@ -545,13 +552,13 @@ def fight(screen_image:pygame.Surface, player_num:int, map_num:int):
                     os.startfile('Pictures\K_Boss.pdf')
 
             for player_0 in players:
-                if player_0.player_num == 1 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_q and player_0.magic >= 5:
-                    player_0.magic -= 5
-                    bullets.append(bullet(screen_image, pic.bullet1, player_0, 20, [player_0.rect.centerx, player_0.rect.centery][:], state_trans(player_0.state,4)))
+                if player_0.player_num == 1 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_q and player_0.magic >= player_info[0][6]:
+                    player_0.magic -= player_info[0][6]
+                    bullets.append(bullet(screen_image, player_info[0][8], player_0, player_info[0][4], [player_0.rect.centerx, player_0.rect.centery][:], state_trans(player_0.state,player_info[0][7]),player_info[0][5]))
                     bullets[-1].display()
-                if player_0.player_num == 2 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_RCTRL and player_0.magic >= 5:
-                    player_0.magic -= 5
-                    bullets.append(bullet(screen_image, pic.bullet1, player_0, 20, [player_0.rect.centerx, player_0.rect.centery][:], state_trans(player_0.state,4)))
+                if player_0.player_num == 2 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_RCTRL and player_0.magic >= player_info[1][6]:
+                    player_0.magic -= player_info[1][6]
+                    bullets.append(bullet(screen_image, player_info[1][8], player_0, player_info[1][4], [player_0.rect.centerx, player_0.rect.centery][:], state_trans(player_0.state,player_info[1][7]),player_info[1][5]))
                     bullets[-1].display()
 
         if pygame.display.get_active():
@@ -575,6 +582,9 @@ def fight(screen_image:pygame.Surface, player_num:int, map_num:int):
 
 
 if __name__ == '__main__':
+    pic = pictures
     screen_image = pygame.display.set_mode((900, 560))
     pygame.display.set_caption('Soul Knight')
-    fight(screen_image, 2, 2)
+    fight(screen_image, 2, 2, [[100,100,4,10,20,True,4,6,pic.bullet1],[100,100,4,20,30,False,5,3,pic.bullet2]])
+
+    #[[0血量, 1魔法值, 2速度, 3伤害, 4溅射范围, 5子弹能否穿墙, 6子弹消耗魔法值, 7子弹速度, 8子弹形象],]

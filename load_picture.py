@@ -19,15 +19,17 @@ class pictures:
     Author = pygame.image.load('Pictures\Author.jpg')
     Author = pygame.transform.scale(Author, (150, 52.5))
 
-    Alice = load_images('Alice', 4, (33,49))
+    Alice = load_images('Alice', 4, (33,47))
     Bob = load_images('Bob', 4, (33,49))
     Knight = load_images('Knight', 4, (33,49))
-    Knightress = load_images('Knightress', 4, (33,49))
+    Knightress = load_images('Knightress', 4, (33,47))
     Bird = load_images('Bird', 4, (64,60))
     Boss = load_images('Boss', 4, (96,96))
 
     bullet1 = pygame.image.load('Pictures\Bullets\Bullet1.png')
     bullet1 = pygame.transform.scale(bullet1, (10, 10))
+    bullet2 = pygame.image.load('Pictures\Bullets\Bullet2.png')
+    bullet2 = pygame.transform.scale(bullet2, (15, 15))
 
     textbox = pygame.image.load('Pictures\\textbox.png')
     textbox = pygame.transform.scale(textbox, (750, 130))
@@ -42,6 +44,11 @@ class pictures:
     grass = pygame.transform.scale(grass, (1280, 720))
     big_grass = pygame.image.load('Pictures\\BGP\\big_grass.png')
     big_grass = pygame.transform.scale(big_grass, (2400, 1500))
+    village = pygame.image.load('Pictures\\BGP\\village.png')
+    village = pygame.transform.scale(village, (750,560))
+
+    portal = pygame.image.load('Pictures\portal.png')
+    portal = pygame.transform.scale(portal,(100,100))
 
     auto_playing = pygame.image.load('Pictures\\icons\\auto_playing.png')
     auto_playing = pygame.transform.scale(auto_playing, (25, 25))
@@ -53,6 +60,12 @@ class pictures:
     wall_images = [pygame.image.load('Pictures\\Walls' + '\\' + file) for file in image_files]
     for walli in range(len(wall_images)):
         wall_images[walli] = pygame.transform.scale(wall_images[walli], (50,50))
+
+    '''
+        wall_images:
+        0 - Tree
+        1 - air_wall
+    '''
 
     def __init__(self):
         pass

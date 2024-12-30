@@ -12,7 +12,7 @@
 - You should log in (or register first) before playing because there are something bound to your account (such as your resources, your chat history with npcs, and your relationship❤ ).
 - You can enter with your user name and your password.
 
-### How to play it?
+### How to play?
 
 - There are different parts of the whole game.
 
@@ -40,7 +40,7 @@
   - Your goal is to defeat the enemies and then approach the portal.
   - Everyone has **HP** and **MP** of their own. When one's HP gets down to 0, then he is defeated.
   - Shooting consumes magic power (MP). When one's MP cannot afford a single shot, then he cannot shoot anymore.
-  - When you have defeated all enemies and both of you (If someone is defeated or it's a single-player game, then one player is also accepted) are beside the portal, you can press **Space **to enter the portal and won !
+  - When you have defeated all enemies and both of you (If someone is defeated or it's a single-player game, then one player is also accepted) are beside the portal, you can press **Space** to enter the portal and won !
 
   #### Plot Appreciation
 
