@@ -30,12 +30,10 @@ class pictures:
     sideplayer2 = pygame.image.load('Pictures\side_player2.png')
     sideplayer2 = pygame.transform.scale(sideplayer2, (150, 115))
 
-    bgp1 = pygame.image.load('Pictures\\BGP\\1.jpeg')
-    bgp1 = pygame.transform.scale(bgp1, (900, 560))
-    bgp2 = pygame.image.load('Pictures\\BGP\\2.png')
-    bgp2 = pygame.transform.scale(bgp2, (900, 560))
     grass = pygame.image.load('Pictures\\BGP\\grass.png')
     grass = pygame.transform.scale(grass, (1280, 720))
+    big_grass = pygame.image.load('Pictures\\BGP\\big_grass.png')
+    big_grass = pygame.transform.scale(big_grass, (2400, 1500))
 
     auto_playing = pygame.image.load('Pictures\\icons\\auto_playing.png')
     auto_playing = pygame.transform.scale(auto_playing, (25, 25))

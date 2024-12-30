@@ -218,7 +218,7 @@ class player:
     font1 = pygame.font.Font('Text\\xiangfont.ttf', 25)
     player_list = []
 
-    def __init__(self, screenin: pygame.Surface, wallmap, imagesin: list[pygame.Surface], side_player: pygame.Surface, damage_value: int, full_hp: int, full_magic: int):
+    def __init__(self, screenin: pygame.Surface, wallmap, imagesin: list[pygame.Surface], side_player: pygame.Surface, damage_value: int, full_hp: int, full_magic: int, speed:int):
         self.player_list.append(len(self.player_list) + 1)
         self.player_num = self.player_list[-1]
         self.screen_image = screenin
@@ -228,7 +228,8 @@ class player:
         self.full_hp = full_hp
         self.hp = self.full_hp
         self.full_magic = full_magic
-        self.magic = 100
+        self.magic = self.full_magic
+        self.speed = speed
         self.state = 2
         self.last_time = pygame.time.get_ticks()
         self.rect = self.images[0].get_rect(center=[350, 255])
@@ -288,15 +289,14 @@ class player:
         if pygame.time.get_ticks() - self.last_time >= 10:
             self.last_time = pygame.time.get_ticks()
             self.state = direction
-            speed = 3
             if direction == 1 and self.rect.top >= 1 and self.can_goto(1,camera_left_top): 
-                self.rect.y -= speed
+                self.rect.y -= self.speed
             elif direction == 2 and self.rect.bottom <= 560 and self.can_goto(2,camera_left_top):  
-                self.rect.y += speed
+                self.rect.y += self.speed
             elif direction == 3 and self.rect.left >= 1 and self.can_goto(3,camera_left_top): 
-                self.rect.x -= speed
+                self.rect.x -= self.speed
             elif direction == 4 and self.rect.right <= 749 and self.can_goto(4,camera_left_top):  
-                self.rect.x += speed
+                self.rect.x += self.speed
 
 
     def hp_set(self, new_hp):
@@ -321,7 +321,7 @@ bullet:
     screen_image(Surface)       窗口
     image(Surface)              子弹形象
     is_show(Bool)               是否显示    0-隐藏 1-显示
-    from_player(player)         伤害来源:   0-来源于非玩家 player1-来源于玩家1 player2-来源于玩家2
+    from_player(player)         伤害来源:   0-来源于非玩家(或玩家的治疗) player1-来源于玩家1 player2-来源于玩家2
     damage(int)                 伤害:       +为伤害 -为治疗
     damage_range(float)         伤害半径
     speed([float, float])       速度:       x_speed(右) y_speed(下)
@@ -338,8 +338,11 @@ class bullet:
         self.screen_image = screenin
         self.image = imagein
         self.is_show = 1
-        self.from_player = from_player
         self.damage = from_player.damage_value
+        if self.damage >= 0:
+            self.from_player = from_player
+        else:
+            self.from_player = 0
         self.damage_range = damage_range
         self.speed = speed
         self.last_time = pygame.time.get_ticks()
@@ -369,24 +372,24 @@ class bullet:
             return -1
         else:
             for target in targets:
-                if (target.rect.x - self.rect.centerx) ** 2 + (target.rect.y - self.rect.centery) ** 2 <= self.damage_range ** 2:
+                if (target.rect.centerx - self.rect.centerx) ** 2 + (target.rect.centery - self.rect.centery) ** 2 <= self.damage_range ** 2:
                     self.hit(target)
                     return -1
             return 0
 
-def fight(screen_image:pygame.Surface, player_num):
+def fight(screen_image:pygame.Surface, player_num:int, map_num:int):
     pygame.init()
 
     pic = pictures()
     map_0 = []
-    with open('Maps\\map1.txt','r') as f:
+    with open(f'Maps\\map{map_num}.txt','r') as f:
         for line in f:
             map_0.append(list(map(int,line.strip())))
-    walls = wall_bgp(screen_image, pic.grass, pic.wall_images, map_0)
-    player1 = player(screen_image, walls.wallmap, [pic.knight1, pic.knight2, pic.knight3, pic.knight4], pic.sideplayer1, 10, 114, 100)
+    walls = wall_bgp(screen_image, pic.big_grass, pic.wall_images, map_0)
+    player1 = player(screen_image, walls.wallmap, [pic.knight1, pic.knight2, pic.knight3, pic.knight4], pic.sideplayer1, 10, 114, 100, 4)
     player1.goto(2)
     if player_num == 2:
-        player2 = player(screen_image, walls.wallmap, [pic.knight1, pic.knight2, pic.knight3, pic.knight4], pic.sideplayer2, 10, 514, 100)
+        player2 = player(screen_image, walls.wallmap, [pic.knight1, pic.knight2, pic.knight3, pic.knight4], pic.sideplayer2, 10, 514, 100, 4)
         player2.goto(2)
         players = [player1, player2]
     else:
@@ -408,13 +411,13 @@ def fight(screen_image:pygame.Surface, player_num):
             if keypressed[K_up] and not keypressed[K_down]:
                 a_player.move(1,camera_0.left_top)
                 flipper()
-            if keypressed[K_down] and not keypressed[K_up]:
+            elif keypressed[K_down] and not keypressed[K_up]:
                 a_player.move(2,camera_0.left_top)
                 flipper()
-            if keypressed[K_left] and not keypressed[K_right]:
+            elif keypressed[K_left] and not keypressed[K_right]:
                 a_player.move(3,camera_0.left_top)
                 flipper()
-            if keypressed[K_right] and not keypressed[K_left]:
+            elif keypressed[K_right] and not keypressed[K_left]:
                 a_player.move(4,camera_0.left_top)
                 flipper()
 
@@ -443,11 +446,12 @@ def fight(screen_image:pygame.Surface, player_num):
 
     clock = pygame.time.Clock()
     while True:
+        clock.tick(50)
         bullets_to_remove = []
         for bullet_0 in bullets:
             bullet_0.move()
             if bullet_0.from_player == player1 or bullet_0.from_player == player2:
-                ############################################################################################3
+                ############################################################################################
                 result = bullet_0.detect([player1])
                 if result == -1:
                     bullets_to_remove.append(bullet_0)
@@ -472,11 +476,11 @@ def fight(screen_image:pygame.Surface, player_num):
             for player_0 in players:
                 if player_0.player_num == 1 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_q and player_0.magic >= 5:
                     player_0.magic -= 5
-                    bullets.append(bullet(screen_image, pic.bullet1, player_0, 20, [player_0.rect.x, player_0.rect.y][:], state_trans(player_0.state,4)))
+                    bullets.append(bullet(screen_image, pic.bullet1, player_0, 20, [player_0.rect.centerx, player_0.rect.centery][:], state_trans(player_0.state,4)))
                     bullets[-1].display()
                 if player_0.player_num == 2 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_RCTRL and player_0.magic >= 5:
                     player_0.magic -= 5
-                    bullets.append(bullet(screen_image, pic.bullet1, player_0, 20, [player_0.rect.x, player_0.rect.y][:], state_trans(player_0.state,4)))
+                    bullets.append(bullet(screen_image, pic.bullet1, player_0, 20, [player_0.rect.centerx, player_0.rect.centery][:], state_trans(player_0.state,4)))
                     bullets[-1].display()
 
         if pygame.display.get_active():
@@ -485,9 +489,16 @@ def fight(screen_image:pygame.Surface, player_num):
             bgm.pause()
 
         keypressed = pygame.key.get_pressed()
-        playercheck(player1, pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d)
-        if player_num == 2:
-            playercheck(player2, pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT)
+        for player_0 in players:
+            if player_0.player_num == 1:
+                playercheck(player1, pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d)
+            elif player_0.player_num == 2:
+                playercheck(player2, pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT)
+        if players[0].is_alive == 0:
+            del players[0]
+        if players[-1].is_alive == 0:
+            del players[-1]
+        
         camera_0.move_check(players, [], bullets, walls)
         flipper()
 
@@ -495,4 +506,4 @@ def fight(screen_image:pygame.Surface, player_num):
 if __name__ == '__main__':
     screen_image = pygame.display.set_mode((900, 560))
     pygame.display.set_caption('Soul Knight')
-    fight(screen_image, 1)
+    fight(screen_image, 2, 2)
