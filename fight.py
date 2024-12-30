@@ -186,7 +186,7 @@ player:
     player_list([int])      玩家列表
     player_num(int)         玩家编号
     screen_image(Surface)   窗口
-    images([Surface])       形象: [knight1, knight2, ...]
+    images([[Surface],...]) 形象: [[knight1_1, knight1_2, ...],[knight2_1, knight2_2, ...]]
     side_player(Surface)    本角色侧边栏图片
     state(int)              状态: 1-up 2-down 3-left 4-right
     damage_value(int)       伤害
@@ -195,6 +195,8 @@ player:
     full_magic(int)         最高魔法值
     magic(int)              魔法值
     last_time(int)          玩家上次移动毫秒值
+    pace_time(int)          玩家上次更新帧的毫秒值
+    image_num(int)          上次形象编号
     rect(Rect)              玩家矩形对象
     wallmap([[]])           地图
     is_alive(bool)          存活状态: 1-alive 0-dead
@@ -218,7 +220,7 @@ class player:
     font1 = pygame.font.Font('Text\\xiangfont.ttf', 25)
     player_list = []
 
-    def __init__(self, screenin: pygame.Surface, wallmap, imagesin: list[pygame.Surface], side_player: pygame.Surface, damage_value: int, full_hp: int, full_magic: int, speed:int):
+    def __init__(self, screenin: pygame.Surface, wallmap, imagesin: list[list[pygame.Surface]], side_player: pygame.Surface, damage_value: int, full_hp: int, full_magic: int, speed:int):
         self.player_list.append(len(self.player_list) + 1)
         self.player_num = self.player_list[-1]
         self.screen_image = screenin
@@ -232,7 +234,9 @@ class player:
         self.speed = speed
         self.state = 2
         self.last_time = pygame.time.get_ticks()
-        self.rect = self.images[0].get_rect(center=[350, 255])
+        self.pace_time = pygame.time.get_ticks()
+        self.image_num = 0
+        self.rect = self.images[0][0].get_rect(center=[350, 255])
         self.wallmap = wallmap
         self.is_alive = 1
 
@@ -283,7 +287,8 @@ class player:
             self.screen_image.blit(now_text, (845, 147))
             now_text = self.font1.render(str(self.magic), True, (0, 0, 255))
             self.screen_image.blit(now_text, (845, 180))
-        self.screen_image.blit(self.images[self.state - 1], self.rect) 
+        self.screen_image.blit(self.images[self.state - 1][self.image_num], self.rect)
+
 
     def move(self, direction, camera_left_top):
         if pygame.time.get_ticks() - self.last_time >= 10:
@@ -297,6 +302,12 @@ class player:
                 self.rect.x -= self.speed
             elif direction == 4 and self.rect.right <= 749 and self.can_goto(4,camera_left_top):  
                 self.rect.x += self.speed
+            if pygame.time.get_ticks() - self.pace_time >= 25:
+                self.pace_time = pygame.time.get_ticks()
+                if self.image_num >= len(self.images[self.state - 1]) - 1:
+                    self.image_num = 0
+                else:
+                    self.image_num += 1
 
 
     def hp_set(self, new_hp):
@@ -315,6 +326,48 @@ class player:
     def is_dying(self):
         if self.hp == 0:
             self.is_alive = 0
+
+
+'''
+enemy:
+    screen_image(Surface)   窗口
+    images(Surface)         形象
+    state(int)              状态: 1-up 2-down 3-left 4-right
+    damage_value(int)       伤害
+    full_hp(int)            最高血量
+    hp(int)                 血量
+    full_magic(int)         最高魔法值
+    magic(int)              魔法值
+    last_time(int)          玩家上次移动毫秒值
+    rect(Rect)              玩家矩形对象
+    wallmap([[]])           地图
+    is_alive(bool)          存活状态: 1-alive 0-dead
+
+    goto(direction, destination):   前往固定地点,设置确定朝向(无检验)
+        direction(int)                  朝向:   1-up 2-down 3-left 4-right
+        destination([int,int])          目的地: list:[x,y]
+    can_goto(direction):            检验是否能够前往目标地点(边界检验和墙体检验)
+    display():                      打印当前角色及其侧边栏面板
+    move(direction):                固定方向移动speed格(有边界校验)
+        direction(int)                  朝向:   1-up 2-down 3-left 4-right
+    hp_set(new_hp):                 设置血量(有上下限校验)
+        new_hp(int)                     新的血量
+    damage(damage):                 结算受到的伤害
+        damage(int)                     受到的伤害值(有上下限校验)
+    is_dying():                     检验是否死亡
+'''
+
+class enemy:
+    def __init__(self, screen_image:pygame.Surface, image:pygame.Surface):
+        self.screen_image = screen_image
+        self.image = image
+        
+
+
+
+
+
+
 
 '''
 bullet:
@@ -386,10 +439,10 @@ def fight(screen_image:pygame.Surface, player_num:int, map_num:int):
         for line in f:
             map_0.append(list(map(int,line.strip())))
     walls = wall_bgp(screen_image, pic.big_grass, pic.wall_images, map_0)
-    player1 = player(screen_image, walls.wallmap, [pic.knight1, pic.knight2, pic.knight3, pic.knight4], pic.sideplayer1, 10, 114, 100, 4)
+    player1 = player(screen_image, walls.wallmap, pic.Alice, pic.sideplayer1, 10, 114, 100, 4)
     player1.goto(2)
     if player_num == 2:
-        player2 = player(screen_image, walls.wallmap, [pic.knight1, pic.knight2, pic.knight3, pic.knight4], pic.sideplayer2, 10, 514, 100, 4)
+        player2 = player(screen_image, walls.wallmap, pic.Alice, pic.sideplayer2, 10, 514, 100, 4)
         player2.goto(2)
         players = [player1, player2]
     else:

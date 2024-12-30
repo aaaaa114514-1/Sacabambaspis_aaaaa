@@ -68,18 +68,21 @@ def login(screen_image:pygame.Surface):
                         username = username_input.get_text()
                         password = password_input.get_text()
 
-                        if username not in user_data:
-                            user_data[username] = hash_data(password)
-                            f = open(f'Text\Accounts.txt', "a", encoding="UTF-8")
-                            f.write(f'{username}   \t{hash_data(password)}\n')
-                            f.close()
-                            os.mkdir(f'Text\\Accounts\\{username}')
-                            with open (f'Text\\Accounts\\{username}\\account_resource.txt', 'w') as f:
-                                f.write('Soulstone   \t100\nhas_read   \t0\nlikability_Alice   \t1')
-                            password_input.clear()
-                            status_label.set_text("Register successfully!")
+                        if username == '':
+                            status_label.set_text("The username cannot be empty")
                         else:
-                            status_label.set_text("The username already exists")
+                            if username not in user_data:
+                                user_data[username] = hash_data(password)
+                                f = open(f'Text\Accounts.txt', "a", encoding="UTF-8")
+                                f.write(f'{username}   \t{hash_data(password)}\n')
+                                f.close()
+                                os.mkdir(f'Text\\Accounts\\{username}')
+                                with open (f'Text\\Accounts\\{username}\\account_resource.txt', 'w') as f:
+                                    f.write('Soulstone   \t100\nhas_read   \t0\nlikability_Alice   \t1')
+                                password_input.clear()
+                                status_label.set_text("Register successfully!")
+                            else:
+                                status_label.set_text("The username already exists")
 
         manager.update(delta_time)
         screen_image.blit(pic.Soul_knight_background2,(0,0))

@@ -1,0 +1,6 @@
+Dialogue
+
+0   	Hello!
+
+Alice   	*I bat my eyelashes* Hey, Soul Knight... I'm Alice, by the way. Welcome back to our village. We've missed you around here. How's it feel to be back in action? Did you want to know about anything specific to this place or get some recommendations for gear from Bob's shop?
+
