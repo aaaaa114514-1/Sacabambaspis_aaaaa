@@ -137,6 +137,42 @@ class npc_dia:
         f.write(f"{name}   \t{content}\n\n")
         f.close()
 
+
+
+
+
+class npc_mov:
+    def __init__(self, name:str, likeability:int):
+        self.name = name
+        self.likeability = likeability
+        self.client = OpenAI(
+            base_url = 'http://10.15.88.73:5016/v1',
+            api_key = 'ollama',
+        )
+        with open(f'AI_Settings\\{name}_movement.txt', 'r') as file:
+            cli_settings = file.read()
+        self.cli_messages : List[Dict] = [{"role": "system", "content": cli_settings}, dict()]
+
+
+    def judge_move(self, user_location, npc_location, likeability):
+        self.likeability = likeability
+        self.cli_messages[1] = {"role": "user", "content": f'Soul Knight\'s location: {user_location}\n{self.name}\'s location: {npc_location}\nLikeability = {self.likeability}'}
+        response = self.client.chat.completions.create(
+            model = "llama3.2",      
+            messages = self.cli_messages,
+        )
+        cli_reply = response.choices[0].message.content.lower()
+        print(f'{self.name}: {cli_reply}')
+        if 'approach' in cli_reply:
+            return 1
+        elif 'off' in cli_reply and 'stay' in cli_reply:
+            return -1
+        else:
+            return 0
+
+
+
+
 if __name__ == "__main__":
     npc1 = npc_dia('Alice','aaaaa')
     while 1:

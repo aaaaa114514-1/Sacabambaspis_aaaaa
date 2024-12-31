@@ -7,7 +7,7 @@ from bgmplayer import BgmPlayer
 Kits:
     manager(UIManager):                     pygame_gui的manager
     bgmplayer(BgmPlayer):                   播放器
-    mode(int):                              显示状态: 1-左上角竖排(gal_custom)
+    mode(int):                              显示状态: 1-左上角竖排(gal_custom) 2-右下角矩形排列(menu, fight)
     quit_button(UIButton):                  退出界面按钮
     bag_button(UIButton):                   打开背包按钮
     volume_button(UIButton):                调整音量按钮

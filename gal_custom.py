@@ -92,7 +92,7 @@ class Textbox:
 
 
 
-def gal_custom(screen_image:pygame.Surface, username:str, npcname:str):
+def gal_custom(screen_image:pygame.Surface, username:str, npcname:str, bgm:BgmPlayer):
     pygame.init()
     screen_image.fill((0,0,0))
     manager = pygame_gui.UIManager((900, 560))
@@ -101,9 +101,6 @@ def gal_custom(screen_image:pygame.Surface, username:str, npcname:str):
     inputbox_0 = Inputbox(screen_image, manager)
     npc_0 = npc_dia(npcname, username)
     textbox_0 = Textbox(f'Chat with {npc_0.name}\n'+'-'*140, manager)
-
-    bgm = BgmPlayer()
-    bgm.play('Soul_Soil.mp3',-1)
 
     kits_0 = Kits(manager, bgm, 1)
 
@@ -165,4 +162,5 @@ def gal_custom(screen_image:pygame.Surface, username:str, npcname:str):
 if __name__ == '__main__':
     screen_image = pygame.display.set_mode((900, 560))
     pygame.display.set_caption('Soul Knight')
-    gal_custom(screen_image,'aaaaa','Bob')
+    bgm = BgmPlayer()
+    gal_custom(screen_image,'aaaaa','Bob', bgm)

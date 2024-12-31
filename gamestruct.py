@@ -28,7 +28,7 @@ if user_resource['has_read'] == 0:
     user_resource['has_read'] = 1
     acer.update_resource(username, user_resource)
 
-menu(screen_image, username, [[100,100,4,10,20,0,5,5,pic.bullet0],[100,100,4,10,20,0,5,5,pic.bullet0]])
+menu.menu(screen_image, username, [[100,100,4,10,20,0,5,5,pic.bullet0],[100,100,4,10,20,0,5,5,pic.bullet0]])
 
 
 clock = pygame.time.Clock()

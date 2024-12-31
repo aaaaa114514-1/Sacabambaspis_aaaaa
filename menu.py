@@ -9,7 +9,9 @@ from load_picture import pictures
 from kits import Kits
 from account_setter import account_admin
 import gal_custom
-
+from ai_iosetter import npc_mov
+import threading
+import random
 
 
 '''
@@ -148,7 +150,7 @@ class player:
         bottom_left = (new_rect.left, new_rect.bottom)
         bottom_right = (new_rect.right, new_rect.bottom)
 
-        if new_rect.left <= 0 or new_rect.right >= 750 or new_rect.top < 0 or new_rect.bottom > 560:
+        if new_rect.left < 0 or new_rect.right > 750 or new_rect.top < 0 or new_rect.bottom > 560:
             return False
 
         for corner in [top_left, top_right, bottom_left, bottom_right]:
@@ -249,6 +251,7 @@ class npc:
         self.pace_time = pygame.time.get_ticks()
         self.image_num = 0
         self.rect = self.images[0][0].get_rect(center=init_location)
+        self.npcm = npc_mov(self.name, self.likeability)
 
     def goto(self, direction, destination=None):
         if destination is None:
@@ -306,6 +309,31 @@ class npc:
                     self.image_num = 0
                 else:
                     self.image_num += 1
+
+    def checkmove(self, user_location:list, likeability:int):
+        self.likeability = likeability
+        result = self.npcm.judge_move(user_location, [self.rect.centerx, self.rect.centery], self.likeability)
+        dx = user_location[0] - self.rect.centerx
+        dy = user_location[1] - self.rect.centery
+        for _ in range(5):
+            r = random.randint(0,1)
+            for __ in range(4):
+                if result == 0 or (dx == 0 and dy == 0):
+                    pass
+                elif result * dx > 0 and result * dy > 0:
+                    if r == 0:  self.move(2)
+                    else:       self.move(4)
+                elif result * dx <= 0 and result * dy > 0:
+                    if r == 0:  self.move(2)
+                    else:       self.move(3)
+                elif result * dx > 0 and result * dy <= 0:
+                    if r == 0:  self.move(1)
+                    else:       self.move(4)
+                elif result * dx <= 0 and result * dy <= 0:
+                    if r == 0:  self.move(1)
+                    else:       self.move(3)
+                time.sleep(0.05)
+        time.sleep(1)
 
 
 
@@ -413,9 +441,9 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
     player2.goto(2)
     players:list[player] = [player1, player2]
 
-    npc_Alice = npc(screen_image, walls.wallmap, 'Alice',userinfo['likeability_Alice'], pic.Alice,[300,160])
+    npc_Alice = npc(screen_image, walls.wallmap, 'Alice',userinfo['likeability_Alice'], pic.Alice,[250,160])
     npc_Alice.goto(2)
-    npc_Bob = npc(screen_image, walls.wallmap, 'Bob',userinfo['likeability_Bob'], pic.Bob,[300,300])
+    npc_Bob = npc(screen_image, walls.wallmap, 'Bob',userinfo['likeability_Bob'], pic.Bob,[250,300])
     npc_Bob.goto(2)
     npcs:list[npc] = [npc_Alice, npc_Bob]
 
@@ -469,11 +497,14 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
                 player_0.display()
         manager.update(time_delta)
         manager.draw_ui(screen_image)
-        pygame.display.flip()
+        pygame.display.update()
 
     flipper()
 
     clock = pygame.time.Clock()
+    thread_check_npc_movement_Alice = threading.Thread(target=npc_Alice.checkmove,args=[[player1.rect.centerx, player1.rect.centery], userinfo['likeability_Alice']])
+    thread_check_npc_movement_Bob = threading.Thread(target=npc_Bob.checkmove,args=[[player2.rect.centerx, player2.rect.centery], userinfo['likeability_Bob']])
+
     while True:
         time_delta = clock.tick(50) / 1000.0
         bullets_to_remove = []
@@ -501,10 +532,11 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
                     minimize_window()
                     os.startfile('Pictures\K_Boss.pdf')
 
-                for player_0 in players:
-                    for npc_0 in npcs:
+                for npc_0 in npcs:
+                    for player_0 in players:
                         if (player_0.rect.centerx - npc_0.rect.centerx) ** 2 + (player_0.rect.centery - npc_0.rect.centery) ** 2 <= 2000 and event.key == pygame.K_SPACE:
-                            gal_custom.gal_custom(screen_image, username, npc_0.name)
+                            gal_custom.gal_custom(screen_image, username, npc_0.name, bgm)
+                            break
 
             for player_0 in players:
                 if player_0.player_num == 1 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_q:
@@ -513,8 +545,12 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
                 if player_0.player_num == 2 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_RCTRL:
                     bullets.append(bullet(screen_image, player_info[1][8], player_0, player_info[1][4], [player_0.rect.centerx, player_0.rect.centery][:], state_trans(player_0.state,player_info[1][7]),player_info[1][5]))
                     bullets[-1].display()
-
-
+        if not thread_check_npc_movement_Alice.is_alive():
+            thread_check_npc_movement_Alice = threading.Thread(target=npc_Alice.checkmove,args=[[player1.rect.centerx, player1.rect.centery], userinfo['likeability_Alice']])
+            thread_check_npc_movement_Alice.start()
+        if not thread_check_npc_movement_Bob.is_alive():
+            thread_check_npc_movement_Bob = threading.Thread(target=npc_Bob.checkmove,args=[[player2.rect.centerx, player2.rect.centery], userinfo['likeability_Bob']])
+            thread_check_npc_movement_Bob.start()
 
         manager.process_events(event)
 
@@ -544,7 +580,7 @@ if __name__ == '__main__':
     pic = pictures
     screen_image = pygame.display.set_mode((900, 560))
     pygame.display.set_caption('Soul Knight')
-    menu(screen_image, 'aaaaa', [[100,100,4,10,20,0,5,5,pic.bullet1],[100,100,4,10,20,0,5,5,pic.bullet2]])
+    menu(screen_image, 'aaaaa', [[100,100,4,10,20,True,5,5,pic.bullet1],[100,100,4,10,20,False,5,5,pic.bullet2]])
     
     #[[0血量, 1魔法值, 2速度, 3伤害, 4溅射范围, 5子弹能否穿墙, 6子弹消耗魔法值, 7子弹速度, 8子弹形象],]
 
