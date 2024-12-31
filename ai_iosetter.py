@@ -113,7 +113,6 @@ class npc_dia:
             for item in shopkeeper_0.pricetable.keys():
                 if (item in jud_reply or item.lower() in jud_reply or item.replace('_',' ') in jud_reply) and self.user_resource[item] == 0 and self.user_resource['Soulstone'] >= shopkeeper_0.pricetable[item]['Price']:
                     self.user_resource[item] = 1
-                    print(f'buying{item}')
                     self.user_resource['Soulstone'] -= shopkeeper_0.pricetable[item]['Price']
                     break
                 
@@ -126,8 +125,6 @@ class npc_dia:
         index = self.cli_messages[-1]['content'].find('ikeability')
         if index != -1:
             self.cli_messages[-1]['content'] = self.cli_messages[-1]['content'][:index-1]
-
-        print(jud_reply)
 
         self.acer.update_resource(self.username, self.user_resource)
         self.write_in(0, user_input)

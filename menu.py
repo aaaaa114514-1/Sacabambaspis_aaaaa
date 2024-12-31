@@ -1,10 +1,12 @@
 import pygame
+import pygame_gui
 import sys
 import time
 import pygetwindow as gw
 import os
 from bgmplayer import BgmPlayer
 from load_picture import pictures
+from kits import Kits
 
 
 
@@ -295,6 +297,7 @@ menu(screen_image, player_num, map_num, player_info):               目录界面
 
 def menu(screen_image:pygame.Surface, player_info:list):
     pygame.init()
+    manager = pygame_gui.UIManager((900,560))
 
     pic = pictures()
     map_0 = []
@@ -313,6 +316,9 @@ def menu(screen_image:pygame.Surface, player_info:list):
 
     bgm = BgmPlayer()
     bgm.play('Soul_Soil.mp3', -1)
+
+    kits_0 = Kits(manager, bgm, 2)
+    time_delta = 0
 
     def minimize_window():
         window = gw.getWindowsWithTitle('Soul Knight')[0]
@@ -351,6 +357,8 @@ def menu(screen_image:pygame.Surface, player_info:list):
                 player_0.display()
         for bullet_0 in bullets:
             bullet_0.move()
+        manager.update(time_delta)
+        manager.draw_ui(screen_image)
         pygame.display.flip()
 
 
@@ -358,7 +366,7 @@ def menu(screen_image:pygame.Surface, player_info:list):
 
     clock = pygame.time.Clock()
     while True:
-        clock.tick(50)
+        time_delta = clock.tick(50) / 1000.0
         bullets_to_remove = []
         for bullet_0 in bullets:
             bullet_0.move()
@@ -392,6 +400,8 @@ def menu(screen_image:pygame.Surface, player_info:list):
                     bullets.append(bullet(screen_image, player_info[1][8], player_0, player_info[1][4], [player_0.rect.centerx, player_0.rect.centery][:], state_trans(player_0.state,player_info[1][7]),player_info[1][5]))
                     bullets[-1].display()
 
+        manager.process_events(event)
+
         if pygame.display.get_active():
             bgm.unpause()
         else:
@@ -408,6 +418,9 @@ def menu(screen_image:pygame.Surface, player_info:list):
         if players[-1].is_alive == 0:
             del players[-1]
         
+        kits_0.check_bagging()
+        kits_0.check_voluming()
+        kits_0.check_adjusting_volume()
         flipper()
 
 

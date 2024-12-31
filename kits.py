@@ -27,10 +27,24 @@ class Kits:
         self.manager = manager
         self.bgmplayer = bgmplayer
         self.mode = mode
-        self.quit_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((10, 10),(55, 55)),text='X',manager=self.manager)
-        self.bag_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((10, 70),(55, 55)),text='Bag',manager=self.manager)
-        self.volume_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((10, 130), (55, 55)),text='Vol', manager=self.manager)
-        self.volume_slider = pygame_gui.elements.UIHorizontalSlider(relative_rect=pygame.Rect((66, 143), (100, 29)),start_value=self.bgmplayer.get_volume(),value_range=(0.0, 1.0),manager=self.manager)
+        if self.mode == 1:
+            button_size = 55
+            quit_lefttop = (10,10)
+            bag_lefttop = (10,70)
+            volume_lefttop = (10,130)
+            slide_lefttop = (66,143)
+            slide_size = (100,29)
+        elif self.mode == 2:
+            button_size = 50
+            quit_lefttop = (771,258)
+            bag_lefttop = (829,258)
+            volume_lefttop = (771,315)
+            slide_lefttop = (771,369)
+            slide_size = (108,30)
+        self.quit_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(quit_lefttop,(button_size, button_size)),text='Quit',manager=self.manager)
+        self.bag_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(bag_lefttop,(button_size, button_size)),text='Bag',manager=self.manager)
+        self.volume_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(volume_lefttop, (button_size, button_size)),text='Vol', manager=self.manager)
+        self.volume_slider = pygame_gui.elements.UIHorizontalSlider(relative_rect=pygame.Rect(slide_lefttop, slide_size),start_value=self.bgmplayer.get_volume(),value_range=(0.0, 1.0),manager=self.manager)
         self.volume_slider_visible = False
         self.volume_slider.hide()
 

@@ -1,5 +1,5 @@
 Soulstone   	100
-has_read   	1
+has_read   	0
 likeability_Alice   	0
 likeability_Bob   	0
 Speeding_up   	0
