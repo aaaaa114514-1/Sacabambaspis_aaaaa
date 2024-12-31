@@ -7,6 +7,7 @@ import os
 from bgmplayer import BgmPlayer
 from load_picture import pictures
 from kits import Kits
+from account_setter import account_admin
 
 
 
@@ -77,6 +78,7 @@ player:
     hp(int)                 血量
     full_magic(int)         最高魔法值
     magic(int)              魔法值
+    speed(int)              速度
     last_time(int)          玩家上次移动毫秒值
     pace_time(int)          玩家上次更新帧的毫秒值
     image_num(int)          上次形象编号
@@ -211,6 +213,102 @@ class player:
             self.hp = self.full_hp
 
 '''
+npc:
+    screen_image(Surface)   窗口
+    images([[Surface],...]) 形象: [[knight1_1, knight1_2, ...],[knight2_1, knight2_2, ...]]
+    name(str)               npc角色名
+    likeability(int)        npc好感度
+    state(int)              状态: 1-up 2-down 3-left 4-right
+    speed(int)              速度
+    last_time(int)          npc上次移动毫秒值
+    pace_time(int)          npc上次更新帧的毫秒值
+    image_num(int)          上次形象编号
+    rect(Rect)              玩家矩形对象
+    wallmap([[]])           地图
+
+    goto(direction, destination):   前往固定地点,设置确定朝向(无检验)
+        direction(int)                  朝向:   1-up 2-down 3-left 4-right
+        destination([int,int])          目的地: list:[x,y]
+    can_goto(direction):            检验是否能够前往目标地点(边界检验和墙体检验)
+    display():                      打印当前角色
+    move(direction):                固定方向移动speed格(有边界校验)
+        direction(int)                  朝向:   1-up 2-down 3-left 4-right
+
+'''
+class npc:
+    def __init__(self, screen_image:pygame.Surface, wall_map:list, name:str, likeability:int, image_in:list[list[pygame.Surface]], init_location:list):
+        self.screen_image = screen_image
+        self.wallmap = wall_map
+        self.name = name
+        self.likeability = likeability
+        self.images = image_in
+        self.state = 2
+        self.speed = 3
+        self.last_time = pygame.time.get_ticks()
+        self.pace_time = pygame.time.get_ticks()
+        self.image_num = 0
+        self.rect = self.images[0][0].get_rect(center=init_location)
+
+    def goto(self, direction, destination=None):
+        if destination is None:
+            destination = [self.rect.x, self.rect.y]
+        self.state = direction
+        self.rect.center = destination 
+
+    def can_goto(self, direction:int):
+        new_rect = self.rect.copy()
+        if direction == 1:
+            new_rect.y -= 3
+        elif direction == 2:
+            new_rect.y += 3
+        elif direction == 3:
+            new_rect.x -= 3
+        elif direction == 4:
+            new_rect.x += 3
+
+        top_left = (new_rect.left, new_rect.top)
+        top_right = (new_rect.right, new_rect.top)
+        bottom_left = (new_rect.left, new_rect.bottom)
+        bottom_right = (new_rect.right, new_rect.bottom)
+
+        if new_rect.left <= 0 or new_rect.right >= 750 or new_rect.top < 0 or new_rect.bottom > 560:
+            return False
+
+        for corner in [top_left, top_right, bottom_left, bottom_right]:
+            try:
+                if self.wallmap[(corner[1]) // 50][(corner[0]) // 50] != 0:
+                    return False
+            except IndexError:
+                return True
+        return True
+
+
+    def display(self):
+        self.screen_image.blit(self.images[self.state - 1][self.image_num], self.rect)
+
+
+    def move(self, direction):
+        if pygame.time.get_ticks() - self.last_time >= 10:
+            self.last_time = pygame.time.get_ticks()
+            self.state = direction
+            if direction == 1 and self.rect.top >= 1 and self.can_goto(1): 
+                self.rect.y -= self.speed
+            elif direction == 2 and self.rect.bottom <= 560 and self.can_goto(2):  
+                self.rect.y += self.speed
+            elif direction == 3 and self.rect.left >= 1 and self.can_goto(3): 
+                self.rect.x -= self.speed
+            elif direction == 4 and self.rect.right <= 749 and self.can_goto(4):  
+                self.rect.x += self.speed
+            if pygame.time.get_ticks() - self.pace_time >= 25:
+                self.pace_time = pygame.time.get_ticks()
+                if self.image_num >= len(self.images[self.state - 1]) - 1:
+                    self.image_num = 0
+                else:
+                    self.image_num += 1
+
+
+
+'''
 bullet:
     screen_image(Surface)       窗口
     image(Surface)              子弹形象
@@ -292,12 +390,15 @@ class bullet:
 '''
 menu(screen_image, player_num, map_num, player_info):               目录界面
     screen_image(Surface):                                              窗口
+    username(str):                                                      玩家名
     player_info([[int,int,int,int,float,bool,int,int,Surface],]):       玩家初始信息:   [[血量, 魔法值, 速度, 伤害, 溅射范围, 子弹能否穿墙, 子弹消耗魔法值, 子弹速度, 子弹形象],]
 '''
 
-def menu(screen_image:pygame.Surface, player_info:list):
+def menu(screen_image:pygame.Surface, username:str, player_info:list):
     pygame.init()
     manager = pygame_gui.UIManager((900,560))
+    acer = account_admin()
+    userinfo = acer.get_resource(username)
 
     pic = pictures()
     map_0 = []
@@ -310,6 +411,12 @@ def menu(screen_image:pygame.Surface, player_info:list):
     player2 = player(screen_image, walls.wallmap, pic.Knightress, pic.sideplayer2, player_info[1][3], player_info[1][0], player_info[1][1], player_info[1][2])
     player2.goto(2)
     players = [player1, player2]
+
+    npc_Alice = npc(screen_image, walls.wallmap, 'Alice',userinfo['likeability_Alice'], pic.Alice,[300,160])
+    npc_Alice.goto(2)
+    npc_Bob = npc(screen_image, walls.wallmap, 'Bob',userinfo['likeability_Bob'], pic.Bob,[300,300])
+    npc_Bob.goto(2)
+    npcs = [npc_Alice, npc_Bob]
 
 
     bullets = []
@@ -352,11 +459,13 @@ def menu(screen_image:pygame.Surface, player_info:list):
     def flipper():
         walls.display()
         screen_image.blit(pic.sidebox, (750, 0))
+        for npc_0 in npcs:
+            npc_0.display()
+        for bullet_0 in bullets:
+            bullet_0.move()
         for player_0 in players:
             if player_0.is_alive == 1:
                 player_0.display()
-        for bullet_0 in bullets:
-            bullet_0.move()
         manager.update(time_delta)
         manager.draw_ui(screen_image)
         pygame.display.flip()
@@ -428,7 +537,7 @@ if __name__ == '__main__':
     pic = pictures
     screen_image = pygame.display.set_mode((900, 560))
     pygame.display.set_caption('Soul Knight')
-    menu(screen_image, [[100,100,4,10,20,0,5,5,pic.bullet1],[100,100,4,10,20,0,5,5,pic.bullet2]])
+    menu(screen_image, 'aaaaa', [[100,100,4,10,20,0,5,5,pic.bullet1],[100,100,4,10,20,0,5,5,pic.bullet2]])
     
     #[[0血量, 1魔法值, 2速度, 3伤害, 4溅射范围, 5子弹能否穿墙, 6子弹消耗魔法值, 7子弹速度, 8子弹形象],]
 

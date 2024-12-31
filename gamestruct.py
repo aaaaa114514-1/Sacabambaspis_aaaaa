@@ -1,6 +1,7 @@
 import pygame
 import sys
 from account_setter import account_admin
+from load_picture import pictures
 import time
 import opening
 import login
@@ -12,6 +13,7 @@ import gal_custom
 
 pygame.init()
 acer = account_admin()
+pic = pictures
 
 screen_image = pygame.display.set_mode((900,560))
 pygame.display.set_caption('Soul Knight')
@@ -26,8 +28,8 @@ if user_resource['has_read'] == 0:
     user_resource['has_read'] = 1
     acer.update_resource(username, user_resource)
 
-#menu.menu(screen_image)
-gal_custom.gal_custom(screen_image, username, 'Alice')
+menu(screen_image, username, [[100,100,4,10,20,0,5,5,pic.bullet0],[100,100,4,10,20,0,5,5,pic.bullet0]])
+
 
 clock = pygame.time.Clock()
 

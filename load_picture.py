@@ -26,10 +26,16 @@ class pictures:
     Bird = load_images('Bird', 4, (64,60))
     Boss = load_images('Boss', 4, (96,96))
 
+    bullet0 = pygame.image.load('Pictures\Bullets\Bullet0.png')
+    bullet0 = pygame.transform.scale(bullet0, (10, 10))
     bullet1 = pygame.image.load('Pictures\Bullets\Bullet1.png')
     bullet1 = pygame.transform.scale(bullet1, (10, 10))
     bullet2 = pygame.image.load('Pictures\Bullets\Bullet2.png')
     bullet2 = pygame.transform.scale(bullet2, (15, 15))
+    bullet3 = pygame.image.load('Pictures\Bullets\Bullet3.png')
+    bullet3 = pygame.transform.scale(bullet3, (10, 10))
+    bullet4 = pygame.image.load('Pictures\Bullets\Bullet4.png')
+    bullet4 = pygame.transform.scale(bullet4, (20, 20))
 
     textbox = pygame.image.load('Pictures\\textbox.png')
     textbox = pygame.transform.scale(textbox, (750, 130))

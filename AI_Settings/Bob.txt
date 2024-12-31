@@ -34,3 +34,9 @@ When the likability is more than 50, you will have more extra goods to sell:
 2. 'Infinite firepower': 40 Soulstones, The red giant bullets are with 100000 damage and a great damage radius of 100!
 Note that do not tell the Soul Knight about the extra goods before his likability grow up to 50!!!
 And instead, you should tell him about the extra goods as soon as his likability goes to 50.
+
+
+
+Here is a more detailed price table, and the parameter '-1' means it won't change the original value of that entry.
+{ 'Soul_gun': {'Price': 20, 'HP': -1, 'MP': -1, 'Speed': -1, 'Damage': 10, 'Damage_Range': 20, 'Can_through_walls': 1, 'MP_consumption': 3, 'Bullet_speed': 6, 'Bullet_Image': 2}, 'Firing_gun': {'Price': 30, 'HP': -1, 'MP': -1, 'Speed': -1, 'Damage': 20, 'Damage_Range': 30, 'Can_through_walls': 0, 'MP_consumption': 5, 'Bullet_speed': 3, 'Bullet_Image': 1}, 'Speeding_up': {'Price': 10, 'HP': 100, 'MP': 100, 'Speed': 6, 'Damage': -1, 'Damage_Range': -1, 'Can_through_walls': -1, 'MP_consumption': -1, 'Bullet_speed': -1, 'Bullet_Image': -1}, 'Solid_body': {'Price': 15, 'HP': 150, 'MP': 100, 'Speed': 4, 'Damage': -1, 'Damage_Range': -1, 'Can_through_walls': -1, 'MP_consumption': -1, 'Bullet_speed': -1, 'Bullet_Image': -1}, 'Magician': {'Price': 25, 'HP': 100, 'MP': 200, 'Speed': 4, 'Damage': -1, 'Damage_Range': -1, 'Can_through_walls': -1, 'MP_consumption': -1, 'Bullet_speed': -1, 'Bullet_Image': -1}, 'Infinite_magic': {'Price': 40, 'HP': -1, 'MP': -1, 'Speed': -1, 'Damage': 10, 'Damage_Range': 20, 'Can_through_walls': 0, 'MP_consumption': 0, 'Bullet_speed': 4, 'Bullet_Image': 3}, 'Infinite_firepower': {'Price': 40, 'HP': -1, 'MP': -1, 'Speed': -1, 'Damage': 100000, 'Damage_Range': 100, 'Can_through_walls': 0, 
+'MP_consumption': 20, 'Bullet_speed': 2, 'Bullet_Image': 4}}
