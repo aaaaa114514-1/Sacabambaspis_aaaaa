@@ -83,6 +83,7 @@ player:
     magic(int)              魔法值
     speed(int)              速度
     last_time(int)          玩家上次移动毫秒值
+    attack_time(int)        玩家上次攻击毫秒值
     pace_time(int)          玩家上次更新帧的毫秒值
     image_num(int)          上次形象编号
     rect(Rect)              玩家矩形对象
@@ -123,8 +124,9 @@ class player:
         self.state = 2
         self.last_time = pygame.time.get_ticks()
         self.pace_time = pygame.time.get_ticks()
+        self.attack_time = pygame.time.get_ticks()
         self.image_num = 0
-        self.rect = self.images[0][0].get_rect(center=[20+30*self.player_num, 500])
+        self.rect = self.images[0][0].get_rect(center=[20+30*self.player_num, 470])
         self.wallmap = wallmap
         self.is_alive = 1
 
@@ -441,9 +443,9 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
     player2.goto(2)
     players:list[player] = [player1, player2]
 
-    npc_Alice = npc(screen_image, walls.wallmap, 'Alice',userinfo['likeability_Alice'], pic.Alice,[250,160])
+    npc_Alice = npc(screen_image, walls.wallmap, 'Alice',userinfo['likeability_Alice'], pic.Alice,[250,100])
     npc_Alice.goto(2)
-    npc_Bob = npc(screen_image, walls.wallmap, 'Bob',userinfo['likeability_Bob'], pic.Bob,[250,300])
+    npc_Bob = npc(screen_image, walls.wallmap, 'Bob',userinfo['likeability_Bob'], pic.Bob,[550,100])
     npc_Bob.goto(2)
     npcs:list[npc] = [npc_Alice, npc_Bob]
 
@@ -524,7 +526,7 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
 
                 
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if event.type == pygame.QUIT or kits_0.is_quiting():
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
@@ -539,10 +541,10 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
                             break
 
             for player_0 in players:
-                if player_0.player_num == 1 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_q:
+                if player_0.player_num == 1 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_q and (pygame.time.get_ticks()-player_0.attack_time > 250):
                     bullets.append(bullet(screen_image, player_info[0][8], player_0, player_info[0][4], [player_0.rect.centerx, player_0.rect.centery][:], state_trans(player_0.state,player_info[0][7]),player_info[0][5]))
                     bullets[-1].display()
-                if player_0.player_num == 2 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_RCTRL:
+                if player_0.player_num == 2 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_RCTRL and (pygame.time.get_ticks()-player_0.attack_time > 250):
                     bullets.append(bullet(screen_image, player_info[1][8], player_0, player_info[1][4], [player_0.rect.centerx, player_0.rect.centery][:], state_trans(player_0.state,player_info[1][7]),player_info[1][5]))
                     bullets[-1].display()
         if not thread_check_npc_movement_Alice.is_alive():

@@ -198,6 +198,7 @@ player:
     magic(int)              魔法值
     last_time(int)          玩家上次移动毫秒值
     pace_time(int)          玩家上次更新帧的毫秒值
+    attack_time(int)        玩家上次攻击毫秒值
     image_num(int)          上次形象编号
     rect(Rect)              玩家矩形对象
     wallmap([[]])           地图
@@ -237,6 +238,7 @@ class player:
         self.state = 2
         self.last_time = pygame.time.get_ticks()
         self.pace_time = pygame.time.get_ticks()
+        self.attack_time = pygame.time.get_ticks()
         self.image_num = 0
         self.rect = self.images[0][0].get_rect(center=[120+30*self.player_num, 260])
         self.wallmap = wallmap
@@ -455,9 +457,10 @@ fight(screen_image, player_num, map_num, player_info):              战斗场景
     screen_image(Surface):                                              窗口
     player_num(int):                                                    玩家数(1或2)
     map_num(int):                                                       使用的地图编号
+    bgm_str(str):                                                           背景音乐名
     player_info([[int,int,int,int,float,bool,int,int,Surface],]):       玩家信息:   [[血量, 魔法值, 速度, 伤害, 溅射范围, 子弹能否穿墙, 子弹消耗魔法值, 子弹速度, 子弹形象],]
 '''
-def fight(screen_image:pygame.Surface, player_num:int, map_num:int, player_info:list):
+def fight(screen_image:pygame.Surface, player_num:int, map_num:int, bgm_str:str, player_info:list):
     pygame.init()
     manager = pygame_gui.UIManager((900,560))
 
@@ -481,7 +484,7 @@ def fight(screen_image:pygame.Surface, player_num:int, map_num:int, player_info:
     camera_0 = camera([0,0])
 
     bgm = BgmPlayer()
-    bgm.play('Soul_Soil.mp3', -1)
+    bgm.play(bgm_str, -1)
 
     kits_0 = Kits(manager, bgm, 2)
     time_delta = 0
@@ -560,11 +563,11 @@ def fight(screen_image:pygame.Surface, player_num:int, map_num:int, player_info:
                     os.startfile('Pictures\K_Boss.pdf')
 
             for player_0 in players:
-                if player_0.player_num == 1 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_q and player_0.magic >= player_info[0][6]:
+                if player_0.player_num == 1 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_q and player_0.magic >= player_info[0][6] and (pygame.time.get_ticks()-player_0.attack_time > 250):
                     player_0.magic -= player_info[0][6]
                     bullets.append(bullet(screen_image, player_info[0][8], player_0, player_info[0][4], [player_0.rect.centerx, player_0.rect.centery][:], state_trans(player_0.state,player_info[0][7]),player_info[0][5]))
                     bullets[-1].display()
-                if player_0.player_num == 2 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_RCTRL and player_0.magic >= player_info[1][6]:
+                if player_0.player_num == 2 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_RCTRL and player_0.magic >= player_info[1][6] and (pygame.time.get_ticks()-player_0.attack_time > 250):
                     player_0.magic -= player_info[1][6]
                     bullets.append(bullet(screen_image, player_info[1][8], player_0, player_info[1][4], [player_0.rect.centerx, player_0.rect.centery][:], state_trans(player_0.state,player_info[1][7]),player_info[1][5]))
                     bullets[-1].display()
@@ -599,6 +602,6 @@ if __name__ == '__main__':
     pic = pictures
     screen_image = pygame.display.set_mode((900, 560))
     pygame.display.set_caption('Soul Knight')
-    fight(screen_image, 2, 2, [[100,100,4,10,20,True,3,6,pic.bullet1],[100,100,4,20,30,False,5,3,pic.bullet2]])
+    fight(screen_image, 2, 2, 'Awakening_of_Eyes.mp3', [[100,100,4,10,20,True,3,6,pic.bullet1],[100,100,4,20,30,False,5,3,pic.bullet2]])
 
     #[[0血量, 1魔法值, 2速度, 3伤害, 4溅射范围, 5子弹能否穿墙, 6子弹消耗魔法值, 7子弹速度, 8子弹形象],]
