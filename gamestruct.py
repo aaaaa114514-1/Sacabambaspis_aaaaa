@@ -11,7 +11,7 @@ import gal_custom
 
 
 pygame.init()
-acer = account_admin
+acer = account_admin()
 
 screen_image = pygame.display.set_mode((900,560))
 pygame.display.set_caption('Soul Knight')

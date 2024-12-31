@@ -49,7 +49,7 @@ class npc_dia:
         with open(f'AI_Settings\\{name}_judge.txt', 'r') as file:
             jud_settings = file.read()
         self.jud_setting =  {"role": "system", "content": jud_settings}
-        self.acer = account_admin
+        self.acer = account_admin()
         self.user_resource = self.acer.get_resource(self.username)
         self.likeability = int(self.user_resource[f'likeability_{self.name}'])
 

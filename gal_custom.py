@@ -5,7 +5,7 @@ import os
 import pygetwindow as gw
 from bgmplayer import BgmPlayer
 from ai_iosetter import npc_dia
-
+from kits import Kits
 
 '''
 Inputbox:
@@ -100,13 +100,10 @@ def gal_custom(screen_image:pygame.Surface, username:str, npcname:str):
     npc_0 = npc_dia(npcname, username)
     textbox_0 = Textbox(f'Chat with {npc_0.name}\n'+'-'*140, manager)
 
-
     bgm = BgmPlayer()
     bgm.play('Soul_Soil.mp3',-1)
 
-    def minimize_window():
-        window = gw.getWindowsWithTitle('Soul Knight')[0]
-        window.minimize()
+    kits_0 = Kits(manager, bgm, 1)
 
     clock = pygame.time.Clock()
     pygame.display.flip()
@@ -132,10 +129,8 @@ def gal_custom(screen_image:pygame.Surface, username:str, npcname:str):
 
 
                 if event.key == pygame.K_ESCAPE:
-                    bgm.pause()
-                    minimize_window()
-                    os.startfile('Pictures\K_Boss.pdf')
-            
+                    return 0
+                
             manager.process_events(event)
 
         if inputbox_0.is_pressed():
@@ -149,8 +144,15 @@ def gal_custom(screen_image:pygame.Surface, username:str, npcname:str):
                 textbox_0.append_text(npc_0.name, npc_0.talk(newtext))
                 inputbox_0.set_inputbox(1)
 
+        if kits_0.is_quiting():
+            return 0
+
         inputbox_0.check_empty()
+        kits_0.check_bagging()
+        kits_0.check_voluming()
+        kits_0.check_adjusting_volume()
         manager.update(time_delta)
+        screen_image.fill((0,0,0))
         manager.draw_ui(screen_image)
         pygame.display.flip()
 
