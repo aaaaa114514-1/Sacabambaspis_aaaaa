@@ -8,6 +8,7 @@ from bgmplayer import BgmPlayer
 from load_picture import pictures
 from kits import Kits
 from account_setter import account_admin
+import gal_custom
 
 
 
@@ -410,16 +411,16 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
     player1.goto(2)
     player2 = player(screen_image, walls.wallmap, pic.Knightress, pic.sideplayer2, player_info[1][3], player_info[1][0], player_info[1][1], player_info[1][2])
     player2.goto(2)
-    players = [player1, player2]
+    players:list[player] = [player1, player2]
 
     npc_Alice = npc(screen_image, walls.wallmap, 'Alice',userinfo['likeability_Alice'], pic.Alice,[300,160])
     npc_Alice.goto(2)
     npc_Bob = npc(screen_image, walls.wallmap, 'Bob',userinfo['likeability_Bob'], pic.Bob,[300,300])
     npc_Bob.goto(2)
-    npcs = [npc_Alice, npc_Bob]
+    npcs:list[npc] = [npc_Alice, npc_Bob]
 
 
-    bullets = []
+    bullets:list[bullet] = []
 
     bgm = BgmPlayer()
     bgm.play('Soul_Soil.mp3', -1)
@@ -470,7 +471,6 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
         manager.draw_ui(screen_image)
         pygame.display.flip()
 
-
     flipper()
 
     clock = pygame.time.Clock()
@@ -501,6 +501,11 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
                     minimize_window()
                     os.startfile('Pictures\K_Boss.pdf')
 
+                for player_0 in players:
+                    for npc_0 in npcs:
+                        if (player_0.rect.centerx - npc_0.rect.centerx) ** 2 + (player_0.rect.centery - npc_0.rect.centery) ** 2 <= 2000 and event.key == pygame.K_SPACE:
+                            gal_custom.gal_custom(screen_image, username, npc_0.name)
+
             for player_0 in players:
                 if player_0.player_num == 1 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_q:
                     bullets.append(bullet(screen_image, player_info[0][8], player_0, player_info[0][4], [player_0.rect.centerx, player_0.rect.centery][:], state_trans(player_0.state,player_info[0][7]),player_info[0][5]))
@@ -508,6 +513,8 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
                 if player_0.player_num == 2 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_RCTRL:
                     bullets.append(bullet(screen_image, player_info[1][8], player_0, player_info[1][4], [player_0.rect.centerx, player_0.rect.centery][:], state_trans(player_0.state,player_info[1][7]),player_info[1][5]))
                     bullets[-1].display()
+
+
 
         manager.process_events(event)
 

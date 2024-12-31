@@ -6,6 +6,7 @@ import pygetwindow as gw
 from bgmplayer import BgmPlayer
 from ai_iosetter import npc_dia
 from kits import Kits
+from account_setter import account_admin
 
 '''
 Inputbox:
@@ -95,6 +96,7 @@ def gal_custom(screen_image:pygame.Surface, username:str, npcname:str):
     pygame.init()
     screen_image.fill((0,0,0))
     manager = pygame_gui.UIManager((900, 560))
+    acer = account_admin()
 
     inputbox_0 = Inputbox(screen_image, manager)
     npc_0 = npc_dia(npcname, username)
@@ -112,6 +114,7 @@ def gal_custom(screen_image:pygame.Surface, username:str, npcname:str):
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                acer.clear_empty_dialogues(username)
                 pygame.quit()
                 sys.exit()
 
@@ -129,6 +132,7 @@ def gal_custom(screen_image:pygame.Surface, username:str, npcname:str):
 
 
                 if event.key == pygame.K_ESCAPE:
+                    acer.clear_empty_dialogues(username)
                     return 0
                 
             manager.process_events(event)
@@ -145,6 +149,7 @@ def gal_custom(screen_image:pygame.Surface, username:str, npcname:str):
                 inputbox_0.set_inputbox(1)
 
         if kits_0.is_quiting():
+            acer.clear_empty_dialogues(username)
             return 0
 
         inputbox_0.check_empty()

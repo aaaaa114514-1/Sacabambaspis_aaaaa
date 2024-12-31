@@ -1,7 +1,7 @@
 Soulstone   	100
 has_read   	0
 likeability_Alice   	0
-likeability_Bob   	0
+likeability_Bob   	6
 Speeding_up   	0
 Solid_body   	0
 Magician   	0

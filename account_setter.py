@@ -12,6 +12,13 @@ account_admin:
     clear_all_accounts():                           删除所有用户数据
     remove_account(usename):                        删除指定用户数据
         username(str):                                  用户名
+    create_account(username, password):             创建账户
+        username(str):                                  用户名
+        password(str):                                  密码(未加密)
+    is_empty(path):            -> bool              判断指定txt文件是否只有'Dialogue'
+        path(str):                                      txt文件路径
+    clear_empty_dialogues(username=None)            清除指定用户只有'Dialogue'的txt文件
+        username(str):                                  指定的用户(默认为None, 即所有用户)
 '''
 class account_admin:
     def __init__(self):
@@ -59,6 +66,27 @@ class account_admin:
         f.close()
         os.mkdir(f'Text\\Accounts\\{username}')
         shutil.copy('Text\\account_resource.txt',f'Text\\Accounts\\{username}\\account_resource.txt')
+
+    def is_empty(self, path):
+        with open(path, 'r', encoding="UTF-8") as f:
+            if f.read().strip() == 'Dialogue':
+                return 1
+            else:
+                return 0
+
+    def clear_empty_dialogues(self, username = None):
+        if username == None:
+            for root, dirs, files in os.walk('Text\\Accounts'):
+                for file in files:
+                    if self.is_empty(os.path.join(root, file)):
+                        os.remove(os.path.join(root, file))
+        else:
+            for root, dirs, files in os.walk(f'Text\\Accounts\\{username}'):
+                for file in files:
+                    if self.is_empty(os.path.join(root, file)):
+                        os.remove(os.path.join(root, file))
+
+
 
 if __name__ == '__main__':
     acer0 = account_admin()
