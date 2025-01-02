@@ -563,7 +563,7 @@ def fight(screen_image:pygame.Surface, player_num:int, map_num:int, bgm_str:str,
     bgm = BgmPlayer()
     bgm.play(bgm_str, -1)
 
-    kits_0 = Kits(screen_image, manager, bgm, 2)
+    kits_0 = Kits(screen_image, manager, bgm, 2, ['quit','volume'])
     time_delta = 0
 
     def minimize_window():
@@ -620,7 +620,6 @@ def fight(screen_image:pygame.Surface, player_num:int, map_num:int, bgm_str:str,
         for bullet_0 in bullets:
             bullet_0.move()
             if bullet_0.from_player == player1 or bullet_0.from_player == player2:
-                ############################################################################################
                 result = bullet_0.detect(enemies, camera_0.left_top, map_0)
                 if result == -1:
                     bullets_to_remove.append(bullet_0)
@@ -679,7 +678,6 @@ def fight(screen_image:pygame.Surface, player_num:int, map_num:int, bgm_str:str,
         
         camera_0.move_check(players, [], bullets, walls)
 
-        kits_0.check_bagging()
         kits_0.check_voluming()
         kits_0.check_adjusting_volume()
         flipper()

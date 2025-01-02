@@ -150,7 +150,7 @@ def gal_custom(screen_image:pygame.Surface, username:str, npcname:str, bgm:BgmPl
             return 0
 
         inputbox_0.check_empty()
-        kits_0.check_bagging()
+        kits_0.check_bagging(username)
         kits_0.check_voluming()
         kits_0.check_adjusting_volume()
         manager.update(time_delta)

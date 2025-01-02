@@ -13,6 +13,7 @@ from ai_iosetter import npc_mov
 import threading
 import random
 import fight
+from shopkeeper import shopkeeper
 
 
 '''
@@ -384,7 +385,7 @@ class bullet:
     def display(self):
         if self.is_show:
             self.screen_image.blit(self.image, self.rect)
-            pygame.display.flip()
+            pygame.display.update()
 
     def move(self):
         if pygame.time.get_ticks() - self.last_time >= 10:
@@ -430,6 +431,7 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
     pygame.init()
     manager = pygame_gui.UIManager((900,560))
     acer = account_admin()
+    shopkeeper_0 = shopkeeper()
     userinfo = acer.get_resource(username)
 
     pic = pictures()
@@ -456,7 +458,7 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
     bgm = BgmPlayer()
     bgm.play('Soul_Soil.mp3', -1)
 
-    kits_0 = Kits(screen_image, manager, bgm, 2)
+    kits_0 = Kits(screen_image, manager, bgm, 3, ['bag','volume'])
     time_delta = 0
     status_text = ''
 
@@ -488,6 +490,37 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
             return [-speed,0]
         else:
             return [speed,0]
+        
+    def info_trans(userinfo:dict, player_i:int):
+        potions = []
+        for key in userinfo.keys():
+            if player_i == 1:
+                if key in ['Original_gun', 'Soul_gun', 'Firing_gun', 'Infinite_magic', 'Infinite_firepower']:
+                    if userinfo[key] == -1 or userinfo[key] == -3:
+                        weapon = key
+                else:
+                    if userinfo[key] == 1:
+                        potions.append(key)
+            else:
+                if key in ['Original_gun', 'Soul_gun', 'Firing_gun', 'Infinite_magic', 'Infinite_firepower']:
+                    if userinfo[key] == -2 or userinfo[key] == -3:
+                        weapon = key
+                else:
+                    if userinfo[key] == 1:
+                        potions.append(key)
+
+        #[[0血量, 1魔法值, 2速度, 3伤害, 4溅射范围, 5子弹能否穿墙, 6子弹消耗魔法值, 7子弹速度, 8子弹形象],]
+        info = [100,100,4,shopkeeper_0.pricetable[weapon]['Damage'],shopkeeper_0.pricetable[weapon]['Damage_Range'],shopkeeper_0.pricetable[weapon]['Can_through_walls'],shopkeeper_0.pricetable[weapon]['MP_consumption'],shopkeeper_0.pricetable[weapon]['Bullet_speed'],shopkeeper_0.pricetable[weapon]['Bullet_Image']]
+        if potions == None:
+            return info
+        else:
+            if 'Speeding_up' in potions:
+                info[2] = shopkeeper_0.pricetable['Speeding_up']['Speed']
+            if 'Solid_body' in potions:
+                info[0] = shopkeeper_0.pricetable['Solid_body']['HP']
+            if 'Magician' in potions:
+                info[1] = shopkeeper_0.pricetable['Magician']['MP']
+            return info
 
     def flipper():
         walls.display()
@@ -505,6 +538,9 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
         pygame.display.update()
 
     flipper()
+    translated_info = [info_trans(userinfo,1),info_trans(userinfo,2)]
+    player1.damage_value = translated_info[0][3]
+    player2.damage_value = translated_info[1][3]
 
     clock = pygame.time.Clock()
     thread_check_npc_movement_Alice = threading.Thread(target=npc_Alice.checkmove,args=[[player1.rect.centerx, player1.rect.centery], userinfo['likeability_Alice']])
@@ -551,7 +587,7 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
         
 
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or kits_0.is_quiting():
+            if event.type == pygame.QUIT:
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
@@ -563,14 +599,14 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
                     if 'Chat' in status_text:
                         gal_custom.gal_custom(screen_image, username, chatted_npc, bgm)
                     elif 'Start' in status_text:
-                        fight.fight(screen_image, player_in, 1, 'Awakening_of_Eyes.MP3', [[100,100,4,10,20,True,5,5,pic.bullet1],[100,100,4,10,20,False,5,5,pic.bullet2]])
-#########################################################################################################################################################################################
+                        fight.fight(screen_image, player_in, 1, 'Awakening_of_Eyes.MP3', translated_info)
+#########################################################################################################################################################
             for player_0 in players:
                 if player_0.player_num == 1 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_q and (pygame.time.get_ticks()-player_0.attack_time > 250):
-                    bullets.append(bullet(screen_image, player_info[0][8], player_0, player_info[0][4], [player_0.rect.centerx, player_0.rect.centery][:], state_trans(player_0.state,player_info[0][7]),player_info[0][5]))
+                    bullets.append(bullet(screen_image, translated_info[0][8], player_0, translated_info[0][4], [player_0.rect.centerx, player_0.rect.centery][:], state_trans(player_0.state,translated_info[0][7]),translated_info[0][5]))
                     bullets[-1].display()
                 if player_0.player_num == 2 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_RCTRL and (pygame.time.get_ticks()-player_0.attack_time > 250):
-                    bullets.append(bullet(screen_image, player_info[1][8], player_0, player_info[1][4], [player_0.rect.centerx, player_0.rect.centery][:], state_trans(player_0.state,player_info[1][7]),player_info[1][5]))
+                    bullets.append(bullet(screen_image, translated_info[1][8], player_0, translated_info[1][4], [player_0.rect.centerx, player_0.rect.centery][:], state_trans(player_0.state,translated_info[1][7]),translated_info[1][5]))
                     bullets[-1].display()
         if not thread_check_npc_movement_Alice.is_alive():
             thread_check_npc_movement_Alice = threading.Thread(target=npc_Alice.checkmove,args=[[player1.rect.centerx, player1.rect.centery], userinfo['likeability_Alice']])
@@ -597,7 +633,12 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
         if players[-1].is_alive == 0:
             del players[-1]
         
-        kits_0.check_bagging()
+        if kits_0.check_bagging(username) == 1:
+            userinfo = acer.get_resource(username)
+            translated_info = [info_trans(userinfo,1),info_trans(userinfo,2)]
+            player1.damage_value = translated_info[0][3]
+            player2.damage_value = translated_info[1][3]
+
         kits_0.check_voluming()
         kits_0.check_adjusting_volume()
         flipper()

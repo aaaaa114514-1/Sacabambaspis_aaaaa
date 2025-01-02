@@ -1,7 +1,10 @@
 import pygame
 import pygame_gui
 from bgmplayer import BgmPlayer
-
+from account_setter import account_admin
+from shopkeeper import shopkeeper
+from load_picture import pictures
+import sys
 
 '''
 Kits:
@@ -23,12 +26,16 @@ Kits:
 
 '''
 class Kits:
-    def __init__(self, screen_image:pygame.Surface, manager:pygame_gui.UIManager, bgmplayer:BgmPlayer, mode:int):
+    def __init__(self, screen_image:pygame.Surface, manager:pygame_gui.UIManager, bgmplayer:BgmPlayer, mode:int, onshow:list=['quit','bag','volume']):
         self.screen_image = screen_image
         self.manager = manager
         self.bgmplayer = bgmplayer
         self.mode = mode
+        self.onshow = onshow
         self.font = pygame.font.SysFont('Arial', 15)
+        self.acer = account_admin()
+        self.shopkeeper_0 = shopkeeper()
+        self.pic = pictures()
         if self.mode == 1:
             button_size = 55
             quit_lefttop = (10,10)
@@ -45,10 +52,21 @@ class Kits:
             slide_lefttop = (771,369)
             slide_size = (108,30)
             self.label_lefttop = (767,400)
-        self.quit_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(quit_lefttop,(button_size, button_size)),text='Quit',manager=self.manager)
-        self.bag_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(bag_lefttop,(button_size, button_size)),text='Bag',manager=self.manager)
-        self.volume_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(volume_lefttop, (button_size, button_size)),text='Vol', manager=self.manager)
-        self.volume_slider = pygame_gui.elements.UIHorizontalSlider(relative_rect=pygame.Rect(slide_lefttop, slide_size),start_value=self.bgmplayer.get_volume(),value_range=(0.0, 1.0),manager=self.manager)
+        elif self.mode == 3:
+            button_size = 50
+            quit_lefttop = (771,258)
+            bag_lefttop = (829,258)
+            volume_lefttop = (771,258)
+            slide_lefttop = (771,312)
+            slide_size = (108,30)
+            self.label_lefttop = (767,400)
+        if 'quit' in self.onshow:
+            self.quit_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(quit_lefttop,(button_size, button_size)),text='Quit',manager=self.manager)
+        if 'bag' in self.onshow:
+            self.bag_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(bag_lefttop,(button_size, button_size)),text='Bag',manager=self.manager)
+        if 'volume' in self.onshow:
+            self.volume_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(volume_lefttop, (button_size, button_size)),text='Vol', manager=self.manager)
+            self.volume_slider = pygame_gui.elements.UIHorizontalSlider(relative_rect=pygame.Rect(slide_lefttop, slide_size),start_value=self.bgmplayer.get_volume(),value_range=(0.0, 1.0),manager=self.manager)
         if self.label_lefttop != -1:
             self.label_text = self.font.render('',True,(0,0,0))
         self.volume_slider_visible = False
@@ -57,9 +75,12 @@ class Kits:
     def is_quiting(self):
         return self.quit_button.check_pressed()
     
-    def check_bagging(self):
+    def check_bagging(self,username):
         if self.bag_button.check_pressed():
-            pass
+            self.bag(username)
+            return 1
+        else:
+            return 0
     
     def check_voluming(self):
         if self.volume_button.check_pressed():
@@ -85,5 +106,114 @@ class Kits:
         self.label_text = self.font.render(text,True,(0,0,0))
         self.screen_image.blit(self.label_text, self.label_lefttop)
 
+    def bag(self, username:str):
+        manager = pygame_gui.UIManager((900,560))
+        font = pygame.font.Font(None, 15)
+        userinfo = self.acer.get_resource(username)
+        is_bagging = 1
+        rect_surface = pygame.Surface((900, 560), pygame.SRCALPHA)
+        rect_surface.fill((0, 0, 0, 150))
+        bag_window_b = pygame.Surface((560, 360))
+        bag_window_b.fill((0, 0, 0))
+        bag_window = pygame.Surface((556,338))
+        bag_window.fill((150,150,150))
+        quitbag_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((710,90),(20, 20)),text='X',manager=manager)
+
+        rect_width = 90
+        rect_height = 130
+        default_color = (200, 200, 200)
+        selected_color = (100, 100, 100)
+        weapons = []
+        selected = ['','']
+        bullet_pics = {'Original_gun':self.pic.bullet0_big, 'Soul_gun':self.pic.bullet1_big, 'Firing_gun':self.pic.bullet2_big, 'Infinite_magic':self.pic.bullet3_big, 'Infinite_firepower':self.pic.bullet4_big}
+
+        for i in self.shopkeeper_0.pricetable.keys():
+            if userinfo[i] != 0 and i in ['Original_gun', 'Soul_gun', 'Firing_gun', 'Infinite_magic', 'Infinite_firepower']:
+                weapons.append(i)
+                if userinfo[i] == -3:
+                    selected = [i,i]
+                elif userinfo[i] == -1:
+                    selected[0] = i
+                elif userinfo[i] == -2:
+                    selected[1] = i
+
+        def draw_option(is_selected:bool, rect:pygame.Rect, image:pygame.Surface, text:str):
+            textf = font.render(text, True, (0, 0, 0))
+            text_rect = textf.get_rect(center=(rect.centerx, rect.bottom-10))
+            image_rect = image.get_rect(center=(rect.centerx, rect.bottom-70))
+            if is_selected:
+                pygame.draw.rect(bag_window, selected_color, rect)
+            else:
+                pygame.draw.rect(bag_window, default_color, rect)
+            bag_window.blit(image, image_rect)
+            bag_window.blit(textf, text_rect)
+
+        def exit_bag():
+            for weapon in userinfo.keys():
+                if weapon in ['Original_gun', 'Soul_gun', 'Firing_gun', 'Infinite_magic', 'Infinite_firepower'] and userinfo[weapon] != 0:
+                    if selected[0] == weapon:
+                        userinfo[weapon] = -1
+                        if selected[1] == weapon:
+                            userinfo[weapon] = -3
+                    elif selected[1] == weapon:
+                        userinfo[weapon] = -2
+                    else:
+                        userinfo[weapon] = 1
+            self.acer.update_resource(username, userinfo)
+        
+        rects = [[],[]]
+        for i in range(len(weapons)):
+            rects[0].append(pygame.Rect(80+i*95, 10, rect_width, rect_height))
+            rects[1].append(pygame.Rect(80+i*95, 160, rect_width, rect_height))
+        
+
+        clock = pygame.time.Clock()
+        while is_bagging:
+            time_delta = clock.tick(50) / 1000.0
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    exit_bag()
+                    pygame.quit()
+                    sys.exit()
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = pygame.mouse.get_pos()
+                    if not pygame.rect.Rect(170,90,560,360).collidepoint(mouse_pos):
+                        exit_bag()
+                        return 1
+                    mouse_pos = (mouse_pos[0]-172,mouse_pos[1]-110)
+                    for layer in range(2):
+                        for i, rect in enumerate(rects[layer]):
+                            if rect.collidepoint(mouse_pos):
+                                selected[layer] = weapons[i]
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_a:
+                        selected[0] = weapons[(weapons.index(selected[0])- 1) % len(rects[0])]
+                    elif event.key == pygame.K_d:
+                        selected[0] = weapons[(weapons.index(selected[0]) + 1) % len(rects[0])]
+                    if event.key == pygame.K_LEFT:
+                        selected[1] = weapons[(weapons.index(selected[1])- 1) % len(rects[1])]
+                    elif event.key == pygame.K_RIGHT:
+                        selected[1] = weapons[(weapons.index(selected[1]) + 1) % len(rects[1])]
+                
+                manager.process_events(event)
+            
+            self.screen_image.blit(bag_window_b, (170, 90))
+            self.screen_image.blit(bag_window, (172,110))
+            bag_window.blit(self.pic.Knight[1][0],(20,50))
+            bag_window.blit(self.pic.Knightress[1][0],(20,200))
+            for layer in range(2):
+                for i in range(len(rects[layer])):
+                    draw_option(weapons[i]==selected[layer], rects[layer][i], bullet_pics[weapons[i]], weapons[i])
+
+            manager.update(time_delta)
+            manager.draw_ui(self.screen_image)
+
+            pygame.display.flip()
+
+            if quitbag_button.check_pressed():
+                exit_bag()
+                return 1
 
 

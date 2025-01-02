@@ -38,6 +38,17 @@ class pictures:
     bullet4 = pygame.image.load('Pictures\Bullets\Bullet4.png')
     bullet4 = pygame.transform.scale(bullet4, (20, 20))
 
+    bullet0_big = pygame.image.load('Pictures\Bullets\Bullet0.png')
+    bullet0_big = pygame.transform.scale(bullet0_big, (40, 40))
+    bullet1_big = pygame.image.load('Pictures\Bullets\Bullet1.png')
+    bullet1_big = pygame.transform.scale(bullet1_big, (40, 40))
+    bullet2_big = pygame.image.load('Pictures\Bullets\Bullet2.png')
+    bullet2_big = pygame.transform.scale(bullet2_big, (60, 60))
+    bullet3_big = pygame.image.load('Pictures\Bullets\Bullet3.png')
+    bullet3_big = pygame.transform.scale(bullet3_big, (40, 40))
+    bullet4_big = pygame.image.load('Pictures\Bullets\Bullet4.png')
+    bullet4_big = pygame.transform.scale(bullet4_big, (80, 80))
+
     textbox = pygame.image.load('Pictures\\textbox.png')
     textbox = pygame.transform.scale(textbox, (750, 130))
     sidebox = pygame.image.load('Pictures\sidebox.png')
