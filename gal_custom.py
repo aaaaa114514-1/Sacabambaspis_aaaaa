@@ -102,7 +102,7 @@ def gal_custom(screen_image:pygame.Surface, username:str, npcname:str, bgm:BgmPl
     npc_0 = npc_dia(npcname, username)
     textbox_0 = Textbox(f'Chat with {npc_0.name}\n'+'-'*140, manager)
 
-    kits_0 = Kits(manager, bgm, 1)
+    kits_0 = Kits(screen_image, manager, bgm, 1)
 
     clock = pygame.time.Clock()
     pygame.display.flip()
@@ -163,4 +163,5 @@ if __name__ == '__main__':
     screen_image = pygame.display.set_mode((900, 560))
     pygame.display.set_caption('Soul Knight')
     bgm = BgmPlayer()
+    bgm.play('Soul_Soil.mp3',-1)
     gal_custom(screen_image,'aaaaa','Bob', bgm)

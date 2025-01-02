@@ -162,7 +162,6 @@ class npc_mov:
             messages = self.cli_messages,
         )
         cli_reply = response.choices[0].message.content.lower()
-        print(f'{self.name}: {cli_reply}')
         if 'approach' in cli_reply:
             return 1
         elif 'off' in cli_reply and 'stay' in cli_reply:

@@ -12,7 +12,7 @@ from kits import Kits
 '''
 camara:
     edges([int,int,int,int]):   镜头移动判定边界位置(上/下/左/右)
-    left_top([int,int]):        镜头左上角在地图上的坐标
+    left_top([int,int]):        地图左上角在当前镜头的坐标
 
     can_move(player, walls, direction):   -> [int,int,int,int]              判定是否能够移动, 返回值为0的元素表示不可[上/下/左/右]移动镜头, 为1则可以移动镜头; 若返回[2,2,2,2]则是地图到达边界
         player([player, ...]):                                                  所有玩家
@@ -180,6 +180,85 @@ class wall_bgp:
         self.screen_image.blit(self.walled_bgp, self.bgp_rect.topleft)
 
 
+'''
+bullet:
+    screen_image(Surface)               窗口
+    image(Surface)                      子弹形象
+    is_show(bool)                       是否显示    0-隐藏 1-显示
+    from_player(<player> or <enemy>)    伤害来源:   0-来源于非玩家(或玩家的治疗)
+    damage(int)                         伤害:       +为伤害 -为治疗
+    damage_range(float)                 伤害半径
+    speed([float, float])               速度:       x_speed(右) y_speed(下)
+    last_time(int)                      子弹上次移动毫秒值
+    rect(Rect)                          子弹矩形对象
+    can_through_wall(bool)              子弹是否能够穿墙:   0-不能穿墙 1-穿墙
+
+    display():                                          绘制子弹(如状态为显示)
+    move():                                             向固定方向移动并绘制
+    hit(target):                                        消除并造成伤害
+        target(<player> or <enemy> or 0)                    目标
+    is_hit_wall(camera_left_top, wallmap):  -> bool     判断是否撞到边界 或 墙(可穿墙的不判定): 0-未撞到 1-撞到
+        camera_left_top([int,int]):                         镜头左上角坐标
+        wallmap([[int]]):                                   地图
+    detect(targets, camera_left_top, wallmap): -> int   检查是否撞到列表内的目标或边界 或 墙(可穿墙的不判定): -1 - 撞到并删除该子弹 0 - 未撞到
+        targets([<player> or <enemy>]):                     子弹需要判定的目标
+        camera_left_top([int,int]):                         镜头左上角坐标
+        wallmap([[int]]):                                   地图
+'''
+class bullet:
+    def __init__(self, screenin:pygame.Surface, imagein:pygame.Surface, from_player, damage_range:float, b_location:list, speed:list, can_through_wall:bool=False):
+        self.screen_image = screenin
+        self.image = imagein
+        self.is_show = 1
+        self.damage = from_player.damage_value
+        if self.damage >= 0:
+            self.from_player = from_player
+        else:
+            self.from_player = 0
+        self.damage_range = damage_range
+        self.speed = speed
+        self.last_time = pygame.time.get_ticks()
+        self.rect = self.image.get_rect(center=b_location) 
+        self.can_through_wall = can_through_wall
+
+    def display(self):
+        if self.is_show:
+            self.screen_image.blit(self.image, self.rect)
+            pygame.display.flip()
+
+    def move(self):
+        if pygame.time.get_ticks() - self.last_time >= 10:
+            self.last_time = pygame.time.get_ticks()
+            self.rect.x += self.speed[0]
+            self.rect.y += self.speed[1]
+            self.display()
+
+    def hit(self, target):
+        if target != 0:
+            target.damage(self.damage)
+        self.is_show = 0
+
+    def is_hit_wall(self, camera_left_top:list, wallmap:list):
+        if self.rect.left < 0 or self.rect.top < 0 or self.rect.right > 750 or self.rect.bottom > 560:
+            return True
+        if not self.can_through_wall:
+            try:
+                if wallmap[(self.rect.centery - camera_left_top[1]) // 50][(self.rect.centerx - camera_left_top[0]) // 50] != 0:
+                    return True
+            except IndexError:
+                return False
+
+    def detect(self, targets:list, camera_left_top:list, wallmap:list):
+        if self.is_hit_wall(camera_left_top, wallmap):
+            self.hit(0)
+            return -1
+        else:
+            for target in targets:
+                if (target.rect.centerx - self.rect.centerx) ** 2 + (target.rect.centery - self.rect.centery) ** 2 <= self.damage_range ** 2:
+                    self.hit(target)
+                    return -1
+            return 0
+
 
 
 '''
@@ -213,8 +292,8 @@ player:
         direction(int)                  朝向:   1-up 2-down 3-left 4-right
     hp_set(new_hp):                 设置血量(有上下限校验)
         new_hp(int)                     新的血量
-    damage(damage):                 结算受到的伤害
-        damage(int)                     受到的伤害值(有上下限校验)
+    damage(damage_v):                 结算受到的伤害
+        damage_v(int)                     受到的伤害值(有上下限校验)
     is_dying():                     检验是否死亡
 '''
 
@@ -306,23 +385,23 @@ class player:
                 self.rect.x -= self.speed
             elif direction == 4 and self.rect.right <= 749 and self.can_goto(4,camera_left_top):  
                 self.rect.x += self.speed
-            if pygame.time.get_ticks() - self.pace_time >= 25:
-                self.pace_time = pygame.time.get_ticks()
-                if self.image_num >= len(self.images[self.state - 1]) - 1:
-                    self.image_num = 0
-                else:
-                    self.image_num += 1
+        if pygame.time.get_ticks() - self.pace_time >= 25:
+            self.pace_time = pygame.time.get_ticks()
+            if self.image_num >= len(self.images[self.state - 1]) - 1:
+                self.image_num = 0
+            else:
+                self.image_num += 1
 
 
     def hp_set(self, new_hp):
         if new_hp >= 0 and new_hp <= self.full_hp:
             self.hp = new_hp
 
-    def damage(self, damage):
-        if damage >= self.hp:
+    def damage(self, damage_v):
+        if damage_v >= self.hp:
             self.hp = 0
         else:
-            self.hp -= damage
+            self.hp -= damage_v
             if self.hp > self.full_hp:
                 self.hp = self.full_hp
         self.is_dying()
@@ -362,95 +441,89 @@ enemy:
 '''
 
 class enemy:
-    def __init__(self, screen_image:pygame.Surface, image:pygame.Surface):
+    def __init__(self, type:int, screen_image:pygame.Surface, images:list[list[pygame.Surface]], hp:int, damage_value:int, motion:list, speed:float):
         self.screen_image = screen_image
-        self.image = image
-        
-
-
-
-
-
-
-
-'''
-bullet:
-    screen_image(Surface)       窗口
-    image(Surface)              子弹形象
-    is_show(bool)               是否显示    0-隐藏 1-显示
-    from_player(player)         伤害来源:   0-来源于非玩家(或玩家的治疗) player1-来源于玩家1 player2-来源于玩家2
-    damage(int)                 伤害:       +为伤害 -为治疗
-    damage_range(float)         伤害半径
-    speed([float, float])       速度:       x_speed(右) y_speed(下)
-    last_time(int)              子弹上次移动毫秒值
-    rect(Rect)                  子弹矩形对象
-    can_through_wall(bool)      子弹是否能够穿墙:   0-不能穿墙 1-穿墙
-
-    display():                                          绘制子弹(如状态为显示)
-    move():                                             向固定方向移动并绘制
-    hit(target):                                        消除并造成伤害
-        target(<player> or <enemy> or 0)                    目标
-    is_hit_wall(camera_left_top, wallmap):  -> bool     判断是否撞到边界 或 墙(可穿墙的不判定): 0-未撞到 1-撞到
-        camera_left_top([int,int]):                         镜头左上角坐标
-        wallmap([[int]]):                                   地图
-    detect(targets, camera_left_top, wallmap): -> int   检查是否撞到列表内的目标或边界 或 墙(可穿墙的不判定): -1 - 撞到并删除该子弹 0 - 未撞到
-        targets([<player> or <enemy>]):                     子弹需要判定的目标
-        camera_left_top([int,int]):                         镜头左上角坐标
-        wallmap([[int]]):                                   地图
-'''
-class bullet:
-    def __init__(self, screenin:pygame.Surface, imagein:pygame.Surface, from_player:player, damage_range:float, b_location:list, speed:list, can_through_wall:bool=False):
-        self.screen_image = screenin
-        self.image = imagein
-        self.is_show = 1
-        self.damage = from_player.damage_value
-        if self.damage >= 0:
-            self.from_player = from_player
-        else:
-            self.from_player = 0
-        self.damage_range = damage_range
+        self.type = id
+        self.images = images
+        self.image_num = 0
+        self.state = 2
+        self.rect = self.images[0][0].get_rect(center=motion[0])
+        self.full_hp = hp
+        self.hp = hp
+        self.damage_value = damage_value
+        self.motion = motion
+        self.motion_i = 0
         self.speed = speed
         self.last_time = pygame.time.get_ticks()
-        self.rect = self.image.get_rect(center=b_location) 
-        self.can_through_wall = can_through_wall
+        self.pace_time = pygame.time.get_ticks()
+        self.attack_time = pygame.time.get_ticks()
+        self.is_alive = 1
 
-    def display(self):
-        if self.is_show:
-            self.screen_image.blit(self.image, self.rect)
-            pygame.display.flip()
+    def vect(self, loca_0:list, loca_1:list,speed:float=1):
+        dx = loca_1[0] - loca_0[0]
+        dy = loca_1[1] - loca_0[1]
+        d = (dx**2+dy**2)**0.5
+        if d != 0:
+            return [dx/d*speed, dy/d*speed]
+        else:
+            return [0,0]
+    
+    def set_state(self, posi_0:int, posi_1:int):
+        vect_0 = self.vect(posi_0,posi_1)
+        if vect_0[0]+vect_0[1]>0:
+            if vect_0[0]>vect_0[1]:
+                self.state = 4
+            else:
+                self.state = 1
+        else:
+            if vect_0[0]>vect_0[1]:
+                self.state = 2
+            else:
+                self.state = 3
 
-    def move(self):
+    def move(self, camera_lefttop:list):
         if pygame.time.get_ticks() - self.last_time >= 10:
             self.last_time = pygame.time.get_ticks()
-            self.rect.x += self.speed[0]
-            self.rect.y += self.speed[1]
-            self.display()
+            if (self.rect.centerx - camera_lefttop[0] - self.motion[self.motion_i][0])**2 + (self.rect.centery - camera_lefttop[1] - self.motion[self.motion_i][1])**2 <= self.speed ** 2:
+                self.rect.center = [(self.motion[self.motion_i][0]+camera_lefttop[0]),(self.motion[self.motion_i][1]+camera_lefttop[1])]
+                if self.motion_i == len(self.motion)-1:
+                    self.motion_i = 0
+                    self.set_state(self.motion[len(self.motion)-1],self.motion[0])
+                else:
+                    self.motion_i += 1
+                    self.set_state(self.motion[self.motion_i-1],self.motion[self.motion_i])
+            else:
+                movement = self.vect([self.rect.centerx-camera_lefttop[0],self.rect.centery-camera_lefttop[1]], self.motion[self.motion_i],self.speed)
+                self.rect.centerx += movement[0]
+                self.rect.centery += movement[1]
+        if pygame.time.get_ticks() - self.pace_time >= 30:
+            self.pace_time = pygame.time.get_ticks()
+            if self.image_num >= len(self.images[self.state - 1]) - 1:
+                self.image_num = 0
+            else:
+                self.image_num += 1
+        self.display()
 
-    def hit(self, target):
-        if target != 0:
-            target.damage(self.damage)
-        self.is_show = 0
+    def display(self):
+        pygame.draw.rect(self.screen_image,(50,50,50),(self.rect.left, self.rect.bottom+1, self.rect.width, 6))
+        pygame.draw.rect(self.screen_image,(255,0,0),(self.rect.left, self.rect.bottom+2, (self.hp/self.full_hp)*self.rect.width, 4))
+        self.screen_image.blit(self.images[self.state-1][self.image_num],self.rect)
 
-    def is_hit_wall(self, camera_left_top:list, wallmap:list):
-        if self.rect.left < 0 or self.rect.top < 0 or self.rect.right > 750 or self.rect.bottom > 560:
-            return True
-        if not self.can_through_wall:
-            try:
-                if wallmap[(self.rect.centery - camera_left_top[1]) // 50][(self.rect.centerx - camera_left_top[0]) // 50] != 0:
-                    return True
-            except IndexError:
-                return False
-
-    def detect(self, targets:list, camera_left_top:list, wallmap:list):
-        if self.is_hit_wall(camera_left_top, wallmap):
-            self.hit(0)
-            return -1
+    def damage(self, damage_v:int):
+        if damage_v >= self.hp:
+            self.hp = 0
         else:
-            for target in targets:
-                if (target.rect.centerx - self.rect.centerx) ** 2 + (target.rect.centery - self.rect.centery) ** 2 <= self.damage_range ** 2:
-                    self.hit(target)
-                    return -1
-            return 0
+            self.hp -= damage_v
+            if self.hp > self.full_hp:
+                self.hp = self.full_hp
+        self.is_dying()
+
+    def is_dying(self):
+        if self.hp == 0:
+            self.is_alive = 0
+
+
+
 
 '''
 fight(screen_image, player_num, map_num, player_info):              战斗场景
@@ -479,6 +552,10 @@ def fight(screen_image:pygame.Surface, player_num:int, map_num:int, bgm_str:str,
     else:
         players = [player1]
 
+    enemy1 = enemy(1,screen_image,pic.Bird,100,10,[[400,400],[500,500],[300,500]],5)
+    enemy2 = enemy(1,screen_image,pic.Bird,100,10,[[400,200],[200,500],[400,600]],4)
+    enemies = [enemy1,enemy2]
+
     bullets:list[bullet] = []
 
     camera_0 = camera([0,0])
@@ -486,7 +563,7 @@ def fight(screen_image:pygame.Surface, player_num:int, map_num:int, bgm_str:str,
     bgm = BgmPlayer()
     bgm.play(bgm_str, -1)
 
-    kits_0 = Kits(manager, bgm, 2)
+    kits_0 = Kits(screen_image, manager, bgm, 2)
     time_delta = 0
 
     def minimize_window():
@@ -526,6 +603,9 @@ def fight(screen_image:pygame.Surface, player_num:int, map_num:int, bgm_str:str,
                 player_0.display()
         for bullet_0 in bullets:
             bullet_0.move()
+        for enemy_0 in enemies:
+            if enemy_0.is_alive == 1:
+                enemy_0.move(camera_0.left_top)
         manager.update(time_delta)
         manager.draw_ui(screen_image)
         pygame.display.flip()
@@ -541,7 +621,7 @@ def fight(screen_image:pygame.Surface, player_num:int, map_num:int, bgm_str:str,
             bullet_0.move()
             if bullet_0.from_player == player1 or bullet_0.from_player == player2:
                 ############################################################################################
-                result = bullet_0.detect([], camera_0.left_top, map_0)
+                result = bullet_0.detect(enemies, camera_0.left_top, map_0)
                 if result == -1:
                     bullets_to_remove.append(bullet_0)
             else:
@@ -585,10 +665,17 @@ def fight(screen_image:pygame.Surface, player_num:int, map_num:int, bgm_str:str,
                 playercheck(player1, pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d)
             elif player_0.player_num == 2:
                 playercheck(player2, pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT)
-        if players[0].is_alive == 0:
+        if len(players) > 0 and players[0].is_alive == 0:
             del players[0]
-        if players[-1].is_alive == 0:
-            del players[-1]
+        if len(players) > 1 and players[1].is_alive == 0:
+            del players[1]
+
+        for enemy_0 in enemies:
+            if enemy_0.is_alive == 0:
+                enemies.remove(enemy_0)
+
+        if kits_0.is_quiting() or players == []:
+            return 0
         
         camera_0.move_check(players, [], bullets, walls)
 
@@ -602,6 +689,6 @@ if __name__ == '__main__':
     pic = pictures
     screen_image = pygame.display.set_mode((900, 560))
     pygame.display.set_caption('Soul Knight')
-    fight(screen_image, 2, 2, 'Awakening_of_Eyes.mp3', [[100,100,4,10,20,True,3,6,pic.bullet1],[100,100,4,20,30,False,5,3,pic.bullet2]])
+    fight(screen_image, 2, 2, 'Awakening_of_Eyes.MP3', [[100,100,4,10,20,True,3,6,pic.bullet1],[100,100,4,20,30,False,5,3,pic.bullet2]])
 
     #[[0血量, 1魔法值, 2速度, 3伤害, 4溅射范围, 5子弹能否穿墙, 6子弹消耗魔法值, 7子弹速度, 8子弹形象],]

@@ -12,6 +12,7 @@ import gal_custom
 from ai_iosetter import npc_mov
 import threading
 import random
+import fight
 
 
 '''
@@ -192,12 +193,12 @@ class player:
                 self.rect.x -= self.speed
             elif direction == 4 and self.rect.right <= 749 and self.can_goto(4):  
                 self.rect.x += self.speed
-            if pygame.time.get_ticks() - self.pace_time >= 25:
-                self.pace_time = pygame.time.get_ticks()
-                if self.image_num >= len(self.images[self.state - 1]) - 1:
-                    self.image_num = 0
-                else:
-                    self.image_num += 1
+        if pygame.time.get_ticks() - self.pace_time >= 25:
+            self.pace_time = pygame.time.get_ticks()
+            if self.image_num >= len(self.images[self.state - 1]) - 1:
+                self.image_num = 0
+            else:
+                self.image_num += 1
 
 
     def hp_set(self, new_hp):
@@ -305,12 +306,12 @@ class npc:
                 self.rect.x -= self.speed
             elif direction == 4 and self.rect.right <= 749 and self.can_goto(4):  
                 self.rect.x += self.speed
-            if pygame.time.get_ticks() - self.pace_time >= 25:
-                self.pace_time = pygame.time.get_ticks()
-                if self.image_num >= len(self.images[self.state - 1]) - 1:
-                    self.image_num = 0
-                else:
-                    self.image_num += 1
+        if pygame.time.get_ticks() - self.pace_time >= 25:
+            self.pace_time = pygame.time.get_ticks()
+            if self.image_num >= len(self.images[self.state - 1]) - 1:
+                self.image_num = 0
+            else:
+                self.image_num += 1
 
     def checkmove(self, user_location:list, likeability:int):
         self.likeability = likeability
@@ -455,8 +456,9 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
     bgm = BgmPlayer()
     bgm.play('Soul_Soil.mp3', -1)
 
-    kits_0 = Kits(manager, bgm, 2)
+    kits_0 = Kits(screen_image, manager, bgm, 2)
     time_delta = 0
+    status_text = ''
 
     def minimize_window():
         window = gw.getWindowsWithTitle('Soul Knight')[0]
@@ -497,6 +499,7 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
         for player_0 in players:
             if player_0.is_alive == 1:
                 player_0.display()
+        kits_0.set_label(status_text)
         manager.update(time_delta)
         manager.draw_ui(screen_image)
         pygame.display.update()
@@ -524,7 +527,29 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
             if bullet_0 in bullets:
                 bullets.remove(bullet_0)
 
-                
+        chatted_npc = ''
+        for npc_0 in npcs:
+            for player_0 in players:
+                if (player_0.rect.centerx - npc_0.rect.centerx) ** 2 + (player_0.rect.centery - npc_0.rect.centery) ** 2 <= 2000:
+                    chatted_npc = npc_0.name
+                    status_text = f'Space: Chat with {chatted_npc}'
+                    break
+            if chatted_npc != '':
+                break
+        else:
+            if 'Chat' in status_text:
+                status_text = ''
+
+        player_in = 0
+        for player_0 in players:
+            if player_0.rect.centerx >= 610 and player_0.rect.centerx <= 700 and player_0.rect.centery >= 400 and player_0.rect.centery <= 570:
+                player_in += 1
+        if player_in != 0:
+            status_text = f'Space: Start with {player_in}!'
+        elif 'Start' in status_text:
+            status_text = ''
+        
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT or kits_0.is_quiting():
                 sys.exit()
@@ -534,12 +559,12 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
                     minimize_window()
                     os.startfile('Pictures\K_Boss.pdf')
 
-                for npc_0 in npcs:
-                    for player_0 in players:
-                        if (player_0.rect.centerx - npc_0.rect.centerx) ** 2 + (player_0.rect.centery - npc_0.rect.centery) ** 2 <= 2000 and event.key == pygame.K_SPACE:
-                            gal_custom.gal_custom(screen_image, username, npc_0.name, bgm)
-                            break
-
+                if event.key == pygame.K_SPACE:
+                    if 'Chat' in status_text:
+                        gal_custom.gal_custom(screen_image, username, chatted_npc, bgm)
+                    elif 'Start' in status_text:
+                        fight.fight(screen_image, player_in, 1, 'Awakening_of_Eyes.MP3', [[100,100,4,10,20,True,5,5,pic.bullet1],[100,100,4,10,20,False,5,5,pic.bullet2]])
+#########################################################################################################################################################################################
             for player_0 in players:
                 if player_0.player_num == 1 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_q and (pygame.time.get_ticks()-player_0.attack_time > 250):
                     bullets.append(bullet(screen_image, player_info[0][8], player_0, player_info[0][4], [player_0.rect.centerx, player_0.rect.centery][:], state_trans(player_0.state,player_info[0][7]),player_info[0][5]))

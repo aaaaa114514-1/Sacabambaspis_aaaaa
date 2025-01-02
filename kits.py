@@ -23,10 +23,12 @@ Kits:
 
 '''
 class Kits:
-    def __init__(self, manager:pygame_gui.UIManager, bgmplayer:BgmPlayer, mode:int):
+    def __init__(self, screen_image:pygame.Surface, manager:pygame_gui.UIManager, bgmplayer:BgmPlayer, mode:int):
+        self.screen_image = screen_image
         self.manager = manager
         self.bgmplayer = bgmplayer
         self.mode = mode
+        self.font = pygame.font.SysFont('Arial', 15)
         if self.mode == 1:
             button_size = 55
             quit_lefttop = (10,10)
@@ -34,6 +36,7 @@ class Kits:
             volume_lefttop = (10,130)
             slide_lefttop = (66,143)
             slide_size = (100,29)
+            self.label_lefttop = -1
         elif self.mode == 2:
             button_size = 50
             quit_lefttop = (771,258)
@@ -41,10 +44,13 @@ class Kits:
             volume_lefttop = (771,315)
             slide_lefttop = (771,369)
             slide_size = (108,30)
+            self.label_lefttop = (767,400)
         self.quit_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(quit_lefttop,(button_size, button_size)),text='Quit',manager=self.manager)
         self.bag_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(bag_lefttop,(button_size, button_size)),text='Bag',manager=self.manager)
         self.volume_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(volume_lefttop, (button_size, button_size)),text='Vol', manager=self.manager)
         self.volume_slider = pygame_gui.elements.UIHorizontalSlider(relative_rect=pygame.Rect(slide_lefttop, slide_size),start_value=self.bgmplayer.get_volume(),value_range=(0.0, 1.0),manager=self.manager)
+        if self.label_lefttop != -1:
+            self.label_text = self.font.render('',True,(0,0,0))
         self.volume_slider_visible = False
         self.volume_slider.hide()
 
@@ -75,6 +81,9 @@ class Kits:
             volume = self.volume_slider.get_current_value()
             self.bgmplayer.set_volume(volume)
 
+    def set_label(self, text:str):
+        self.label_text = self.font.render(text,True,(0,0,0))
+        self.screen_image.blit(self.label_text, self.label_lefttop)
 
 
 

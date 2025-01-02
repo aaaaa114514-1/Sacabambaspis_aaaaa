@@ -25,6 +25,7 @@ class pictures:
     Knightress = load_images('Knightress', 4, (33,47))
     Bird = load_images('Bird', 4, (64,60))
     Boss = load_images('Boss', 4, (96,96))
+    TestEnemy = load_images('TestEnemy', 4,(64,60))
 
     bullet0 = pygame.image.load('Pictures\Bullets\Bullet0.png')
     bullet0 = pygame.transform.scale(bullet0, (10, 10))
