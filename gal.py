@@ -150,11 +150,12 @@ class history:
         pygame.display.flip()
 
 
-
-
-
-
-
+'''
+gal(screen_image, username, chapter_path):      剧情鉴赏模式
+    screen_image(Surface):                          屏幕图像
+    username(str):                                  用户名
+    chapter_path(str):                              章节路径(默认值'Text\\Chapter0.txt')
+'''
 def gal(screen_image:pygame.Surface, username:str, chapter_path:str = 'Text\\Chapter0.txt'):
     pygame.init()
 

@@ -7,6 +7,8 @@ import os
 from bgmplayer import BgmPlayer
 from load_picture import pictures
 from kits import Kits
+import random
+import json
 
 
 '''
@@ -235,7 +237,8 @@ class bullet:
 
     def hit(self, target):
         if target != 0:
-            target.damage(self.damage)
+            if target.damage(self.damage) == 0:
+                self.from_player.magic_add(30)
         self.is_show = 0
 
     def is_hit_wall(self, camera_left_top:list, wallmap:list):
@@ -392,6 +395,11 @@ class player:
             else:
                 self.image_num += 1
 
+    def magic_add(self, add_magic):
+        if self.magic + add_magic > self.full_magic:
+            self.magic = self.full_magic
+        else:
+            self.magic += add_magic
 
     def hp_set(self, new_hp):
         if new_hp >= 0 and new_hp <= self.full_hp:
@@ -405,6 +413,7 @@ class player:
             if self.hp > self.full_hp:
                 self.hp = self.full_hp
         self.is_dying()
+        return 1
 
     def is_dying(self):
         if self.hp == 0:
@@ -441,9 +450,9 @@ enemy:
 '''
 
 class enemy:
-    def __init__(self, type:int, screen_image:pygame.Surface, images:list[list[pygame.Surface]], hp:int, damage_value:int, motion:list, speed:float):
+    def __init__(self, type_in:int, screen_image:pygame.Surface, images:list[list[pygame.Surface]], hp:int, damage_value:int, damage_range:float, bullet_speed:int, bullet_image:pygame.Surface, bullet_ctw:bool, motion:list, speed:float):
         self.screen_image = screen_image
-        self.type = id
+        self.type = type_in
         self.images = images
         self.image_num = 0
         self.state = 2
@@ -451,6 +460,10 @@ class enemy:
         self.full_hp = hp
         self.hp = hp
         self.damage_value = damage_value
+        self.damage_range = damage_range
+        self.bullet_speed = bullet_speed
+        self.bullet_image = bullet_image
+        self.bullet_ctw = bullet_ctw
         self.motion = motion
         self.motion_i = 0
         self.speed = speed
@@ -504,6 +517,11 @@ class enemy:
                 self.image_num += 1
         self.display()
 
+    def attack(self, target_player_loca:list):
+        if pygame.time.get_ticks() - self.attack_time > 2000:
+            self.attack_time = pygame.time.get_ticks()
+            return bullet(self.screen_image, self.bullet_image, self, self.damage_range, self.rect.center, self.vect(self.rect.center, target_player_loca, self.bullet_speed), self.bullet_ctw)
+
     def display(self):
         pygame.draw.rect(self.screen_image,(50,50,50),(self.rect.left, self.rect.bottom+1, self.rect.width, 6))
         pygame.draw.rect(self.screen_image,(255,0,0),(self.rect.left, self.rect.bottom+2, (self.hp/self.full_hp)*self.rect.width, 4))
@@ -516,52 +534,60 @@ class enemy:
             self.hp -= damage_v
             if self.hp > self.full_hp:
                 self.hp = self.full_hp
-        self.is_dying()
+        return self.is_dying()
 
     def is_dying(self):
         if self.hp == 0:
             self.is_alive = 0
-
-
+            return 0
+        else:
+            return 1
 
 
 '''
-fight(screen_image, player_num, map_num, player_info):              战斗场景
-    screen_image(Surface):                                              窗口
-    player_num(int):                                                    玩家数(1或2)
-    map_num(int):                                                       使用的地图编号
-    bgm_str(str):                                                           背景音乐名
-    player_info([[int,int,int,int,float,bool,int,int,Surface],]):       玩家信息:   [[血量, 魔法值, 速度, 伤害, 溅射范围, 子弹能否穿墙, 子弹消耗魔法值, 子弹速度, 子弹形象],]
+fight(screen_image, player_num_list, level_num, player_info):     -> bool   战斗场景
+    screen_image(Surface):                                                      窗口
+    player_num_list(list):                                                      玩家, 如[1,2],[1]或[2]
+    level_num(int):                                                             关卡编号
+    player_info([[int,int,int,int,float,bool,int,int,Surface],]):               玩家信息:   [[血量, 魔法值, 速度, 伤害, 溅射范围, 子弹能否穿墙, 子弹消耗魔法值, 子弹速度, 子弹形象],]
 '''
-def fight(screen_image:pygame.Surface, player_num:int, map_num:int, bgm_str:str, player_info:list):
+def fight(screen_image:pygame.Surface, player_num_list:list, level_num:int, player_info:list):
     pygame.init()
     manager = pygame_gui.UIManager((900,560))
+    with open(f'Levels\Level{level_num}.txt', 'r') as file:
+        file_content = file.read()
+    level_data = json.loads(file_content)
 
     pic = pictures()
     map_0 = []
-    with open(f'Maps\\map{map_num}.txt','r') as f:
+    with open(f'Maps\\map{level_data['map']}.txt','r') as f:
         for line in f:
             map_0.append(list(map(int,line.strip())))
     walls = wall_bgp(screen_image, pic.big_grass, pic.wall_images, map_0)
-    player1 = player(screen_image, walls.wallmap, pic.Knight, pic.sideplayer1, player_info[0][3], player_info[0][0], player_info[0][1], player_info[0][2])
-    player1.goto(2)
-    if player_num == 2:
+    players:list[player] = []
+    if 1 in player_num_list:
+        player1 = player(screen_image, walls.wallmap, pic.Knight, pic.sideplayer1, player_info[0][3], player_info[0][0], player_info[0][1], player_info[0][2])
+        player1.player_num = 1
+        player1.goto(2)
+        players.append(player1)
+    if 2 in player_num_list:
         player2 = player(screen_image, walls.wallmap, pic.Knightress, pic.sideplayer2, player_info[1][3], player_info[1][0], player_info[1][1], player_info[1][2])
+        player2.player_num = 2
         player2.goto(2)
-        players = [player1, player2]
-    else:
-        players = [player1]
+        players.append(player2)
 
-    enemy1 = enemy(1,screen_image,pic.Bird,100,10,[[400,400],[500,500],[300,500]],5)
-    enemy2 = enemy(1,screen_image,pic.Bird,100,10,[[400,200],[200,500],[400,600]],4)
-    enemies = [enemy1,enemy2]
+    enemies:list[enemy] = []
+    enemy_pics = [pic.Bird, pic.Boss]
+    bullet_pics = [pic.bullet0, pic.bullet1, pic.bullet2, pic.bullet3, pic.bullet4]
+    for enemy_data in level_data['enemies']:
+        enemies.append(enemy(enemy_data['type'],screen_image,enemy_pics[enemy_data['type']],enemy_data['hp'],enemy_data['damage'],enemy_data['damage_range'],enemy_data['bullet_speed'],bullet_pics[enemy_data['bullet_image']],False,enemy_data['motion'],enemy_data['speed']))
 
     bullets:list[bullet] = []
 
     camera_0 = camera([0,0])
 
     bgm = BgmPlayer()
-    bgm.play(bgm_str, -1)
+    bgm.play(level_data['bgm'], -1)
 
     kits_0 = Kits(screen_image, manager, bgm, 2, ['quit','volume'])
     time_delta = 0
@@ -619,7 +645,7 @@ def fight(screen_image:pygame.Surface, player_num:int, map_num:int, bgm_str:str,
         bullets_to_remove = []
         for bullet_0 in bullets:
             bullet_0.move()
-            if bullet_0.from_player == player1 or bullet_0.from_player == player2:
+            if bullet_0.from_player in players:
                 result = bullet_0.detect(enemies, camera_0.left_top, map_0)
                 if result == -1:
                     bullets_to_remove.append(bullet_0)
@@ -664,14 +690,20 @@ def fight(screen_image:pygame.Surface, player_num:int, map_num:int, bgm_str:str,
                 playercheck(player1, pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d)
             elif player_0.player_num == 2:
                 playercheck(player2, pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT)
+        if len(players) > 1 and players[1].is_alive == 0:
+            del players[0]
         if len(players) > 0 and players[0].is_alive == 0:
             del players[0]
-        if len(players) > 1 and players[1].is_alive == 0:
-            del players[1]
+        if len(players) == 0:
+            return 0
 
         for enemy_0 in enemies:
             if enemy_0.is_alive == 0:
                 enemies.remove(enemy_0)
+            player_0 = random.choice(players)
+            bullet_to_add = enemy_0.attack(player_0.rect.center)
+            if bullet_to_add != None:
+                bullets.append(bullet_to_add)
 
         if kits_0.is_quiting() or players == []:
             return 0
@@ -687,6 +719,6 @@ if __name__ == '__main__':
     pic = pictures
     screen_image = pygame.display.set_mode((900, 560))
     pygame.display.set_caption('Soul Knight')
-    fight(screen_image, 2, 2, 'Awakening_of_Eyes.MP3', [[100,100,4,10,20,True,3,6,pic.bullet1],[100,100,4,20,30,False,5,3,pic.bullet2]])
+    fight(screen_image, [1,2], 1, [[100,100,4,10,20,True,3,6,pic.bullet1],[100,100,4,20,30,False,5,3,pic.bullet2]])
 
     #[[0血量, 1魔法值, 2速度, 3伤害, 4溅射范围, 5子弹能否穿墙, 6子弹消耗魔法值, 7子弹速度, 8子弹形象],]

@@ -10,12 +10,14 @@ import sys
 Kits:
     manager(UIManager):                     pygame_gui的manager
     bgmplayer(BgmPlayer):                   播放器
-    mode(int):                              显示状态: 1-左上角竖排(gal_custom) 2-右下角矩形排列(menu, fight)
+    mode(int):                              显示状态: 1-左上角竖排(gal_custom) 2-右下角矩形排列(fight) 3-右下角矩形排列(menu)
     quit_button(UIButton):                  退出界面按钮
     bag_button(UIButton):                   打开背包按钮
     volume_button(UIButton):                调整音量按钮
     volume_slider(UIHorizontalSlider):      调整音量拖条
     volume_slider_visible(bool):            音量拖条是否正在显示
+    screen_image(pygame.Surface):           屏幕图像
+    onshow(list):                           显示的按钮列表
 
     is_quiting():       -> bool             返回退出按钮是否按下
     check_bagging():                        检查并打开背包
@@ -48,8 +50,8 @@ class Kits:
             button_size = 50
             quit_lefttop = (771,258)
             bag_lefttop = (829,258)
-            volume_lefttop = (771,315)
-            slide_lefttop = (771,369)
+            volume_lefttop = (829,258)
+            slide_lefttop = (771,315)
             slide_size = (108,30)
             self.label_lefttop = (767,400)
         elif self.mode == 3:
@@ -188,6 +190,9 @@ class Kits:
                                 selected[layer] = weapons[i]
 
                 if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN or event.key == pygame.K_ESCAPE:
+                        exit_bag()
+                        return 1
                     if event.key == pygame.K_a:
                         selected[0] = weapons[(weapons.index(selected[0])- 1) % len(rects[0])]
                     elif event.key == pygame.K_d:

@@ -5,7 +5,10 @@ import hashlib
 import os
 import shutil
 
-
+'''
+login(screen_image):        登录界面
+    screen_image(Surface):      屏幕图像
+'''
 def login(screen_image:pygame.Surface):
     """
     hash_data(data):   -> str       使用SHA-256算法对输入数据进行哈希加密

@@ -3,6 +3,10 @@ import sys
 import time
 from load_picture import pictures
 
+'''
+opening(screen_image):                  开场动画
+    screen_image(Surface):                  屏幕图像
+'''
 def opening(screen_image:pygame.Surface):
     pygame.init()
     pic = pictures()

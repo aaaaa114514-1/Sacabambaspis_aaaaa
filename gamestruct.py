@@ -3,11 +3,11 @@ import sys
 from account_setter import account_admin
 from load_picture import pictures
 import time
+from bgmplayer import BgmPlayer
 import opening
 import login
 import gal
 import menu
-import gal_custom
 
 
 
@@ -17,6 +17,8 @@ pic = pictures
 
 screen_image = pygame.display.set_mode((900,560))
 pygame.display.set_caption('Soul Knight')
+bgm = BgmPlayer()
+bgm.play('Soul_Soil.mp3', -1)
 
 opening.opening(screen_image)
 
@@ -28,12 +30,10 @@ if user_resource['has_read'] == 0:
     user_resource['has_read'] = 1
     acer.update_resource(username, user_resource)
 
-menu.menu(screen_image, username, [[100,100,4,10,20,0,5,5,pic.bullet0],[100,100,4,10,20,0,5,5,pic.bullet0]])
+menu.menu(screen_image, username)
 
 
 clock = pygame.time.Clock()
-
-
 while True:
     clock.tick(60)
     for event in pygame.event.get():

@@ -421,18 +421,50 @@ class bullet:
             return 0
 
 '''
-menu(screen_image, player_num, map_num, player_info):               目录界面
-    screen_image(Surface):                                              窗口
-    username(str):                                                      玩家名
-    player_info([[int,int,int,int,float,bool,int,int,Surface],]):       玩家初始信息:   [[血量, 魔法值, 速度, 伤害, 溅射范围, 子弹能否穿墙, 子弹消耗魔法值, 子弹速度, 子弹形象],]
+menu(screen_image, username(str)):              目录界面
+    screen_image(Surface):                      窗口
+    username(str):                              玩家名
 '''
 
-def menu(screen_image:pygame.Surface, username:str, player_info:list):
+def menu(screen_image:pygame.Surface, username:str):
     pygame.init()
     manager = pygame_gui.UIManager((900,560))
     acer = account_admin()
     shopkeeper_0 = shopkeeper()
     userinfo = acer.get_resource(username)
+
+    def info_trans(userinfo:dict, player_i:int):
+        potions = []
+        for key in userinfo.keys():
+            if player_i == 1:
+                if key in ['Original_gun', 'Soul_gun', 'Firing_gun', 'Infinite_magic', 'Infinite_firepower']:
+                    if userinfo[key] == -1 or userinfo[key] == -3:
+                        weapon = key
+                else:
+                    if userinfo[key] == 1:
+                        potions.append(key)
+            else:
+                if key in ['Original_gun', 'Soul_gun', 'Firing_gun', 'Infinite_magic', 'Infinite_firepower']:
+                    if userinfo[key] == -2 or userinfo[key] == -3:
+                        weapon = key
+                else:
+                    if userinfo[key] == 1:
+                        potions.append(key)
+
+        #[[0血量, 1魔法值, 2速度, 3伤害, 4溅射范围, 5子弹能否穿墙, 6子弹消耗魔法值, 7子弹速度, 8子弹形象],]
+        info = [100,100,4,shopkeeper_0.pricetable[weapon]['Damage'],shopkeeper_0.pricetable[weapon]['Damage_Range'],shopkeeper_0.pricetable[weapon]['Can_through_walls'],shopkeeper_0.pricetable[weapon]['MP_consumption'],shopkeeper_0.pricetable[weapon]['Bullet_speed'],shopkeeper_0.pricetable[weapon]['Bullet_Image']]
+        if potions == None:
+            return info
+        else:
+            if 'Speeding_up' in potions:
+                info[2] = shopkeeper_0.pricetable['Speeding_up']['Speed']
+            if 'Solid_body' in potions:
+                info[0] = shopkeeper_0.pricetable['Solid_body']['HP']
+            if 'Magician' in potions:
+                info[1] = shopkeeper_0.pricetable['Magician']['MP']
+            return info
+        
+    translated_info =  [info_trans(userinfo,1),info_trans(userinfo,2)]
 
     pic = pictures()
     map_0 = []
@@ -440,9 +472,9 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
         for line in f:
             map_0.append(list(map(int,line.strip())))
     walls = wall_bgp(screen_image, pic.village, pic.wall_images, map_0)
-    player1 = player(screen_image, walls.wallmap, pic.Knight, pic.sideplayer1, player_info[0][3], player_info[0][0], player_info[0][1], player_info[0][2])
+    player1 = player(screen_image, walls.wallmap, pic.Knight, pic.sideplayer1, translated_info[0][3], translated_info[0][0], translated_info[0][1], translated_info[0][2])
     player1.goto(2)
-    player2 = player(screen_image, walls.wallmap, pic.Knightress, pic.sideplayer2, player_info[1][3], player_info[1][0], player_info[1][1], player_info[1][2])
+    player2 = player(screen_image, walls.wallmap, pic.Knightress, pic.sideplayer2, translated_info[1][3], translated_info[1][0], translated_info[1][1], translated_info[1][2])
     player2.goto(2)
     players:list[player] = [player1, player2]
 
@@ -491,36 +523,6 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
         else:
             return [speed,0]
         
-    def info_trans(userinfo:dict, player_i:int):
-        potions = []
-        for key in userinfo.keys():
-            if player_i == 1:
-                if key in ['Original_gun', 'Soul_gun', 'Firing_gun', 'Infinite_magic', 'Infinite_firepower']:
-                    if userinfo[key] == -1 or userinfo[key] == -3:
-                        weapon = key
-                else:
-                    if userinfo[key] == 1:
-                        potions.append(key)
-            else:
-                if key in ['Original_gun', 'Soul_gun', 'Firing_gun', 'Infinite_magic', 'Infinite_firepower']:
-                    if userinfo[key] == -2 or userinfo[key] == -3:
-                        weapon = key
-                else:
-                    if userinfo[key] == 1:
-                        potions.append(key)
-
-        #[[0血量, 1魔法值, 2速度, 3伤害, 4溅射范围, 5子弹能否穿墙, 6子弹消耗魔法值, 7子弹速度, 8子弹形象],]
-        info = [100,100,4,shopkeeper_0.pricetable[weapon]['Damage'],shopkeeper_0.pricetable[weapon]['Damage_Range'],shopkeeper_0.pricetable[weapon]['Can_through_walls'],shopkeeper_0.pricetable[weapon]['MP_consumption'],shopkeeper_0.pricetable[weapon]['Bullet_speed'],shopkeeper_0.pricetable[weapon]['Bullet_Image']]
-        if potions == None:
-            return info
-        else:
-            if 'Speeding_up' in potions:
-                info[2] = shopkeeper_0.pricetable['Speeding_up']['Speed']
-            if 'Solid_body' in potions:
-                info[0] = shopkeeper_0.pricetable['Solid_body']['HP']
-            if 'Magician' in potions:
-                info[1] = shopkeeper_0.pricetable['Magician']['MP']
-            return info
 
     def flipper():
         walls.display()
@@ -576,12 +578,12 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
             if 'Chat' in status_text:
                 status_text = ''
 
-        player_in = 0
+        player_in = []
         for player_0 in players:
             if player_0.rect.centerx >= 610 and player_0.rect.centerx <= 700 and player_0.rect.centery >= 400 and player_0.rect.centery <= 570:
-                player_in += 1
-        if player_in != 0:
-            status_text = f'Space: Start with {player_in}!'
+                player_in.append(player_0.player_num)
+        if player_in != []:
+            status_text = f'Space: Start with {len(player_in)}!'
         elif 'Start' in status_text:
             status_text = ''
         
@@ -599,7 +601,7 @@ def menu(screen_image:pygame.Surface, username:str, player_info:list):
                     if 'Chat' in status_text:
                         gal_custom.gal_custom(screen_image, username, chatted_npc, bgm)
                     elif 'Start' in status_text:
-                        fight.fight(screen_image, player_in, 1, 'Awakening_of_Eyes.MP3', translated_info)
+                        fight.fight(screen_image, player_in, 1, translated_info)
 #########################################################################################################################################################
             for player_0 in players:
                 if player_0.player_num == 1 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_q and (pygame.time.get_ticks()-player_0.attack_time > 250):
@@ -648,7 +650,7 @@ if __name__ == '__main__':
     pic = pictures
     screen_image = pygame.display.set_mode((900, 560))
     pygame.display.set_caption('Soul Knight')
-    menu(screen_image, 'aaaaa', [[100,100,4,10,20,True,5,5,pic.bullet1],[100,100,4,10,20,False,5,5,pic.bullet2]])
+    menu(screen_image, 'aaaaa')
     
     #[[0血量, 1魔法值, 2速度, 3伤害, 4溅射范围, 5子弹能否穿墙, 6子弹消耗魔法值, 7子弹速度, 8子弹形象],]
 

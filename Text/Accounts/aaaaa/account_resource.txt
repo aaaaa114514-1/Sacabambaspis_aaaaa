@@ -1,5 +1,5 @@
 Soulstone   	100
-has_read   	0
+has_read   	1
 likeability_Alice   	0
 likeability_Bob   	0
 Original_gun   	1
@@ -8,5 +8,5 @@ Solid_body   	1
 Magician   	1
 Soul_gun   	1
 Firing_gun   	1
-Infinite_magic   	-2
-Infinite_firepower   	-1
+Infinite_magic   	-1
+Infinite_firepower   	-2

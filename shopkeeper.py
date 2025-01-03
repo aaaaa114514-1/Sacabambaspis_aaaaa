@@ -1,6 +1,10 @@
 from load_picture import pictures
 
-
+'''
+shopkeeper:
+    pic(pictures):                          图片加载器
+    pricetable(dict):                       价目表
+'''
 class shopkeeper:
     def __init__(self):
         self.pic = pictures()

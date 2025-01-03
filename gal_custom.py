@@ -91,7 +91,13 @@ class Textbox:
         except: pass
 
 
-
+'''
+gal_custom(screen_image, username, npcname, bgm):       实时对话模式
+    screen_image(Surface):                                  屏幕图像
+    username(str):                                          用户名
+    npcname(str):                                           npc名字
+    bgm(<BgmPlayer>):                                       bgmplayer
+'''
 def gal_custom(screen_image:pygame.Surface, username:str, npcname:str, bgm:BgmPlayer):
     pygame.init()
     screen_image.fill((0,0,0))
