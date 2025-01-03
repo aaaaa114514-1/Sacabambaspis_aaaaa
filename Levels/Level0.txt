@@ -1,0 +1,19 @@
+{
+    "map": 1,
+    "bgm": "Accident_Occurred.MP3",
+    "portal": [425,325],
+    "enemies": [
+        {
+            "hp": 10,
+            "type":0,
+            "damage": 10,
+            "damage_range": 20,
+            "bullet_speed": 4,
+            "bullet_image": 0,
+            "bullet_ctw": 0,
+            "motion": [[600, 500]],
+            "speed": 3,
+            "attack_dt": 2000
+        }
+    ]
+}

@@ -1,6 +1,7 @@
 {
-    "map": 2,
-    "bgm": "Awakening_of_Eyes.MP3",
+    "map": 1,
+    "bgm": "Accident_Occurred.MP3",
+    "portal": [425,325],
     "enemies": [
         {
             "hp": 50,
@@ -10,8 +11,21 @@
             "bullet_speed": 4,
             "bullet_image": 0,
             "bullet_ctw": 0,
-            "motion": [[400, 400], [400, 600], [600, 600], [600, 400]],
-            "speed": 3
+            "motion": [[475, 375], [475, 475], [375, 475], [375, 275], [575, 275], [575, 475], [475, 475]],
+            "speed": 3,
+            "attack_dt": 2000
+        },
+        {
+            "hp": 50,
+            "type":0,
+            "damage": 20,
+            "damage_range": 20,
+            "bullet_speed": 3,
+            "bullet_image": 2,
+            "bullet_ctw": 0,
+            "motion": [[475, 375], [475, 475]],
+            "speed": 3,
+            "attack_dt": 3000
         },
         {
             "hp": 50,
@@ -21,8 +35,21 @@
             "bullet_speed": 4,
             "bullet_image": 0,
             "bullet_ctw": 0,
-            "motion": [[500, 200], [300, 600], [400, 700], [100, 200]],
-            "speed": 3
+            "motion": [[475, 375], [475, 475], [575, 475], [575, 275], [375, 275], [375, 475], [475, 475]],
+            "speed": 3,
+            "attack_dt": 2000
+        },
+        {
+            "hp": 50,
+            "type":0,
+            "damage": 10,
+            "damage_range": 20,
+            "bullet_speed": 4,
+            "bullet_image": 0,
+            "bullet_ctw": 0,
+            "motion": [[600, 500]],
+            "speed": 3,
+            "attack_dt": 2000
         }
     ]
 }

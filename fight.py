@@ -140,12 +140,15 @@ wall_bgp:
     wall_images([Surface]): 墙体图片列表
     wall_map([[]]):         地图(0-地面 >0-墙体)
 
-    build_map():                    将墙体按照地图绘制在walled_bgp上
-    can_move(direction): -> bool    判定移动后图片是否出界
-        direction([int,int]):           移动方向向量
-    move(direction):                移动背景图和所有墙体(带边缘判定)
-        direction([int,int]):           移动方向向量
-    display():                      将walled_bgp绘制在屏幕上
+    show_portal(portal_pic, portal_location):       显示传送门
+        portal_pic(Surface):                            传送门图片
+        portal_location([int,int]):                     传送门位置
+    build_map():                                    将墙体按照地图绘制在walled_bgp上
+    can_move(direction): -> bool                    判定移动后图片是否出界
+        direction([int,int]):                           移动方向向量
+    move(direction):                                移动背景图和所有墙体(带边缘判定)
+        direction([int,int]):                           移动方向向量
+    display():                                      将walled_bgp绘制在屏幕上
 '''
 class wall_bgp:
     def __init__(self, screen_image:pygame.Surface, bgp:pygame.Surface, wall_images:list[pygame.Surface], wallmap:list=None):
@@ -158,6 +161,9 @@ class wall_bgp:
         self.wall_images = wall_images
         self.walled_bgp = self.bgp.copy()
         self.build_map()
+
+    def show_portal(self, portal_pic:pygame.Surface, portal_location:list):
+        self.walled_bgp.blit(portal_pic, portal_location)
         
     def build_map(self):
         for i in range(len(self.wallmap)):
@@ -226,14 +232,12 @@ class bullet:
     def display(self):
         if self.is_show:
             self.screen_image.blit(self.image, self.rect)
-            pygame.display.flip()
 
     def move(self):
         if pygame.time.get_ticks() - self.last_time >= 10:
             self.last_time = pygame.time.get_ticks()
             self.rect.x += self.speed[0]
             self.rect.y += self.speed[1]
-            self.display()
 
     def hit(self, target):
         if target != 0:
@@ -335,13 +339,13 @@ class player:
     def can_goto(self, direction:int, camera_left_top:list):
         new_rect = self.rect.copy()
         if direction == 1:
-            new_rect.y -= 3
+            new_rect.y -= self.speed
         elif direction == 2:
-            new_rect.y += 3
+            new_rect.y += self.speed
         elif direction == 3:
-            new_rect.x -= 3
+            new_rect.x -= self.speed
         elif direction == 4:
-            new_rect.x += 3
+            new_rect.x += self.speed
 
         top_left = (new_rect.left, new_rect.top)
         top_right = (new_rect.right, new_rect.top)
@@ -434,6 +438,12 @@ enemy:
     rect(Rect)              玩家矩形对象
     wallmap([[]])           地图
     is_alive(bool)          存活状态: 1-alive 0-dead
+    motion([[int,int],...]) 移动路径
+    motion_i(int)           当前移动路径索引
+    speed(float)            移动速度
+    pace_time(int)          玩家上次更新帧的毫秒值
+    attack_time(int)        玩家上次攻击毫秒值
+    attack_dt(int)          攻击间隔毫秒值
 
     goto(direction, destination):   前往固定地点,设置确定朝向(无检验)
         direction(int)                  朝向:   1-up 2-down 3-left 4-right
@@ -450,7 +460,7 @@ enemy:
 '''
 
 class enemy:
-    def __init__(self, type_in:int, screen_image:pygame.Surface, images:list[list[pygame.Surface]], hp:int, damage_value:int, damage_range:float, bullet_speed:int, bullet_image:pygame.Surface, bullet_ctw:bool, motion:list, speed:float):
+    def __init__(self, type_in:int, screen_image:pygame.Surface, images:list[list[pygame.Surface]], hp:int, damage_value:int, damage_range:float, bullet_speed:int, bullet_image:pygame.Surface, bullet_ctw:bool, motion:list, speed:float, attack_dt:int):
         self.screen_image = screen_image
         self.type = type_in
         self.images = images
@@ -471,6 +481,7 @@ class enemy:
         self.pace_time = pygame.time.get_ticks()
         self.attack_time = pygame.time.get_ticks()
         self.is_alive = 1
+        self.attack_dt = attack_dt
 
     def vect(self, loca_0:list, loca_1:list,speed:float=1):
         dx = loca_1[0] - loca_0[0]
@@ -487,10 +498,10 @@ class enemy:
             if vect_0[0]>vect_0[1]:
                 self.state = 4
             else:
-                self.state = 1
+                self.state = 2
         else:
             if vect_0[0]>vect_0[1]:
-                self.state = 2
+                self.state = 1
             else:
                 self.state = 3
 
@@ -515,17 +526,17 @@ class enemy:
                 self.image_num = 0
             else:
                 self.image_num += 1
-        self.display()
 
     def attack(self, target_player_loca:list):
-        if pygame.time.get_ticks() - self.attack_time > 2000:
+        if pygame.time.get_ticks() - self.attack_time > self.attack_dt:
             self.attack_time = pygame.time.get_ticks()
             return bullet(self.screen_image, self.bullet_image, self, self.damage_range, self.rect.center, self.vect(self.rect.center, target_player_loca, self.bullet_speed), self.bullet_ctw)
 
     def display(self):
-        pygame.draw.rect(self.screen_image,(50,50,50),(self.rect.left, self.rect.bottom+1, self.rect.width, 6))
-        pygame.draw.rect(self.screen_image,(255,0,0),(self.rect.left, self.rect.bottom+2, (self.hp/self.full_hp)*self.rect.width, 4))
-        self.screen_image.blit(self.images[self.state-1][self.image_num],self.rect)
+        if self.rect.right > 0 and self.rect.left < 750 and self.rect.bottom > 0 and self.rect.top < 560:
+            pygame.draw.rect(self.screen_image,(50,50,50),(self.rect.left, self.rect.bottom+1, self.rect.width, 6))
+            pygame.draw.rect(self.screen_image,(255,0,0),(self.rect.left, self.rect.bottom+2, (self.hp/self.full_hp)*self.rect.width, 4))
+            self.screen_image.blit(self.images[self.state-1][self.image_num],self.rect)
 
     def damage(self, damage_v:int):
         if damage_v >= self.hp:
@@ -580,7 +591,7 @@ def fight(screen_image:pygame.Surface, player_num_list:list, level_num:int, play
     enemy_pics = [pic.Bird, pic.Boss]
     bullet_pics = [pic.bullet0, pic.bullet1, pic.bullet2, pic.bullet3, pic.bullet4]
     for enemy_data in level_data['enemies']:
-        enemies.append(enemy(enemy_data['type'],screen_image,enemy_pics[enemy_data['type']],enemy_data['hp'],enemy_data['damage'],enemy_data['damage_range'],enemy_data['bullet_speed'],bullet_pics[enemy_data['bullet_image']],False,enemy_data['motion'],enemy_data['speed']))
+        enemies.append(enemy(enemy_data['type'],screen_image,enemy_pics[enemy_data['type']],enemy_data['hp'],enemy_data['damage'],enemy_data['damage_range'],enemy_data['bullet_speed'],bullet_pics[enemy_data['bullet_image']],enemy_data['bullet_ctw'],enemy_data['motion'],enemy_data['speed'],enemy_data['attack_dt']))
 
     bullets:list[bullet] = []
 
@@ -591,6 +602,8 @@ def fight(screen_image:pygame.Surface, player_num_list:list, level_num:int, play
 
     kits_0 = Kits(screen_image, manager, bgm, 2, ['quit','volume'])
     time_delta = 0
+    winning = 0
+    status_text = ''
 
     def minimize_window():
         window = gw.getWindowsWithTitle('Soul Knight')[0]
@@ -600,16 +613,12 @@ def fight(screen_image:pygame.Surface, player_num_list:list, level_num:int, play
         if a_player.is_alive == 1:
             if keypressed[K_up] and not keypressed[K_down]:
                 a_player.move(1,camera_0.left_top)
-                flipper()
             elif keypressed[K_down] and not keypressed[K_up]:
                 a_player.move(2,camera_0.left_top)
-                flipper()
             elif keypressed[K_left] and not keypressed[K_right]:
                 a_player.move(3,camera_0.left_top)
-                flipper()
             elif keypressed[K_right] and not keypressed[K_left]:
                 a_player.move(4,camera_0.left_top)
-                flipper()
 
     def state_trans(state,speed):
         if state == 1:
@@ -623,15 +632,16 @@ def fight(screen_image:pygame.Surface, player_num_list:list, level_num:int, play
 
     def flipper():
         walls.display()
+        for bullet_0 in bullets:
+            bullet_0.display()
+        for enemy_0 in enemies:
+            if enemy_0.is_alive == 1:
+                enemy_0.display()
         screen_image.blit(pic.sidebox, (750, 0))
         for player_0 in players:
             if player_0.is_alive == 1:
                 player_0.display()
-        for bullet_0 in bullets:
-            bullet_0.move()
-        for enemy_0 in enemies:
-            if enemy_0.is_alive == 1:
-                enemy_0.move(camera_0.left_top)
+        kits_0.set_label(status_text)
         manager.update(time_delta)
         manager.draw_ui(screen_image)
         pygame.display.flip()
@@ -666,6 +676,8 @@ def fight(screen_image:pygame.Surface, player_num_list:list, level_num:int, play
                     bgm.pause()
                     minimize_window()
                     os.startfile('Pictures\K_Boss.pdf')
+                if winning == 2 and event.key == pygame.K_SPACE:
+                    return 1
 
             for player_0 in players:
                 if player_0.player_num == 1 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_q and player_0.magic >= player_info[0][6] and (pygame.time.get_ticks()-player_0.attack_time > 250):
@@ -691,7 +703,7 @@ def fight(screen_image:pygame.Surface, player_num_list:list, level_num:int, play
             elif player_0.player_num == 2:
                 playercheck(player2, pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT)
         if len(players) > 1 and players[1].is_alive == 0:
-            del players[0]
+            del players[1]
         if len(players) > 0 and players[0].is_alive == 0:
             del players[0]
         if len(players) == 0:
@@ -700,25 +712,42 @@ def fight(screen_image:pygame.Surface, player_num_list:list, level_num:int, play
         for enemy_0 in enemies:
             if enemy_0.is_alive == 0:
                 enemies.remove(enemy_0)
+            else:
+                enemy_0.move(camera_0.left_top)
             player_0 = random.choice(players)
-            bullet_to_add = enemy_0.attack(player_0.rect.center)
+            bullet_to_add = enemy_0.attack(player_0.rect.bottomright)
             if bullet_to_add != None:
                 bullets.append(bullet_to_add)
+
+        if enemies == [] and winning == 0:
+            winning = 1
+            walls.show_portal(pic.portal, level_data['portal'])
 
         if kits_0.is_quiting() or players == []:
             return 0
         
-        camera_0.move_check(players, [], bullets, walls)
+        camera_0.move_check(players, enemies, bullets, walls)
 
         kits_0.check_voluming()
         kits_0.check_adjusting_volume()
+        if winning:
+            for player_0 in players:
+                if player_0.rect.centerx-camera_0.left_top[0] > level_data['portal'][0]+100 or player_0.rect.centerx-camera_0.left_top[0] < level_data['portal'][0] or player_0.rect.centery-camera_0.left_top[1] > level_data['portal'][1]+100 or player_0.rect.centery-camera_0.left_top[1] < level_data['portal'][1]-25:
+                    status_text = 'Go to portal and win!'
+                    winning = 1
+                    break
+            else:
+                status_text = 'Space: win!'
+                winning = 2
+            manager.process_events(event)
         flipper()
+
 
 
 if __name__ == '__main__':
     pic = pictures
     screen_image = pygame.display.set_mode((900, 560))
     pygame.display.set_caption('Soul Knight')
-    fight(screen_image, [1,2], 1, [[100,100,4,10,20,True,3,6,pic.bullet1],[100,100,4,20,30,False,5,3,pic.bullet2]])
+    fight(screen_image, [1], 0, [[100,100,4,10,20,True,3,6,pic.bullet1],[500,100,4,20,30,False,5,3,pic.bullet2]])
 
     #[[0血量, 1魔法值, 2速度, 3伤害, 4溅射范围, 5子弹能否穿墙, 6子弹消耗魔法值, 7子弹速度, 8子弹形象],]

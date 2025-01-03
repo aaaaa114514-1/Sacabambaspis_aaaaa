@@ -1,4 +1,4 @@
-Soulstone   	100
+Soulstone   	110
 has_read   	1
 likeability_Alice   	0
 likeability_Bob   	0

@@ -141,13 +141,13 @@ class player:
     def can_goto(self, direction:int):
         new_rect = self.rect.copy()
         if direction == 1:
-            new_rect.y -= 3
+            new_rect.y -= self.speed
         elif direction == 2:
-            new_rect.y += 3
+            new_rect.y += self.speed
         elif direction == 3:
-            new_rect.x -= 3
+            new_rect.x -= self.speed
         elif direction == 4:
-            new_rect.x += 3
+            new_rect.x += self.speed
 
         top_left = (new_rect.left, new_rect.top)
         top_right = (new_rect.right, new_rect.top)
@@ -266,13 +266,13 @@ class npc:
     def can_goto(self, direction:int):
         new_rect = self.rect.copy()
         if direction == 1:
-            new_rect.y -= 3
+            new_rect.y -= self.speed
         elif direction == 2:
-            new_rect.y += 3
+            new_rect.y += self.speed
         elif direction == 3:
-            new_rect.x -= 3
+            new_rect.x -= self.speed
         elif direction == 4:
-            new_rect.x += 3
+            new_rect.x += self.speed
 
         top_left = (new_rect.left, new_rect.top)
         top_right = (new_rect.right, new_rect.top)
@@ -392,7 +392,6 @@ class bullet:
             self.last_time = pygame.time.get_ticks()
             self.rect.x += self.speed[0]
             self.rect.y += self.speed[1]
-            self.display()
 
     def hit(self, target):
         if target != 0:
@@ -424,9 +423,10 @@ class bullet:
 menu(screen_image, username(str)):              目录界面
     screen_image(Surface):                      窗口
     username(str):                              玩家名
+    bgm(BgmPlayer):                             背景音乐播放器
 '''
 
-def menu(screen_image:pygame.Surface, username:str):
+def menu(screen_image:pygame.Surface, username:str, bgm:BgmPlayer):
     pygame.init()
     manager = pygame_gui.UIManager((900,560))
     acer = account_admin()
@@ -487,9 +487,6 @@ def menu(screen_image:pygame.Surface, username:str):
 
     bullets:list[bullet] = []
 
-    bgm = BgmPlayer()
-    bgm.play('Soul_Soil.mp3', -1)
-
     kits_0 = Kits(screen_image, manager, bgm, 3, ['bag','volume'])
     time_delta = 0
     status_text = ''
@@ -502,16 +499,12 @@ def menu(screen_image:pygame.Surface, username:str):
         if a_player.is_alive == 1:
             if keypressed[K_up] and not keypressed[K_down]:
                 a_player.move(1)
-                flipper()
             elif keypressed[K_down] and not keypressed[K_up]:
                 a_player.move(2)
-                flipper()
             elif keypressed[K_left] and not keypressed[K_right]:
                 a_player.move(3)
-                flipper()
             elif keypressed[K_right] and not keypressed[K_left]:
                 a_player.move(4)
-                flipper()
 
     def state_trans(state,speed):
         if state == 1:
@@ -530,7 +523,7 @@ def menu(screen_image:pygame.Surface, username:str):
         for npc_0 in npcs:
             npc_0.display()
         for bullet_0 in bullets:
-            bullet_0.move()
+            bullet_0.display()
         for player_0 in players:
             if player_0.is_alive == 1:
                 player_0.display()
@@ -601,7 +594,16 @@ def menu(screen_image:pygame.Surface, username:str):
                     if 'Chat' in status_text:
                         gal_custom.gal_custom(screen_image, username, chatted_npc, bgm)
                     elif 'Start' in status_text:
-                        fight.fight(screen_image, player_in, 1, translated_info)
+                        result = fight.fight(screen_image, player_in, 1, translated_info)
+                        if result == 1:
+                            acer.update_resource(username, userinfo)
+                            result = fight.fight(screen_image, player_in, 2, translated_info)
+                            if result == 1:
+                                userinfo['Soulstone'] += 20
+                            else:
+                                userinfo['Soulstone'] += 10
+                            acer.update_resource(username, userinfo)
+                        bgm.play('Soul_Soil.mp3', -1)
 #########################################################################################################################################################
             for player_0 in players:
                 if player_0.player_num == 1 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_q and (pygame.time.get_ticks()-player_0.attack_time > 250):
@@ -650,7 +652,9 @@ if __name__ == '__main__':
     pic = pictures
     screen_image = pygame.display.set_mode((900, 560))
     pygame.display.set_caption('Soul Knight')
-    menu(screen_image, 'aaaaa')
+    bgm = BgmPlayer()
+    bgm.play('Soul_Soil.mp3', -1)
+    menu(screen_image, 'aaaaa', bgm)
     
     #[[0血量, 1魔法值, 2速度, 3伤害, 4溅射范围, 5子弹能否穿墙, 6子弹消耗魔法值, 7子弹速度, 8子弹形象],]
 
