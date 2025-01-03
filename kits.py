@@ -18,22 +18,38 @@ Kits:
     volume_slider_visible(bool):            音量拖条是否正在显示
     screen_image(pygame.Surface):           屏幕图像
     onshow(list):                           显示的按钮列表
+    font(Font):                             字体
+    acer(account_admin):                    账户管理器
+    shopkeeper_0(shopkeeper):               商店管理器
+    pic(pictures):                          图片加载器
+    label_lefttop(tuple):                   标签位置
+    Soulstone_b_lefttop(tuple):             灵魂石标签位置
+    Soulstone_lefttop(tuple):               灵魂石数字位置
 
     is_quiting():       -> bool             返回退出按钮是否按下
     check_bagging():                        检查并打开背包
     check_voluming():                       检查并显示/隐藏音量调整拖条
     slider_visible(is_show):                拖条切换为显示/隐藏
-        is_show(bool):                      需要切换的目标状态
+        is_show(bool):                          需要切换的目标状态
     check_adjusting_volume():               仅在显示拖条时更新音量
+    set_label(text):                        设置标签
+        text(str):                              标签内容
+    show_Soulstone(username):               显示灵魂石
+        username(str):                          用户名
+    bag(username):                          打开背包
+        username(str):                          用户名
 
 '''
 class Kits:
-    def __init__(self, screen_image:pygame.Surface, manager:pygame_gui.UIManager, bgmplayer:BgmPlayer, mode:int, onshow:list=['quit','bag','volume']):
+    def __init__(self, screen_image:pygame.Surface, manager:pygame_gui.UIManager, bgmplayer:BgmPlayer, mode:int, onshow:list=None):
         self.screen_image = screen_image
         self.manager = manager
         self.bgmplayer = bgmplayer
         self.mode = mode
-        self.onshow = onshow
+        if onshow != None:
+            self.onshow = onshow
+        else:
+            self.onshow = ['quit','bag','volume','logout']
         self.font = pygame.font.SysFont('Arial', 15)
         self.acer = account_admin()
         self.shopkeeper_0 = shopkeeper()
@@ -45,7 +61,10 @@ class Kits:
             volume_lefttop = (10,130)
             slide_lefttop = (66,143)
             slide_size = (100,29)
+            logout_lefttop = -1
             self.label_lefttop = -1
+            self.Soulstone_b_lefttop = (10,190)
+            self.Soulstone_lefttop = (10,210)
         elif self.mode == 2:
             button_size = 50
             quit_lefttop = (771,258)
@@ -53,15 +72,19 @@ class Kits:
             volume_lefttop = (829,258)
             slide_lefttop = (771,315)
             slide_size = (108,30)
+            logout_lefttop = -1
             self.label_lefttop = (767,400)
+            self.Soulstone_lefttop = -1
         elif self.mode == 3:
             button_size = 50
-            quit_lefttop = (771,258)
             bag_lefttop = (829,258)
-            volume_lefttop = (771,258)
-            slide_lefttop = (771,312)
+            volume_lefttop = (771,312)
+            slide_lefttop = (771,366)
             slide_size = (108,30)
+            logout_lefttop = (771,258)
             self.label_lefttop = (767,400)
+            self.Soulstone_b_lefttop = (767,430)
+            self.Soulstone_lefttop = (832,430)
         if 'quit' in self.onshow:
             self.quit_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(quit_lefttop,(button_size, button_size)),text='Quit',manager=self.manager)
         if 'bag' in self.onshow:
@@ -69,13 +92,21 @@ class Kits:
         if 'volume' in self.onshow:
             self.volume_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(volume_lefttop, (button_size, button_size)),text='Vol', manager=self.manager)
             self.volume_slider = pygame_gui.elements.UIHorizontalSlider(relative_rect=pygame.Rect(slide_lefttop, slide_size),start_value=self.bgmplayer.get_volume(),value_range=(0.0, 1.0),manager=self.manager)
+        if 'logout' in self.onshow:
+            self.logout_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(logout_lefttop, (button_size, button_size)),text='Logout',manager=self.manager)
         if self.label_lefttop != -1:
             self.label_text = self.font.render('',True,(0,0,0))
+        if self.Soulstone_lefttop != -1:
+            self.Soulstone_text_b = self.font.render('Soulstone:',True,(100,100,255))
+            self.Soulstone_text = self.font.render('',True,(100,100,255))
         self.volume_slider_visible = False
         self.volume_slider.hide()
 
     def is_quiting(self):
         return self.quit_button.check_pressed()
+    
+    def is_logout(self):
+        return self.logout_button.check_pressed()
     
     def check_bagging(self,username):
         if self.bag_button.check_pressed():
@@ -107,6 +138,12 @@ class Kits:
     def set_label(self, text:str):
         self.label_text = self.font.render(text,True,(0,0,0))
         self.screen_image.blit(self.label_text, self.label_lefttop)
+
+    def show_Soulstone(self, username:str):
+        userinfo = self.acer.get_resource(username)
+        self.Soulstone_text = self.font.render(str(userinfo["Soulstone"]),True,(100,100,255))
+        self.screen_image.blit(self.Soulstone_text_b, self.Soulstone_b_lefttop)
+        self.screen_image.blit(self.Soulstone_text, self.Soulstone_lefttop)
 
     def bag(self, username:str):
         manager = pygame_gui.UIManager((900,560))

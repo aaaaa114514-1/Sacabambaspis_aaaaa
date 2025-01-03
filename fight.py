@@ -82,6 +82,7 @@ class camera:
                 for entity in enemies:
                     entity.rect.y -= distance
                 for entity in bullets:
+                    entity.location[1] -= distance
                     entity.rect.y -= distance
                 walls.move([0,-distance])
                 self.left_top = [self.left_top[0],self.left_top[1]-distance]
@@ -95,6 +96,7 @@ class camera:
                 for entity in enemies:
                     entity.rect.y += distance
                 for entity in bullets:
+                    entity.location[1] += distance
                     entity.rect.y += distance
                 walls.move([0,distance])
                 self.left_top = [self.left_top[0],self.left_top[1]+distance]
@@ -108,6 +110,7 @@ class camera:
                 for entity in enemies:
                     entity.rect.x -= distance
                 for entity in bullets:
+                    entity.location[0] -= distance
                     entity.rect.x -= distance
                 walls.move([-distance,0])
                 self.left_top = [self.left_top[0]-distance,self.left_top[1]]
@@ -121,6 +124,7 @@ class camera:
                 for entity in enemies:
                     entity.rect.x += distance
                 for entity in bullets:
+                    entity.location[0] += distance
                     entity.rect.x += distance
                 walls.move([distance,0])
                 self.left_top = [self.left_top[0]+distance,self.left_top[1]]
@@ -226,7 +230,8 @@ class bullet:
         self.damage_range = damage_range
         self.speed = speed
         self.last_time = pygame.time.get_ticks()
-        self.rect = self.image.get_rect(center=b_location) 
+        self.rect = self.image.get_rect(center=b_location)
+        self.location = [b_location[0], b_location[1]]
         self.can_through_wall = can_through_wall
 
     def display(self):
@@ -236,8 +241,10 @@ class bullet:
     def move(self):
         if pygame.time.get_ticks() - self.last_time >= 10:
             self.last_time = pygame.time.get_ticks()
-            self.rect.x += self.speed[0]
-            self.rect.y += self.speed[1]
+            self.location[0] += self.speed[0]
+            self.location[1] += self.speed[1]
+            self.rect.x = self.location[0]
+            self.rect.y = self.location[1]
 
     def hit(self, target):
         if target != 0:
@@ -271,7 +278,6 @@ class bullet:
 '''
 player:
     font1(Font)             侧边栏字体(大)
-    player_list([int])      玩家列表
     player_num(int)         玩家编号
     screen_image(Surface)   窗口
     images([[Surface],...]) 形象: [[knight1_1, knight1_2, ...],[knight2_1, knight2_2, ...]]
@@ -307,11 +313,9 @@ player:
 class player:
     pygame.font.init()
     font1 = pygame.font.Font('Text\\xiangfont.ttf', 25)
-    player_list = []
 
-    def __init__(self, screenin: pygame.Surface, wallmap, imagesin: list[list[pygame.Surface]], side_player: pygame.Surface, damage_value: int, full_hp: int, full_magic: int, speed:int):
-        self.player_list.append(len(self.player_list) + 1)
-        self.player_num = self.player_list[-1]
+    def __init__(self, player_num, screenin: pygame.Surface, wallmap, imagesin: list[list[pygame.Surface]], side_player: pygame.Surface, damage_value: int, full_hp: int, full_magic: int, speed:int):
+        self.player_num = player_num
         self.screen_image = screenin
         self.images = imagesin
         self.side_player = side_player
@@ -326,7 +330,7 @@ class player:
         self.pace_time = pygame.time.get_ticks()
         self.attack_time = pygame.time.get_ticks()
         self.image_num = 0
-        self.rect = self.images[0][0].get_rect(center=[120+30*self.player_num, 260])
+        self.rect = self.images[0][0].get_rect(center=[150, 260])
         self.wallmap = wallmap
         self.is_alive = 1
 
@@ -427,7 +431,9 @@ class player:
 '''
 enemy:
     screen_image(Surface)   窗口
+    type(int)               类型: 0-普通 1-BOSS
     images(Surface)         形象
+    image_num(int)          形象编号
     state(int)              状态: 1-up 2-down 3-left 4-right
     damage_value(int)       伤害
     full_hp(int)            最高血量
@@ -492,7 +498,7 @@ class enemy:
         else:
             return [0,0]
     
-    def set_state(self, posi_0:int, posi_1:int):
+    def set_state(self, posi_0:list, posi_1:list):
         vect_0 = self.vect(posi_0,posi_1)
         if vect_0[0]+vect_0[1]>0:
             if vect_0[0]>vect_0[1]:
@@ -530,7 +536,14 @@ class enemy:
     def attack(self, target_player_loca:list):
         if pygame.time.get_ticks() - self.attack_time > self.attack_dt:
             self.attack_time = pygame.time.get_ticks()
-            return bullet(self.screen_image, self.bullet_image, self, self.damage_range, self.rect.center, self.vect(self.rect.center, target_player_loca, self.bullet_speed), self.bullet_ctw)
+            if self.type == 0:
+                return bullet(self.screen_image, self.bullet_image, self, self.damage_range, self.rect.center, self.vect(self.rect.center, target_player_loca, self.bullet_speed), self.bullet_ctw)
+            elif self.type == 1:
+                return [bullet(self.screen_image, self.bullet_image, self, self.damage_range, self.rect.center, self.vect(self.rect.center, target_player_loca, self.bullet_speed+1), True),
+                        bullet(self.screen_image, self.bullet_image, self, self.damage_range, self.rect.center, self.vect(self.rect.center, (target_player_loca[0]+50, target_player_loca[1]+50), self.bullet_speed), self.bullet_ctw),
+                        bullet(self.screen_image, self.bullet_image, self, self.damage_range, self.rect.center, self.vect(self.rect.center, (target_player_loca[0]-50, target_player_loca[1]-50), self.bullet_speed), self.bullet_ctw),
+                        bullet(self.screen_image, self.bullet_image, self, self.damage_range, self.rect.center, self.vect(self.rect.center, (target_player_loca[0]+50, target_player_loca[1]-50), self.bullet_speed), self.bullet_ctw),
+                        bullet(self.screen_image, self.bullet_image, self, self.damage_range, self.rect.center, self.vect(self.rect.center, (target_player_loca[0]-50, target_player_loca[1]+50), self.bullet_speed), self.bullet_ctw)]
 
     def display(self):
         if self.rect.right > 0 and self.rect.left < 750 and self.rect.bottom > 0 and self.rect.top < 560:
@@ -577,13 +590,11 @@ def fight(screen_image:pygame.Surface, player_num_list:list, level_num:int, play
     walls = wall_bgp(screen_image, pic.big_grass, pic.wall_images, map_0)
     players:list[player] = []
     if 1 in player_num_list:
-        player1 = player(screen_image, walls.wallmap, pic.Knight, pic.sideplayer1, player_info[0][3], player_info[0][0], player_info[0][1], player_info[0][2])
-        player1.player_num = 1
+        player1 = player(1, screen_image, walls.wallmap, pic.Knight, pic.sideplayer1, player_info[0][3], player_info[0][0], player_info[0][1], player_info[0][2])
         player1.goto(2)
         players.append(player1)
     if 2 in player_num_list:
-        player2 = player(screen_image, walls.wallmap, pic.Knightress, pic.sideplayer2, player_info[1][3], player_info[1][0], player_info[1][1], player_info[1][2])
-        player2.player_num = 2
+        player2 = player(2, screen_image, walls.wallmap, pic.Knightress, pic.sideplayer2, player_info[1][3], player_info[1][0], player_info[1][1], player_info[1][2])
         player2.goto(2)
         players.append(player2)
 
@@ -715,9 +726,12 @@ def fight(screen_image:pygame.Surface, player_num_list:list, level_num:int, play
             else:
                 enemy_0.move(camera_0.left_top)
             player_0 = random.choice(players)
-            bullet_to_add = enemy_0.attack(player_0.rect.bottomright)
-            if bullet_to_add != None:
+            bullet_to_add = enemy_0.attack(player_0.rect.center)
+            if type(bullet_to_add) == bullet:
                 bullets.append(bullet_to_add)
+            elif type(bullet_to_add) == list:
+                for bullet_0 in bullet_to_add:
+                    bullets.append(bullet_0)
 
         if enemies == [] and winning == 0:
             winning = 1
@@ -748,6 +762,6 @@ if __name__ == '__main__':
     pic = pictures
     screen_image = pygame.display.set_mode((900, 560))
     pygame.display.set_caption('Soul Knight')
-    fight(screen_image, [1], 0, [[100,100,4,10,20,True,3,6,pic.bullet1],[500,100,4,20,30,False,5,3,pic.bullet2]])
+    fight(screen_image, [2], 2, [[100,100,4,10,20,True,3,6,pic.bullet1],[500,100,4,20,30,False,5,3,pic.bullet2]])
 
     #[[0血量, 1魔法值, 2速度, 3伤害, 4溅射范围, 5子弹能否穿墙, 6子弹消耗魔法值, 7子弹速度, 8子弹形象],]

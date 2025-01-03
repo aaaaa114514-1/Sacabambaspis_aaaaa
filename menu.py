@@ -72,7 +72,6 @@ class wall_bgp:
 '''
 player:
     font1(Font)             侧边栏字体(大)
-    player_list([int])      玩家列表
     player_num(int)         玩家编号
     screen_image(Surface)   窗口
     images([[Surface],...]) 形象: [[knight1_1, knight1_2, ...],[knight2_1, knight2_2, ...]]
@@ -109,11 +108,9 @@ player:
 class player:
     pygame.font.init()
     font1 = pygame.font.Font('Text\\xiangfont.ttf', 25)
-    player_list = []
 
-    def __init__(self, screenin: pygame.Surface, wallmap, imagesin: list[list[pygame.Surface]], side_player: pygame.Surface, damage_value: int, full_hp: int, full_magic: int, speed:int):
-        self.player_list.append(len(self.player_list) + 1)
-        self.player_num = self.player_list[-1]
+    def __init__(self, player_num, screenin: pygame.Surface, wallmap, imagesin: list[list[pygame.Surface]], side_player: pygame.Surface, damage_value: int, full_hp: int, full_magic: int, speed:int):
+        self.player_num = player_num
         self.screen_image = screenin
         self.images = imagesin
         self.side_player = side_player
@@ -472,9 +469,9 @@ def menu(screen_image:pygame.Surface, username:str, bgm:BgmPlayer):
         for line in f:
             map_0.append(list(map(int,line.strip())))
     walls = wall_bgp(screen_image, pic.village, pic.wall_images, map_0)
-    player1 = player(screen_image, walls.wallmap, pic.Knight, pic.sideplayer1, translated_info[0][3], translated_info[0][0], translated_info[0][1], translated_info[0][2])
+    player1 = player(1, screen_image, walls.wallmap, pic.Knight, pic.sideplayer1, translated_info[0][3], translated_info[0][0], translated_info[0][1], translated_info[0][2])
     player1.goto(2)
-    player2 = player(screen_image, walls.wallmap, pic.Knightress, pic.sideplayer2, translated_info[1][3], translated_info[1][0], translated_info[1][1], translated_info[1][2])
+    player2 = player(2, screen_image, walls.wallmap, pic.Knightress, pic.sideplayer2, translated_info[1][3], translated_info[1][0], translated_info[1][1], translated_info[1][2])
     player2.goto(2)
     players:list[player] = [player1, player2]
 
@@ -487,7 +484,7 @@ def menu(screen_image:pygame.Surface, username:str, bgm:BgmPlayer):
 
     bullets:list[bullet] = []
 
-    kits_0 = Kits(screen_image, manager, bgm, 3, ['bag','volume'])
+    kits_0 = Kits(screen_image, manager, bgm, 3, ['bag','volume','logout'])
     time_delta = 0
     status_text = ''
 
@@ -528,6 +525,7 @@ def menu(screen_image:pygame.Surface, username:str, bgm:BgmPlayer):
             if player_0.is_alive == 1:
                 player_0.display()
         kits_0.set_label(status_text)
+        kits_0.show_Soulstone(username)
         manager.update(time_delta)
         manager.draw_ui(screen_image)
         pygame.display.update()
@@ -583,7 +581,7 @@ def menu(screen_image:pygame.Surface, username:str, bgm:BgmPlayer):
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                sys.exit()
+                return 0
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     bgm.pause()
@@ -643,6 +641,8 @@ def menu(screen_image:pygame.Surface, username:str, bgm:BgmPlayer):
             player1.damage_value = translated_info[0][3]
             player2.damage_value = translated_info[1][3]
 
+        if kits_0.is_logout():
+            return -1
         kits_0.check_voluming()
         kits_0.check_adjusting_volume()
         flipper()

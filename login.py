@@ -4,6 +4,7 @@ from load_picture import pictures
 import hashlib
 import os
 import shutil
+import sys
 
 '''
 login(screen_image):        登录界面
@@ -50,6 +51,7 @@ def login(screen_image:pygame.Surface):
             if event.type == pygame.QUIT:
                 running = False
                 pygame.quit()
+                sys.exit()
 
             manager.process_events(event)
 

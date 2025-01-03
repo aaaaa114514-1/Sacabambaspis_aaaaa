@@ -108,7 +108,7 @@ def gal_custom(screen_image:pygame.Surface, username:str, npcname:str, bgm:BgmPl
     npc_0 = npc_dia(npcname, username)
     textbox_0 = Textbox(f'Chat with {npc_0.name}\n'+'-'*140, manager)
 
-    kits_0 = Kits(screen_image, manager, bgm, 1)
+    kits_0 = Kits(screen_image, manager, bgm, 1, ['quit','bag','volume'])
 
     clock = pygame.time.Clock()
     pygame.display.flip()
@@ -161,6 +161,7 @@ def gal_custom(screen_image:pygame.Surface, username:str, npcname:str, bgm:BgmPl
         kits_0.check_adjusting_volume()
         manager.update(time_delta)
         screen_image.fill((0,0,0))
+        kits_0.show_Soulstone(username)
         manager.draw_ui(screen_image)
         pygame.display.flip()
 

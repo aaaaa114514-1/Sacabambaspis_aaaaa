@@ -1,6 +1,0 @@
-Dialogue
-
-0   	Hello!
-
-Alice   	*I look away, scowling slightly* "What do you want? You're just a ghost from my gaming sessions... what's going on?"
-
