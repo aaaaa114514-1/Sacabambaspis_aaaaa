@@ -1,6 +1,5 @@
 import pygame
 import pygame_gui
-import sys
 import time
 import pygetwindow as gw
 import os
@@ -14,7 +13,7 @@ import threading
 import random
 import fight
 from shopkeeper import shopkeeper
-
+import transition_effect
 
 '''
 wall_bgp:
@@ -514,7 +513,7 @@ def menu(screen_image:pygame.Surface, username:str, bgm:BgmPlayer):
             return [speed,0]
         
 
-    def flipper():
+    def flipper(is_flip=True):
         walls.display()
         screen_image.blit(pic.sidebox, (750, 0))
         for npc_0 in npcs:
@@ -528,9 +527,12 @@ def menu(screen_image:pygame.Surface, username:str, bgm:BgmPlayer):
         kits_0.show_Soulstone(username)
         manager.update(time_delta)
         manager.draw_ui(screen_image)
-        pygame.display.update()
+        if is_flip:
+            pygame.display.update()
 
-    flipper()
+    flipper(False)
+    transition_effect.fade_in(screen_image)
+
     translated_info = [info_trans(userinfo,1),info_trans(userinfo,2)]
     player1.damage_value = translated_info[0][3]
     player2.damage_value = translated_info[1][3]
@@ -588,21 +590,35 @@ def menu(screen_image:pygame.Surface, username:str, bgm:BgmPlayer):
                     minimize_window()
                     os.startfile('Pictures\K_Boss.pdf')
 
+                if event.key == pygame.K_b:
+                    kits_0.bag(username)
+                    userinfo = acer.get_resource(username)
+                    translated_info = [info_trans(userinfo,1),info_trans(userinfo,2)]
+                    player1.damage_value = translated_info[0][3]
+                    player2.damage_value = translated_info[1][3]
+
                 if event.key == pygame.K_SPACE:
                     if 'Chat' in status_text:
+                        transition_effect.fade_out(screen_image)
                         gal_custom.gal_custom(screen_image, username, chatted_npc, bgm)
+                        flipper(False)
+                        transition_effect.fade_in(screen_image)
                     elif 'Start' in status_text:
+                        transition_effect.fade_out(screen_image)
                         result = fight.fight(screen_image, player_in, 1, translated_info)
+                        transition_effect.fade_out(screen_image)
                         if result == 1:
                             acer.update_resource(username, userinfo)
                             result = fight.fight(screen_image, player_in, 2, translated_info)
+                            transition_effect.fade_out(screen_image)
                             if result == 1:
                                 userinfo['Soulstone'] += 20
                             else:
                                 userinfo['Soulstone'] += 10
                             acer.update_resource(username, userinfo)
+                        flipper(False)
+                        transition_effect.fade_in(screen_image)
                         bgm.play('Soul_Soil.mp3', -1)
-#########################################################################################################################################################
             for player_0 in players:
                 if player_0.player_num == 1 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_q and (pygame.time.get_ticks()-player_0.attack_time > 250):
                     bullets.append(bullet(screen_image, translated_info[0][8], player_0, translated_info[0][4], [player_0.rect.centerx, player_0.rect.centery][:], state_trans(player_0.state,translated_info[0][7]),translated_info[0][5]))

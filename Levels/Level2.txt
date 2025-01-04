@@ -52,18 +52,6 @@
             "attack_dt": 2000
         },
         {
-            "hp": 40,
-            "type":0,
-            "damage": 10,
-            "damage_range": 20,
-            "bullet_speed": 4,
-            "bullet_image": 0,
-            "bullet_ctw": 0,
-            "motion": [[150,200],[2250, 200],[2250,1300],[150,1300]],
-            "speed": 4,
-            "attack_dt": 2000
-        },
-        {
             "hp": 30,
             "type":0,
             "damage": 10,
@@ -174,10 +162,10 @@
         {
             "hp": 300,
             "type":1,
-            "damage": 20,
+            "damage": 15,
             "damage_range": 20,
             "bullet_speed": 3,
-            "bullet_image": 3,
+            "bullet_image": 1,
             "bullet_ctw": 0,
             "motion": [[475,475],[475,575],[1075,575],[1075,475]],
             "speed": 2,

@@ -5,6 +5,7 @@ import hashlib
 import os
 import shutil
 import sys
+import transition_effect
 
 '''
 login(screen_image):        登录界面
@@ -43,6 +44,18 @@ def login(screen_image:pygame.Surface):
         user_data[line.split()[0]] = line.split()[1]
     pic = pictures()
 
+    delta_time = 0
+    def flipper(is_flip = True):
+        manager.update(delta_time)
+        screen_image.blit(pic.Soul_knight_background2,(0,0))
+        login_text = font.render('Log in', True, (255, 255, 255))
+        screen_image.blit(login_text, (190,170))
+        manager.draw_ui(screen_image)
+        if is_flip:
+            pygame.display.update()
+
+    flipper(False)
+    transition_effect.fade_in(screen_image)
     running = True
     clock = pygame.time.Clock()
     while running:
@@ -88,13 +101,7 @@ def login(screen_image:pygame.Surface):
                             else:
                                 status_label.set_text("The username already exists")
 
-        manager.update(delta_time)
-        screen_image.blit(pic.Soul_knight_background2,(0,0))
-        login_text = font.render('Log in', True, (255, 255, 255))
-        screen_image.blit(login_text, (190,170))
-        manager.draw_ui(screen_image)
-
-        pygame.display.update()
+        flipper()
 
     pygame.quit()
 

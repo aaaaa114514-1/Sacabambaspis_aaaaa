@@ -1,2 +1,1 @@
-
-    pic = pictures
+fig

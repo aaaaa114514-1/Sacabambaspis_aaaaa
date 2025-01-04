@@ -3,6 +3,7 @@ import sys
 from account_setter import account_admin
 from load_picture import pictures
 from bgmplayer import BgmPlayer
+import transition_effect
 import opening
 import login
 import gal
@@ -19,6 +20,8 @@ bgm = BgmPlayer()
 bgm.play('Soul_Soil.mp3', -1)
 
 opening.opening(screen_image)
+pygame.time.wait(1000)
+transition_effect.fade_out(screen_image)
 
 logined = False
 while not logined:
@@ -26,11 +29,14 @@ while not logined:
     logined = True
     user_resource = acer.get_resource(username)
     if user_resource['has_read'] == 0:
+        transition_effect.fade_out(screen_image)
         gal.gal(screen_image, username)
         user_resource['has_read'] = 1
         acer.update_resource(username, user_resource)
 
+    transition_effect.fade_out(screen_image)
     result = menu.menu(screen_image, username, bgm)
+    transition_effect.fade_out(screen_image)
     if result == -1:
         logined = False
 

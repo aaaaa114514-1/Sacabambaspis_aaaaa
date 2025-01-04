@@ -1,5 +1,4 @@
 import pygame
-import sys
 import time
 from load_picture import pictures
 
@@ -17,7 +16,7 @@ def opening(screen_image:pygame.Surface):
     while alpha <= 256:
         clock.tick(60)
         for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN:
                 alpha = 254
                 time.sleep(0.2)
         alpha += 2
@@ -30,7 +29,7 @@ def opening(screen_image:pygame.Surface):
     while alpha <= 256:
         clock.tick(60)
         for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN:
                 alpha = 254
                 time.sleep(0.2)
         alpha += 2
@@ -40,9 +39,6 @@ def opening(screen_image:pygame.Surface):
         screen_image.blit(pic.Author, (20, 0))
         pygame.display.flip()
 
-    pygame.time.wait(1000)
-    pygame.draw.rect(screen_image, (0,0,0), (0,0,900,560))
-    pygame.display.flip()
 
 
 if __name__ == '__main__':

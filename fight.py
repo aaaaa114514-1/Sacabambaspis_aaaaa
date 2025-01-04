@@ -1,7 +1,6 @@
 import pygame
 import pygame_gui
 import sys
-import time
 import pygetwindow as gw
 import os
 from bgmplayer import BgmPlayer
@@ -9,6 +8,7 @@ from load_picture import pictures
 from kits import Kits
 import random
 import json
+import transition_effect
 
 
 '''
@@ -305,8 +305,8 @@ player:
         direction(int)                  朝向:   1-up 2-down 3-left 4-right
     hp_set(new_hp):                 设置血量(有上下限校验)
         new_hp(int)                     新的血量
-    damage(damage_v):                 结算受到的伤害
-        damage_v(int)                     受到的伤害值(有上下限校验)
+    damage(damage_v):               结算受到的伤害
+        damage_v(int)                   受到的伤害值(有上下限校验)
     is_dying():                     检验是否死亡
 '''
 
@@ -469,6 +469,9 @@ class enemy:
     def __init__(self, type_in:int, screen_image:pygame.Surface, images:list[list[pygame.Surface]], hp:int, damage_value:int, damage_range:float, bullet_speed:int, bullet_image:pygame.Surface, bullet_ctw:bool, motion:list, speed:float, attack_dt:int):
         self.screen_image = screen_image
         self.type = type_in
+        if self.type == 1:
+            self.pic = pictures()
+            self.is_raging = 0
         self.images = images
         self.image_num = 0
         self.state = 2
@@ -540,10 +543,10 @@ class enemy:
                 return bullet(self.screen_image, self.bullet_image, self, self.damage_range, self.rect.center, self.vect(self.rect.center, target_player_loca, self.bullet_speed), self.bullet_ctw)
             elif self.type == 1:
                 return [bullet(self.screen_image, self.bullet_image, self, self.damage_range, self.rect.center, self.vect(self.rect.center, target_player_loca, self.bullet_speed+1), True),
-                        bullet(self.screen_image, self.bullet_image, self, self.damage_range, self.rect.center, self.vect(self.rect.center, (target_player_loca[0]+50, target_player_loca[1]+50), self.bullet_speed), self.bullet_ctw),
-                        bullet(self.screen_image, self.bullet_image, self, self.damage_range, self.rect.center, self.vect(self.rect.center, (target_player_loca[0]-50, target_player_loca[1]-50), self.bullet_speed), self.bullet_ctw),
-                        bullet(self.screen_image, self.bullet_image, self, self.damage_range, self.rect.center, self.vect(self.rect.center, (target_player_loca[0]+50, target_player_loca[1]-50), self.bullet_speed), self.bullet_ctw),
-                        bullet(self.screen_image, self.bullet_image, self, self.damage_range, self.rect.center, self.vect(self.rect.center, (target_player_loca[0]-50, target_player_loca[1]+50), self.bullet_speed), self.bullet_ctw)]
+                        bullet(self.screen_image, self.pic.bullet3, self, self.damage_range, self.rect.center, self.vect(self.rect.center, (target_player_loca[0]+50, target_player_loca[1]+50), self.bullet_speed), self.bullet_ctw),
+                        bullet(self.screen_image, self.pic.bullet3, self, self.damage_range, self.rect.center, self.vect(self.rect.center, (target_player_loca[0]-50, target_player_loca[1]-50), self.bullet_speed), self.bullet_ctw),
+                        bullet(self.screen_image, self.pic.bullet3, self, self.damage_range, self.rect.center, self.vect(self.rect.center, (target_player_loca[0]+50, target_player_loca[1]-50), self.bullet_speed), self.bullet_ctw),
+                        bullet(self.screen_image, self.pic.bullet3, self, self.damage_range, self.rect.center, self.vect(self.rect.center, (target_player_loca[0]-50, target_player_loca[1]+50), self.bullet_speed), self.bullet_ctw)]
 
     def display(self):
         if self.rect.right > 0 and self.rect.left < 750 and self.rect.bottom > 0 and self.rect.top < 560:
@@ -558,6 +561,11 @@ class enemy:
             self.hp -= damage_v
             if self.hp > self.full_hp:
                 self.hp = self.full_hp
+        if self.type == 1 and self.is_raging == 0 and self.hp <= self.full_hp//2 and self.is_alive == 1:
+            self.is_raging = 1
+            self.attack_dt = int(self.attack_dt * 0.8)
+            self.damage_value = self.damage_value * 2
+            self.bullet_image = self.pic.bullet2
         return self.is_dying()
 
     def is_dying(self):
@@ -641,7 +649,7 @@ def fight(screen_image:pygame.Surface, player_num_list:list, level_num:int, play
         else:
             return [speed,0]
 
-    def flipper():
+    def flipper(is_flip=True):
         walls.display()
         for bullet_0 in bullets:
             bullet_0.display()
@@ -655,10 +663,12 @@ def fight(screen_image:pygame.Surface, player_num_list:list, level_num:int, play
         kits_0.set_label(status_text)
         manager.update(time_delta)
         manager.draw_ui(screen_image)
-        pygame.display.flip()
+        if is_flip:
+            pygame.display.flip()
 
 
-    flipper()
+    flipper(False)
+    transition_effect.level_fade_in(screen_image, level_num)
 
     clock = pygame.time.Clock()
     while True:
@@ -762,6 +772,6 @@ if __name__ == '__main__':
     pic = pictures
     screen_image = pygame.display.set_mode((900, 560))
     pygame.display.set_caption('Soul Knight')
-    fight(screen_image, [2], 2, [[100,100,4,10,20,True,3,6,pic.bullet1],[500,100,4,20,30,False,5,3,pic.bullet2]])
+    fight(screen_image, [2], 2, [[100,100,4,10,20,True,3,6,pic.bullet1],[500,100,6,20,30,False,5,3,pic.bullet2]])
 
     #[[0血量, 1魔法值, 2速度, 3伤害, 4溅射范围, 5子弹能否穿墙, 6子弹消耗魔法值, 7子弹速度, 8子弹形象],]

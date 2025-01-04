@@ -1,7 +1,16 @@
 import pygame
 import os
 
+'''
+pictures:
+    load_images(name, frame_num, size):     加载图片
+        name(str):                              图片名称
+        frame_num(int):                         帧数
+        size(tuple):                            大小
+'''
 class pictures:
+    def __init__(self):
+        pass
 
     def load_images(name:str, frame_num:int, size:tuple):
         result = [[],[],[],[]]
@@ -25,7 +34,7 @@ class pictures:
     Knightress = load_images('Knightress', 4, (33,47))
     Bird = load_images('Bird', 4, (64,60))
     Boss = load_images('Boss', 4, (96,96))
-    TestEnemy = load_images('TestEnemy', 4,(64,60))
+    # TestEnemy = load_images('TestEnemy', 4,(64,60))
 
     bullet0 = pygame.image.load('Pictures\Bullets\Bullet0.png')
     bullet0 = pygame.transform.scale(bullet0, (10, 10))
@@ -58,8 +67,6 @@ class pictures:
     sideplayer2 = pygame.image.load('Pictures\side_player2.png')
     sideplayer2 = pygame.transform.scale(sideplayer2, (150, 115))
 
-    grass = pygame.image.load('Pictures\\BGP\\grass.png')
-    grass = pygame.transform.scale(grass, (1280, 720))
     big_grass = pygame.image.load('Pictures\\BGP\\big_grass.png')
     big_grass = pygame.transform.scale(big_grass, (2400, 1500))
     village = pygame.image.load('Pictures\\BGP\\village.png')
@@ -72,6 +79,8 @@ class pictures:
     auto_playing = pygame.transform.scale(auto_playing, (25, 25))
     chapter_background = pygame.image.load('Pictures\\icons\\Chapter_background.png')
     chapter_background = pygame.transform.scale(chapter_background, (170, 70))
+    level_namebox = pygame.image.load('Pictures\\Level_namebox.png')
+    level_namebox = pygame.transform.scale(level_namebox, (700, 110))
 
     folder_path = 'Pictures\\Walls'
     image_files = [f for f in os.listdir(folder_path) if f.endswith(('png', 'jpg', 'jpeg'))]
@@ -84,6 +93,3 @@ class pictures:
         0 - Tree
         1 - air_wall
     '''
-
-    def __init__(self):
-        pass

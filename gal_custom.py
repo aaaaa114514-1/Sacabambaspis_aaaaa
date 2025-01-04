@@ -1,12 +1,11 @@
 import pygame
 import pygame_gui
 import sys
-import os
-import pygetwindow as gw
 from bgmplayer import BgmPlayer
 from ai_iosetter import npc_dia
 from kits import Kits
 from account_setter import account_admin
+import transition_effect
 
 '''
 Inputbox:
@@ -111,7 +110,18 @@ def gal_custom(screen_image:pygame.Surface, username:str, npcname:str, bgm:BgmPl
     kits_0 = Kits(screen_image, manager, bgm, 1, ['quit','bag','volume'])
 
     clock = pygame.time.Clock()
-    pygame.display.flip()
+    time_delta = 0
+    
+    def flipper(is_flip=True):
+        manager.update(time_delta)
+        screen_image.fill((0,0,0))
+        kits_0.show_Soulstone(username)
+        manager.draw_ui(screen_image)
+        if is_flip:
+            pygame.display.flip()
+
+    flipper(False)
+    transition_effect.fade_in(screen_image)
     while True:
         time_delta = clock.tick(30) / 1000.0
 
@@ -159,11 +169,7 @@ def gal_custom(screen_image:pygame.Surface, username:str, npcname:str, bgm:BgmPl
         kits_0.check_bagging(username)
         kits_0.check_voluming()
         kits_0.check_adjusting_volume()
-        manager.update(time_delta)
-        screen_image.fill((0,0,0))
-        kits_0.show_Soulstone(username)
-        manager.draw_ui(screen_image)
-        pygame.display.flip()
+        flipper()
 
 
 if __name__ == '__main__':

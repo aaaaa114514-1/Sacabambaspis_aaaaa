@@ -148,6 +148,7 @@ class Kits:
     def bag(self, username:str):
         manager = pygame_gui.UIManager((900,560))
         font = pygame.font.Font(None, 15)
+        font_potions = pygame.font.SysFont('Arial', 20)
         userinfo = self.acer.get_resource(username)
         is_bagging = 1
         rect_surface = pygame.Surface((900, 560), pygame.SRCALPHA)
@@ -163,6 +164,7 @@ class Kits:
         default_color = (200, 200, 200)
         selected_color = (100, 100, 100)
         weapons = []
+        potions = []
         selected = ['','']
         bullet_pics = {'Original_gun':self.pic.bullet0_big, 'Soul_gun':self.pic.bullet1_big, 'Firing_gun':self.pic.bullet2_big, 'Infinite_magic':self.pic.bullet3_big, 'Infinite_firepower':self.pic.bullet4_big}
 
@@ -175,6 +177,11 @@ class Kits:
                     selected[0] = i
                 elif userinfo[i] == -2:
                     selected[1] = i
+            elif userinfo[i] != 0:
+                potions.append(i)
+
+        potions_text = ' + '.join(potions)
+        potions_surface = font_potions.render(potions_text, True, (100, 100, 255))
 
         def draw_option(is_selected:bool, rect:pygame.Rect, image:pygame.Surface, text:str):
             textf = font.render(text, True, (0, 0, 0))
@@ -227,7 +234,7 @@ class Kits:
                                 selected[layer] = weapons[i]
 
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_RETURN or event.key == pygame.K_ESCAPE:
+                    if event.key in [pygame.K_RETURN, pygame.K_ESCAPE, pygame.K_b]:
                         exit_bag()
                         return 1
                     if event.key == pygame.K_a:
@@ -243,6 +250,7 @@ class Kits:
             
             self.screen_image.blit(bag_window_b, (170, 90))
             self.screen_image.blit(bag_window, (172,110))
+            bag_window.blit(potions_surface, (80, 305))
             bag_window.blit(self.pic.Knight[1][0],(20,50))
             bag_window.blit(self.pic.Knightress[1][0],(20,200))
             for layer in range(2):
