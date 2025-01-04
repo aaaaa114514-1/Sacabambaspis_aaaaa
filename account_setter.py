@@ -60,12 +60,15 @@ class account_admin:
                 f.write(f'{key}   \t{userinfo[key]}\n')
         f.close()
 
-    def create_account(self, username, password):
+    def create_account(self, username, password, is_cheater = False):
         f = open(f'Text\Accounts.txt', "a", encoding="UTF-8")
         f.write(f'{username}   \t{self.hash_data(password)}\n')
         f.close()
         os.mkdir(f'Text\\Accounts\\{username}')
         shutil.copy('Text\\account_resource.txt',f'Text\\Accounts\\{username}\\account_resource.txt')
+        if is_cheater:
+            userinfo = {'Soulstone': 1000, 'has_read0': 0, 'has_read1': 0, 'likeability_Alice': 100, 'likeability_Bob': 100, 'Original_gun': 1, 'Speeding_up': 1, 'Solid_body': 1, 'Magician': 1, 'Soul_gun': 1, 'Firing_gun': 1, 'Infinite_magic': 1, 'Infinite_firepower': -3}
+            self.update_resource(username, userinfo)
 
     def is_empty(self, path):
         with open(path, 'r', encoding="UTF-8") as f:
@@ -91,4 +94,4 @@ class account_admin:
 if __name__ == '__main__':
     acer0 = account_admin()
     acer0.clear_all_accounts()
-    acer0.create_account('aaaaa','')
+    acer0.create_account('aaaaa','',1)

@@ -25,13 +25,13 @@ transition_effect.fade_out(screen_image)
 
 logined = False
 while not logined:
-    username = login.login(screen_image)
+    username = login.login(screen_image, bgm)
     logined = True
     user_resource = acer.get_resource(username)
-    if user_resource['has_read'] == 0:
+    if user_resource['has_read0'] == 0:
         transition_effect.fade_out(screen_image)
-        gal.gal(screen_image, username)
-        user_resource['has_read'] = 1
+        gal.gal(screen_image, username, 'Text\\Chapter0.txt', pic.Soul_knight_background, bgm, 'Soul_Soil.mp3')
+        user_resource['has_read0'] = 1
         acer.update_resource(username, user_resource)
 
     transition_effect.fade_out(screen_image)

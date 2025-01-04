@@ -6,12 +6,13 @@ import os
 import shutil
 import sys
 import transition_effect
+from bgmplayer import BgmPlayer
 
 '''
 login(screen_image):        登录界面
     screen_image(Surface):      屏幕图像
 '''
-def login(screen_image:pygame.Surface):
+def login(screen_image:pygame.Surface,bgm:BgmPlayer):
     """
     hash_data(data):   -> str       使用SHA-256算法对输入数据进行哈希加密
         data(str):                  需要加密的数据
@@ -101,6 +102,11 @@ def login(screen_image:pygame.Surface):
                             else:
                                 status_label.set_text("The username already exists")
 
+        if pygame.display.get_active():
+            bgm.unpause()
+        else:
+            bgm.pause()
+
         flipper()
 
     pygame.quit()
@@ -108,4 +114,6 @@ def login(screen_image:pygame.Surface):
 if __name__ == '__main__':
     screen_image = pygame.display.set_mode((900, 560))
     pygame.display.set_caption('Soul Knight')
-    login(screen_image)
+    bgm = BgmPlayer()
+    bgm.play('Soul_Soil.mp3', -1)
+    login(screen_image,bgm)

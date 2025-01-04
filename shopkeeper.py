@@ -38,4 +38,4 @@ class shopkeeper:
 
 if __name__ == '__main__':
     keeper = shopkeeper()
-    print(keeper.pricetable.keys())
+    print(keeper.pricetable)

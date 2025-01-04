@@ -6,5 +6,5 @@ Speeding_up	10	100	100	6	-1	-1		-1		-1		-1		-1
 Solid_body	15	150	100	4	-1	-1		-1		-1		-1		-1
 Magician		25	100	200	4	-1	-1		-1		-1		-1		-1
 Infinite_magic	40	-1	-1	-1	10	20		0		0		4		3
-Infinite_firepower	40	-1	-1	-1	100000	100		0		20		2		4
+Infinite_firepower	40	-1	-1	-1	100000	50		0		20		2		4
 

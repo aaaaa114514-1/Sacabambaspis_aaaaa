@@ -44,4 +44,4 @@ def opening(screen_image:pygame.Surface):
 if __name__ == '__main__':
     screen_image = pygame.display.set_mode((900, 560))
     pygame.display.set_caption('Soul Knight')
-    open(screen_image)
+    opening(screen_image)

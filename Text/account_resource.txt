@@ -1,5 +1,6 @@
 Soulstone   	50
-has_read   	0
+has_read0   	0
+has_read1   	0
 likeability_Alice   	0
 likeability_Bob   	0
 Original_gun	-3

@@ -4,6 +4,7 @@ from load_picture import pictures
 import sys
 import os
 import pygetwindow as gw
+import transition_effect
 
 
 '''
@@ -154,30 +155,33 @@ class history:
 gal(screen_image, username, chapter_path):      剧情鉴赏模式
     screen_image(Surface):                          屏幕图像
     username(str):                                  用户名
-    chapter_path(str):                              章节路径(默认值'Text\\Chapter0.txt')
+    chapter_path(str):                              章节路径
+    bgp(Surface):                                   背景图
+    bgm(<BgmPlayer>):                               bgmplayer
+    bgm_name(str):                                  bgm文件名
 '''
-def gal(screen_image:pygame.Surface, username:str, chapter_path:str = 'Text\\Chapter0.txt'):
+def gal(screen_image:pygame.Surface, username:str, chapter_path, bgp:pygame.Surface, bgm:BgmPlayer, bgm_name:str):
     pygame.init()
 
     pic = pictures()
-    screen_image.blit(pic.Soul_knight_background, (0,0))
+    screen_image.blit(bgp, (0,0))
     screen_image.blit(pic.textbox, (75,420))
     pygame.display.flip()
 
-    bgm = BgmPlayer()
-    bgm.play('Soul_Soil.mp3',-1)
+    bgm.play(bgm_name,-1)
 
     text0 = text(screen_image, pic.chapter_background, chapter_path, pic.textbox, username)
-    history0 = history(screen_image, pic.Soul_knight_background)
+    history0 = history(screen_image, bgp)
 
     def minimize_window():
         window = gw.getWindowsWithTitle('Soul Knight')[0]
         window.minimize()
 
-    def flapper():
-        screen_image.blit(pic.Soul_knight_background, (0,0))
+    def flipper(is_flip=True):
+        screen_image.blit(bgp, (0,0))
         text0.show_scene()
-        pygame.display.flip()
+        if is_flip:
+            pygame.display.flip()
 
     clock = pygame.time.Clock()
     gal_running = 1
@@ -185,6 +189,8 @@ def gal(screen_image:pygame.Surface, username:str, chapter_path:str = 'Text\\Cha
     is_auto = 0
     timeset = 0
     text0.push_on()
+    flipper(False)
+    transition_effect.fade_in(screen_image)
     while gal_running:
         clock.tick(100)
         for event in pygame.event.get():
@@ -199,7 +205,7 @@ def gal(screen_image:pygame.Surface, username:str, chapter_path:str = 'Text\\Cha
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     if is_auto != 0:
-                        screen_image.blit(pic.Soul_knight_background, (0,0))
+                        screen_image.blit(bgp, (0,0))
                         text0.show_scene()
                         pygame.display.flip()
                         is_auto = 0
@@ -209,7 +215,7 @@ def gal(screen_image:pygame.Surface, username:str, chapter_path:str = 'Text\\Cha
                         os.startfile('Pictures\K_Boss.pdf')
                     else:
                         is_history = 0
-                        flapper()
+                        flipper()
 
                 elif event.key == pygame.K_SPACE and is_history == 0:
                     gal_running = text0.push_on()
@@ -222,7 +228,7 @@ def gal(screen_image:pygame.Surface, username:str, chapter_path:str = 'Text\\Cha
                         is_auto = 1
                         timeset = pygame.time.get_ticks() - 4000
                     else:
-                        flapper()
+                        flipper()
                         is_auto = 0
 
 
@@ -241,7 +247,7 @@ def gal(screen_image:pygame.Surface, username:str, chapter_path:str = 'Text\\Cha
                     elif event.y < 0:
                         is_history = history0.page_down()
                         if is_history == 0:
-                            flapper()
+                            flipper()
 
         if pygame.time.get_ticks() - timeset >= 2500 and is_auto == 1:
             timeset = pygame.time.get_ticks()
@@ -259,4 +265,6 @@ def gal(screen_image:pygame.Surface, username:str, chapter_path:str = 'Text\\Cha
 if __name__ == '__main__':
     screen_image = pygame.display.set_mode((900,560))
     pygame.display.set_caption('Soul Knight')
-    gal(screen_image, 'aaaaa')
+    pic = pictures()
+    bgm = BgmPlayer()
+    gal(screen_image, 'aaaaa','Text\Chapter1.txt', pic.Hatching_Soul, bgm, 'Heart-to-Heart.MP3')

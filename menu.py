@@ -14,6 +14,7 @@ import random
 import fight
 from shopkeeper import shopkeeper
 import transition_effect
+import gal
 
 '''
 wall_bgp:
@@ -613,6 +614,10 @@ def menu(screen_image:pygame.Surface, username:str, bgm:BgmPlayer):
                             transition_effect.fade_out(screen_image)
                             if result == 1:
                                 userinfo['Soulstone'] += 20
+                                if userinfo['has_read1'] == 0:
+                                    gal.gal(screen_image, username, 'Text\\Chapter1.txt', pic.Hatching_Soul, bgm, 'Heart-to-Heart.MP3')
+                                    transition_effect.fade_out(screen_image)
+                                    userinfo['has_read1'] = 1
                             else:
                                 userinfo['Soulstone'] += 10
                             acer.update_resource(username, userinfo)

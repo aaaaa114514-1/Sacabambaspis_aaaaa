@@ -164,6 +164,11 @@ def gal_custom(screen_image:pygame.Surface, username:str, npcname:str, bgm:BgmPl
         if kits_0.is_quiting():
             acer.clear_empty_dialogues(username)
             return 0
+        
+        if pygame.display.get_active():
+            bgm.unpause()
+        else:
+            bgm.pause()
 
         inputbox_0.check_empty()
         kits_0.check_bagging(username)

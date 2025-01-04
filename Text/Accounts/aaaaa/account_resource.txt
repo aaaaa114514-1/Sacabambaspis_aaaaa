@@ -1,7 +1,8 @@
-Soulstone   	70
-has_read   	1
-likeability_Alice   	0
-likeability_Bob   	0
+Soulstone   	1060
+has_read0   	1
+has_read1   	0
+likeability_Alice   	100
+likeability_Bob   	100
 Original_gun   	1
 Speeding_up   	1
 Solid_body   	1
