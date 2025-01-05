@@ -3,6 +3,7 @@ from typing import List, Dict
 from datetime import datetime
 from account_setter import account_admin
 from shopkeeper import shopkeeper
+import random
 
 '''
 npc_dia:
@@ -56,10 +57,13 @@ class npc_dia:
 
     def talk(self, user_input:str):
         self.cli_messages.append({"role": "user", "content": user_input+f'\nLikeability = {self.likeability}'})
-        response = self.client.chat.completions.create(
-            model = "llama3.2",      
-            messages = self.cli_messages,
-        )
+        try:
+            response = self.client.chat.completions.create(
+                model = "llama3.2",      
+                messages = self.cli_messages,
+            )
+        except:
+            return 'Network Error! Please check your network and make sure you are in Shanghaitech University!'
         cli_reply = response.choices[0].message.content
         self.cli_messages.append({"role": "assistant", "content": cli_reply})
         response = self.judge.chat.completions.create(
@@ -157,10 +161,13 @@ class npc_mov:
     def judge_move(self, user_location, npc_location, likeability):
         self.likeability = likeability
         self.cli_messages[1] = {"role": "user", "content": f'Soul Knight\'s location: {user_location}\n{self.name}\'s location: {npc_location}\nLikeability = {self.likeability}'}
-        response = self.client.chat.completions.create(
-            model = "llama3.2",      
-            messages = self.cli_messages,
-        )
+        try:
+            response = self.client.chat.completions.create(
+                model = "llama3.2",      
+                messages = self.cli_messages,
+            )
+        except:
+            return random.randint(-1,1)
         cli_reply = response.choices[0].message.content.lower()
         if 'approach' in cli_reply:
             return 1
