@@ -13,6 +13,22 @@ The name of the game is ***Soul_Knight*** .
 - You can use VSCode to open the file **Soul knight** and run **main.py** .
 - **Do not** attempt to maximize the window or change its size.
 - Turn your Chinese input method **off** , or you will not be able to play through keyboard any more.
+- The current version of the game relies on the following libraries to run:
+  - **pygame**
+  - **pygame_gui**
+  - **pygetwindow**
+  - **shutil**
+  - **os**
+  - **sys**
+  - **threading**
+  - **typing**
+  - **hashlib**
+  - **openai**
+  - **time**
+  - **datetime**
+  - **random**
+  - **json**
+
 
 ### How to cheat ?
 

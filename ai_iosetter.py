@@ -64,7 +64,7 @@ class npc_dia:
         self.cli_messages.append({"role": "assistant", "content": cli_reply})
         response = self.judge.chat.completions.create(
             model= "llama3.2",
-            messages=[self.jud_setting, {"role": "user", "content": f'The user: {user_input}; {self.name}: {self.cli_messages[-1]['content']}'}],
+            messages=[self.jud_setting, {"role": "user", "content": f'The user: {user_input}; {self.name}: {self.cli_messages[-1]["content"]}'}],
         )
         jud_reply = response.choices[0].message.content
 

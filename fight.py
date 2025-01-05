@@ -592,7 +592,7 @@ def fight(screen_image:pygame.Surface, player_num_list:list, level_num:int, play
 
     pic = pictures()
     map_0 = []
-    with open(f'Maps\\map{level_data['map']}.txt','r') as f:
+    with open(f'Maps\\map{level_data["map"]}.txt','r') as f:
         for line in f:
             map_0.append(list(map(int,line.strip())))
     walls = wall_bgp(screen_image, pic.big_grass, pic.wall_images, map_0)
