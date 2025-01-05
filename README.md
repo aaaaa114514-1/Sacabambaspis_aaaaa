@@ -1,5 +1,11 @@
 # Readme
 
+The group is entitled Sacabambaspis_aaaaa and the only member is aaaaa(周博扬 2024533141).
+
+You may access the game in the repository [Sacabambaspis_aaaaa](https://github.com/aaaaa114514-1/Sacabambaspis_aaaaa) .
+
+The name of the game is Soul_Knight.
+
 #### This is a game similar to the original 'Soul Knight', in terms of both **game-play** and **plot**.
 
 ### How to run it ?
@@ -12,7 +18,6 @@
 
 - You should log in (or register first, of course) before playing because there are something bound to your account (such as your resources, your chat history with npcs, and your relationship❤ ).
 - You can enter with your username and your password.
-- The username and password must be letters, numbers, or special characters. Other characters may not be accepted.
 
 ### How to play?
 
@@ -32,21 +37,19 @@
 
 You may encounter a plot appreciation scene when you successfully registered and logged in for the first time. Enjoy it!
 
-You can scroll up the mouse wheel (not in auto mode) to check the history dialogue. You can then scroll up/down to turn pages. When you turn to the last page and you can scroll down to quit the history mode. You can also press **Esc** to quit the history mode.
-
-You can press **A** / **F6** (not in history mode) to get into auto mode, which enables the program to play automatically (2.5s/page). If you turn pages in auto mode, time for each page will be reset. You can press **A** / **F6** again or press **Esc** to quit the auto mode.
+You can scroll up to view history, and scroll down to exit history mode, or press **Esc**. Press **A** or **F6** to enter auto mode (2.5s/page), and press them again or **Esc** to exit.
 
 #### Menu
 
-|         **Keys**         |          **Functions**           |
-| :----------------------: | :------------------------------: |
-|          W / ↑           |  (Player 1 / Player 2) move up   |
-|          S / ↓           | (Player 1 / Player 2) move down  |
-|          A / ←           | (Player 1 / Player 2) move left  |
-|          D / →           | (Player 1 / Player 2) move right |
-| Alt(left) / Ctrl (right) |   (Player 1 / Player 2) attack   |
-|          Space           |   Player 1 & Player 2 approach   |
-|           Esc            |             Boss key             |
+|    **Keys**     |          **Functions**           |
+| :-------------: | :------------------------------: |
+|      W / ↑      |  (Player 1 / Player 2) move up   |
+|      S / ↓      | (Player 1 / Player 2) move down  |
+|      A / ←      | (Player 1 / Player 2) move left  |
+|      D / →      | (Player 1 / Player 2) move right |
+| M / Mouse click |   (Player 1 / Player 2) attack   |
+|      Space      |   Player 1 & Player 2 approach   |
+|       Esc       |             Boss key             |
 
 - Menu page locates in a beautiful village ! You can buy different weapons and potions, choose from these weapons and enter the portal to start a battle.
 - You will meet npcs here. You may approach them and press **Space** to talk to them (more details in Part **Chat with Npcs** ). 
@@ -83,10 +86,4 @@ You can press **A** / **F6** (not in history mode) to get into auto mode, which 
   - **Quit** : Press to quit the current scene and return to the previous scene.
   - **Bag** : Press to choose from your weapons. You can click on the weapons or press **A** / **D** and **←** / **→** to choose from the weapons for two players separately. Your potions are showed in blue at the bottom of the child window.
   - **Vol** : Press to show/hide the volume control slider. You can drag the slider to control the volume of background music.
-
-### Music & Art
-
-- Background music ***Soul Soil*** is ***aaaaa***'s original track, **all rights reserved**.
-
-- Other background music and pictures are from the Internet or from AI.
 

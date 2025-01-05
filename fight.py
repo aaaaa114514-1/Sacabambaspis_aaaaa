@@ -701,11 +701,11 @@ def fight(screen_image:pygame.Surface, player_num_list:list, level_num:int, play
                     return 1
 
             for player_0 in players:
-                if player_0.player_num == 1 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_LALT and player_0.magic >= player_info[0][6] and (pygame.time.get_ticks()-player_0.attack_time > 250):
+                if player_0.player_num == 1 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_m and player_0.magic >= player_info[0][6] and (pygame.time.get_ticks()-player_0.attack_time > 250):
                     player_0.magic -= player_info[0][6]
                     bullets.append(bullet(screen_image, player_info[0][8], player_0, player_info[0][4], [player_0.rect.centerx, player_0.rect.centery][:], state_trans(player_0.state,player_info[0][7]),player_info[0][5]))
                     bullets[-1].display()
-                if player_0.player_num == 2 and player_0.is_alive == 1 and event.type == pygame.KEYDOWN and event.key == pygame.K_RCTRL and player_0.magic >= player_info[1][6] and (pygame.time.get_ticks()-player_0.attack_time > 250):
+                if player_0.player_num == 2 and player_0.is_alive == 1 and event.type == pygame.MOUSEBUTTONDOWN and player_0.magic >= player_info[1][6] and (pygame.time.get_ticks()-player_0.attack_time > 250):
                     player_0.magic -= player_info[1][6]
                     bullets.append(bullet(screen_image, player_info[1][8], player_0, player_info[1][4], [player_0.rect.centerx, player_0.rect.centery][:], state_trans(player_0.state,player_info[1][7]),player_info[1][5]))
                     bullets[-1].display()

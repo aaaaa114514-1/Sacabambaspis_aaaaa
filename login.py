@@ -77,7 +77,8 @@ def login(screen_image:pygame.Surface,bgm:BgmPlayer):
 
                         if username in user_data and user_data[username] == hash_data(password):
                             status_label.set_text(f"Welcome, {username} !")
-                            pygame.time.wait(500)
+                            flipper()
+                            pygame.time.wait(1000)
                             return username
                         else:
                             status_label.set_text("Incorrect username or password")
