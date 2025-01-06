@@ -11,26 +11,22 @@ The name of the game is ***Soul_Knight*** .
 ### How to run it ?
 
 - You can use VSCode to open the file **Soul knight** and run **main.py** .
+
 - **Do not** attempt to maximize the window or change its size.
+
 - Turn your Chinese input method **off** , or you will not be able to play through keyboard any more.
-- The current version of the game relies on the following libraries to run:
-  - **pygame**
-  - **pygame_gui**
-  - **pygetwindow**
-  - **shutil**
-  - **os**
-  - **sys**
-  - **threading**
-  - **typing**
-  - **hashlib**
-  - **openai**
-  - **time**
-  - **datetime**
-  - **random**
-  - **json**
 
+- The current version of the game relies on the following third-party libraries to run:
+  - | Library     | Version |
+    | ----------- | ------- |
+    | openai      | 1.58.1  |
+    | pygame-ce   | 2.5.2   |
+    | pygame_gui  | 0.6.13  |
+    | PyGetWindow | 0.0.9   |
 
-### How to cheat ?
+- Also seen in ***requirements.txt*** .
+
+### **How to cheat** ?
 
 - Cheating in this game is **not recommended**. The gaming experience will decrease.
 - If you still want to cheat in the game, just run **account_setter.py** and log in with the account **aaaaa** with **empty password** . You will get everything in the game including full likeability with npcs, 1000 Soulstones and all the weapons and potions. 
@@ -42,7 +38,13 @@ The name of the game is ***Soul_Knight*** .
 
 ### How to play?
 
-- There are different scenes in the whole game.
+- Please check ***Menu&Fight.png*** and ***Plot Appreciation.png*** to learn more about the key mapping:
+
+  ![](Menu&Fight.png)
+
+  ![](Plot_Appreciation.png)
+
+- There are different scenes in the whole game:
 
 #### Plot Appreciation
 
@@ -109,3 +111,4 @@ You can scroll up to view history, and scroll down to exit history mode, or pres
   - **Bag** : Press to choose from your weapons. You can click on the weapons or press **A** / **D** and **←** / **→** to choose from the weapons for two players separately. Your potions are showed in blue at the bottom of the child window.
   - **Vol** : Press to show/hide the volume control slider. You can drag the slider to control the volume of background music.
 
+## To figure out more about the game and its **highlights** , you can refer to **Report.pdf** and check **the last page**.
