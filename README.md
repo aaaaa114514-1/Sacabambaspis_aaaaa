@@ -1,6 +1,6 @@
 # Readme
 
-The group is entitled ***Sacabambaspis_aaaaa*** and the only member is ***aaaaa(周博扬 2024533141)***.
+The group is called ***Sacabambaspis_aaaaa*** , and the only member is ***aaaaa(周博扬 2024533141)***.
 
 You may access the game in the repository [Sacabambaspis_aaaaa](https://github.com/aaaaa114514-1/Sacabambaspis_aaaaa) .
 
@@ -10,9 +10,9 @@ The name of the game is ***Soul_Knight*** .
 
 ### How to run it ?
 
-- You can use VSCode to open the file **Soul knight** and run **main.py** .
+- You can use VSCode to open the file and run **main.py** .
 
-- **Do not** attempt to maximize the window or change its size.
+- **Do not** attempt to maximize or resize the window.
 
 - Turn your Chinese input method **off** , or you will not be able to play through keyboard any more.
 
@@ -29,11 +29,11 @@ The name of the game is ***Soul_Knight*** .
 ### **How to cheat** ?
 
 - Cheating in this game is **not recommended**. The gaming experience will decrease.
-- If you still want to cheat in the game, just run **account_setter.py** and log in with the account **aaaaa** with **empty password** . You will get everything in the game including full likeability with npcs, 1000 Soulstones and all the weapons and potions. 
+- If you still want to cheat in the game, just run **account_setter.py** and log in with the account **aaaaa** with **empty password** . You will get everything in the game including full likeability with NPCs, 1000 Soulstones and all the weapons and potions. 
 
 ### Log in First
 
-- You should log in (or register first, of course) before playing because there are something bound to your account (such as your resources, your chat history with npcs, and your relationship❤ ).
+- You should log in (or register first, of course) before playing because there are things bound to your account (such as your resources, your chat history with NPCs, and your relationship❤ ).
 - You can enter with your username and your password.
 
 ### How to play?
@@ -48,7 +48,7 @@ The name of the game is ***Soul_Knight*** .
 
 #### Plot Appreciation
 
-- ~~The inspiration for interface design comes from Galgame.~~
+- ~~The interface design is inspired by Galgame.~~
 
 |             **Keys**             | **Functions** |
 | :------------------------------: | :-----------: |
@@ -64,18 +64,18 @@ You can scroll up to view history, and scroll down to exit history mode, or pres
 
 #### Menu
 
-|    **Keys**     |          **Functions**           |
-| :-------------: | :------------------------------: |
-|      W / ↑      |  (Player 1 / Player 2) move up   |
-|      S / ↓      | (Player 1 / Player 2) move down  |
-|      A / ←      | (Player 1 / Player 2) move left  |
-|      D / →      | (Player 1 / Player 2) move right |
-| M / Mouse click |   (Player 1 / Player 2) attack   |
-|      Space      |   Player 1 & Player 2 approach   |
-|       Esc       |             Boss key             |
+|    **Keys**    |          **Functions**           |
+| :------------: | :------------------------------: |
+|     W / ↑      |  (Player 1 / Player 2) move up   |
+|     S / ↓      | (Player 1 / Player 2) move down  |
+|     A / ←      | (Player 1 / Player 2) move left  |
+|     D / →      | (Player 1 / Player 2) move right |
+| M / Left-click |   (Player 1 / Player 2) attack   |
+|     Space      |   Player 1 & Player 2 approach   |
+|      Esc       |             Boss key             |
 
 - Menu page locates in a beautiful village ! You can buy different weapons and potions, choose from these weapons and enter the portal to start a battle.
-- You will meet npcs here. You may approach them and press **Space** to talk to them (more details in Part **Chat with Npcs** ). 
+- You will meet NPCs here. You may approach them and press **Space** to talk to them (more details in Part **Chat with NPCs** ). 
 - You can play in either **single player mode** and **pair mode** ! Just approach the portal by yourself / together with your friend and press **Space** !
 - You can try your weapons here **for free** ! No limit for magic and you won't be defeated !
 
@@ -92,13 +92,13 @@ You can scroll up to view history, and scroll down to exit history mode, or pres
 
 - Haven't remember the steps above? Don't worry! After you have defeated all enemies, everything you should do is just to follow the tips in the bottom right corner of the screen.
 
-#### Chat with Npcs
+#### Chat with NPCs
 
-- You can chat with npcs powered by ollama AI. You can key in the text box below and press **Enter (on keyboard or keypad)** or press the button **Enter** to send a message to him/her.
-- You can enhance your relationship with him/her by chatting.
-- You may get **key information**, **effect gain** or **resources** by talking to npcs! The closer your relationship is, the more you may get!
+- You can chat with NPCs powered by ollama AI. You can key in the text box below and press **Enter (on keyboard or keypad)** or press the button **Enter** to send a message to him/her.
+- You can improve your relationship with him/her by chatting.
+- You may get **key information**, **effect gain** or **resources** by talking to NPCs! The closer your relationship is, the more you may get!
 - All your relationship and chat history will be saved and bound to your account.
-- Tip: sometimes the npc won't reply instantly, and you may check your network and wait for his/her reply patiently.
+- Tip: sometimes the NPC won't reply instantly, and you may check your network and wait for his/her reply patiently.
 
 #### Other
 
@@ -108,7 +108,7 @@ You can scroll up to view history, and scroll down to exit history mode, or pres
 - You may see some buttons on the edge of the screen:
   - **Logout** : Press to log out and go to the login page.
   - **Quit** : Press to quit the current scene and return to the previous scene.
-  - **Bag** : Press to choose from your weapons. You can click on the weapons or press **A** / **D** and **←** / **→** to choose from the weapons for two players separately. Your potions are showed in blue at the bottom of the child window.
+  - **Bag** : Press to choose from your weapons. You can click on the weapons or press **A** / **D** and **←** / **→** to select weapons for two players separately. Your potions are showed in blue at the bottom of the child window.
   - **Vol** : Press to show/hide the volume control slider. You can drag the slider to control the volume of background music.
 
 ## To figure out more about the game and its **highlights** , you can refer to **Report.pdf** and check **the last page**.
