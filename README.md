@@ -24,6 +24,8 @@ The name of the game is ***Soul_Knight*** .
     | pygame_gui  | 0.6.13  |
     | PyGetWindow | 0.0.9   |
 
+- Note that if you meet some problems when installing pygame-ce, please UNINSTALL pygame AND pygame-ce FIRST and THEN INSTALL pygame-ce. Besides, using virtual environments to avoid version conflicts is also a good idea.
+
 - Also seen in ***requirements.txt*** .
 
 ### **How to cheat** ?
